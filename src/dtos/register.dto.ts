@@ -1,4 +1,5 @@
 import z from "zod";
+
 const { isValidCPF } = require("@studiovisual/brazilian-validator-js");
 
 export const registerSchema = z.object({

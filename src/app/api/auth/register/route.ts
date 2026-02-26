@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
+import z from "zod";
 import { registerSchema } from "@/dtos/register.dto";
 import { AuthService } from "@/services/auth.service";
-import z from "zod";
 
 export async function POST(request: Request) {
   try {

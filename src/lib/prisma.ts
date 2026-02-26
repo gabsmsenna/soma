@@ -1,6 +1,6 @@
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import { Pool } from "pg";
-import { PrismaPg } from "@prisma/adapter-pg";
 
 const prismaClientSingleton = () => {
   // Use DIRECT_URL (ou DATABASE_URL) dependendo de como está o seu .env

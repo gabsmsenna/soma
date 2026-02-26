@@ -1,8 +1,9 @@
 import bcrypt from "bcryptjs";
+import { jwtVerify } from "jose";
+import type { LoginDto } from "@/dtos/login.dto";
+import type { RegisterDto } from "@/dtos/register.dto";
 import { generateAuthToken } from "@/lib/generate-auth-token";
-import { RegisterDto } from "@/dtos/register.dto";
 import prisma from "@/lib/prisma";
-import { LoginDto } from "@/dtos/login.dto";
 
 export class AuthService {
   static async register(data: RegisterDto) {
@@ -48,5 +49,21 @@ export class AuthService {
       user: userWithoutPassword,
       token,
     };
+  }
+
+  static async verifyToken(
+    token: string,
+  ): Promise<{ userId: string; email: string }> {
+    const secretKey = process.env.JWT_SECRET;
+    if (!secretKey) {
+      throw new Error("JWT_SECRET not defined");
+    }
+    const secret = new TextEncoder().encode(secretKey);
+    try {
+      const { payload } = await jwtVerify(token, secret);
+      return { userId: payload.sub as string, email: payload.email as string };
+    } catch (error) {
+      throw new Error("INVALID_TOKEN");
+    }
   }
 }

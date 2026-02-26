@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { loginSchema } from "@/dtos/login.dto";
 import z from "zod";
+import { loginSchema } from "@/dtos/login.dto";
 import { AuthService } from "@/services/auth.service";
 
 export async function POST(request: Request) {
