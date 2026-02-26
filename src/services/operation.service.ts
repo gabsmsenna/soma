@@ -11,13 +11,13 @@ export async function getAll(userId: string) {
   });
 }
 
-export async function create(userId: string, data: CreateOperationDto) {
+export async function createOperation(userId: string, data: CreateOperationDto) {
   return prisma.operation.create({
     data: { ...data, userId },
   });
 }
 
-export async function update(
+export async function updateOperation(
   id: string,
   userId: string,
   data: UpdateOperationDto,
