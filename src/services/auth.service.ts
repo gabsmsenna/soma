@@ -5,65 +5,64 @@ import type { RegisterDto } from "@/dtos/register.dto";
 import { generateAuthToken } from "@/lib/generate-auth-token";
 import prisma from "@/lib/prisma";
 
-export class AuthService {
-  static async register(data: RegisterDto) {
-    const { email, password, name, cpf } = data;
+export async function register(data: RegisterDto) {
+  const { email, password, name, cpf } = data;
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      throw { message: "E-mail já cadastrado", status: 409 };
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await prisma.user.create({
-      data: { name, email, cpf, password: hashedPassword },
-    });
-
-    const token = await generateAuthToken(user.id, user.email);
-    const { password: _, ...userWithoutPassword } = user;
-
-    return { user: userWithoutPassword, token };
+  const existingUser = await prisma.user.findUnique({ where: { email } });
+  if (existingUser) {
+    throw { message: "E-mail já cadastrado", status: 409 };
   }
 
-  static async login({ email, password }: LoginDto) {
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-    if (!user) {
-      throw new Error("INVALID_CREDENTIALS");
-    }
+  const user = await prisma.user.create({
+    data: { name, email, cpf, password: hashedPassword },
+  });
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+  const token = await generateAuthToken(user.id, user.email);
+  const { password: _, ...userWithoutPassword } = user;
 
-    if (!isPasswordValid) {
-      throw new Error("INVALID_CREDENTIALS");
-    }
+  return { user: userWithoutPassword, token };
+}
 
-    const token = await generateAuthToken(user.id, user.email);
+export async function login({ email, password }: LoginDto) {
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
 
-    const { password: _, ...userWithoutPassword } = user;
-
-    return {
-      user: userWithoutPassword,
-      token,
-    };
+  if (!user) {
+    throw new Error("INVALID_CREDENTIALS");
   }
 
-  static async verifyToken(
-    token: string,
-  ): Promise<{ userId: string; email: string }> {
-    const secretKey = process.env.JWT_SECRET;
-    if (!secretKey) {
-      throw new Error("JWT_SECRET not defined");
-    }
-    const secret = new TextEncoder().encode(secretKey);
-    try {
-      const { payload } = await jwtVerify(token, secret);
-      return { userId: payload.sub as string, email: payload.email as string };
-    } catch (error) {
-      throw new Error("INVALID_TOKEN");
-    }
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordValid) {
+    throw new Error("INVALID_CREDENTIALS");
+  }
+
+  const token = await generateAuthToken(user.id, user.email);
+
+  const { password: _, ...userWithoutPassword } = user;
+
+  return {
+    user: userWithoutPassword,
+    token,
+  };
+}
+
+export async function verifyToken(
+  token: string,
+): Promise<{ userId: string; email: string }> {
+  const secretKey = process.env.JWT_SECRET;
+  if (!secretKey) {
+    throw new Error("JWT_SECRET not defined");
+  }
+  const secret = new TextEncoder().encode(secretKey);
+  try {
+    const { payload } = await jwtVerify(token, secret);
+    return { userId: payload.sub as string, email: payload.email as string };
+  } catch (error) {
+    console.error("Token verification failed:", error);
+    throw new Error("INVALID_TOKEN");
   }
 }
