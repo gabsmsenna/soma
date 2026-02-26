@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import z from "zod";
 import { updateProjectSchema } from "@/dtos/project.dto";
 import prisma from "@/lib/prisma";
-import { AuthService } from "@/services/auth.service";
-import { ProjectService } from "@/services/project.service";
+import { verifyToken } from "@/services/auth.service";
+import { deleteProject, findById, update } from "@/services/project.service";
 
 function getTokenFromRequest(request: Request): string | null {
   const authHeader = request.headers.get("authorization");
@@ -22,7 +22,7 @@ export async function GET(
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const { userId } = await AuthService.verifyToken(token);
+    const { userId } = await verifyToken(token);
 
     // Verificar se a operação pertence ao usuário
     const operation = await prisma.operation.findUnique({
@@ -35,7 +35,7 @@ export async function GET(
       );
     }
 
-    const project = await ProjectService.findById(params.projectId);
+    const project = await findById(params.projectId);
     if (project.operationId !== params.operationId) {
       return NextResponse.json(
         { error: "Projeto não pertence à operação" },
@@ -71,7 +71,7 @@ export async function PUT(
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const { userId } = await AuthService.verifyToken(token);
+    const { userId } = await verifyToken(token);
 
     // Verificar se a operação pertence ao usuário
     const operation = await prisma.operation.findUnique({
@@ -84,7 +84,7 @@ export async function PUT(
       );
     }
 
-    const project = await ProjectService.findById(params.projectId);
+    const project = await findById(params.projectId);
     if (project.operationId !== params.operationId) {
       return NextResponse.json(
         { error: "Projeto não pertence à operação" },
@@ -101,10 +101,7 @@ export async function PUT(
       );
     }
 
-    const updatedProject = await ProjectService.update(
-      params.projectId,
-      parsedData.data,
-    );
+    const updatedProject = await update(params.projectId, parsedData.data);
 
     return NextResponse.json(updatedProject);
   } catch (error) {
@@ -134,7 +131,7 @@ export async function DELETE(
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const { userId } = await AuthService.verifyToken(token);
+    const { userId } = await verifyToken(token);
 
     // Verificar se a operação pertence ao usuário
     const operation = await prisma.operation.findUnique({
@@ -147,7 +144,7 @@ export async function DELETE(
       );
     }
 
-    const project = await ProjectService.findById(params.projectId);
+    const project = await findById(params.projectId);
     if (project.operationId !== params.operationId) {
       return NextResponse.json(
         { error: "Projeto não pertence à operação" },
@@ -155,7 +152,7 @@ export async function DELETE(
       );
     }
 
-    await ProjectService.delete(params.projectId);
+    await deleteProject(params.projectId);
 
     return NextResponse.json({ message: "Projeto deletado com sucesso" });
   } catch (error) {

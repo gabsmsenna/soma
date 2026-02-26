@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import z from "zod";
 import { createProjectSchema } from "@/dtos/project.dto";
 import prisma from "@/lib/prisma";
-import { AuthService } from "@/services/auth.service";
-import { ProjectService } from "@/services/project.service";
+import { verifyToken } from "@/services/auth.service";
+import { create, findByOperationId } from "@/services/project.service";
 
 function getTokenFromRequest(request: Request): string | null {
   const authHeader = request.headers.get("authorization");
@@ -22,7 +22,7 @@ export async function GET(
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const { userId } = await AuthService.verifyToken(token);
+    const { userId } = await verifyToken(token);
 
     // Verificar se a operação pertence ao usuário
     const operation = await prisma.operation.findUnique({
@@ -35,7 +35,7 @@ export async function GET(
       );
     }
 
-    const projects = await ProjectService.findByOperationId(params.operationId);
+    const projects = await findByOperationId(params.operationId);
     return NextResponse.json(projects);
   } catch (error) {
     console.error("Erro ao listar projetos:", error);
@@ -58,7 +58,7 @@ export async function POST(
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const { userId } = await AuthService.verifyToken(token);
+    const { userId } = await verifyToken(token);
 
     // Verificar se a operação pertence ao usuário
     const operation = await prisma.operation.findUnique({
@@ -80,7 +80,7 @@ export async function POST(
       );
     }
 
-    const project = await ProjectService.create({
+    const project = await create({
       ...parsedData.data,
       operationId: params.operationId,
     });
