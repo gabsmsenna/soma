@@ -13,11 +13,16 @@ function getTokenFromRequest(request: Request): string | null {
   return authHeader.substring(7);
 }
 
-export async function GET(
-  request: Request,
-  { params }: { params: { operationId: string; projectId: string } },
-) {
+// 1. Criamos a tipagem correta indicando que params é uma Promise
+type RouteContext = {
+  params: Promise<{ operationId: string; projectId: string }>;
+};
+
+export async function GET(request: Request, { params }: RouteContext) {
   try {
+    // 2. Extraímos os IDs da Promise
+    const { operationId, projectId } = await params;
+
     const token = getTokenFromRequest(request);
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -26,7 +31,7 @@ export async function GET(
 
     // Verificar se a operação pertence ao usuário
     const operation = await prisma.operation.findUnique({
-      where: { id: params.operationId, userId },
+      where: { id: operationId, userId },
     });
     if (!operation) {
       return NextResponse.json(
@@ -35,8 +40,8 @@ export async function GET(
       );
     }
 
-    const project = await findById(params.projectId);
-    if (project.operationId !== params.operationId) {
+    const project = await findById(projectId);
+    if (project.operationId !== operationId) {
       return NextResponse.json(
         { error: "Projeto não pertence à operação" },
         { status: 404 },
@@ -62,11 +67,10 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: { operationId: string; projectId: string } },
-) {
+export async function PUT(request: Request, { params }: RouteContext) {
   try {
+    const { operationId, projectId } = await params;
+
     const token = getTokenFromRequest(request);
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -75,7 +79,7 @@ export async function PUT(
 
     // Verificar se a operação pertence ao usuário
     const operation = await prisma.operation.findUnique({
-      where: { id: params.operationId, userId },
+      where: { id: operationId, userId },
     });
     if (!operation) {
       return NextResponse.json(
@@ -84,8 +88,8 @@ export async function PUT(
       );
     }
 
-    const project = await findById(params.projectId);
-    if (project.operationId !== params.operationId) {
+    const project = await findById(projectId);
+    if (project.operationId !== operationId) {
       return NextResponse.json(
         { error: "Projeto não pertence à operação" },
         { status: 404 },
@@ -101,7 +105,7 @@ export async function PUT(
       );
     }
 
-    const updatedProject = await update(params.projectId, parsedData.data);
+    const updatedProject = await update(projectId, parsedData.data);
 
     return NextResponse.json(updatedProject);
   } catch (error) {
@@ -122,11 +126,10 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  { params }: { params: { operationId: string; projectId: string } },
-) {
+export async function DELETE(request: Request, { params }: RouteContext) {
   try {
+    const { operationId, projectId } = await params;
+
     const token = getTokenFromRequest(request);
     if (!token) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -135,7 +138,7 @@ export async function DELETE(
 
     // Verificar se a operação pertence ao usuário
     const operation = await prisma.operation.findUnique({
-      where: { id: params.operationId, userId },
+      where: { id: operationId, userId },
     });
     if (!operation) {
       return NextResponse.json(
@@ -144,15 +147,15 @@ export async function DELETE(
       );
     }
 
-    const project = await findById(params.projectId);
-    if (project.operationId !== params.operationId) {
+    const project = await findById(projectId);
+    if (project.operationId !== operationId) {
       return NextResponse.json(
         { error: "Projeto não pertence à operação" },
         { status: 404 },
       );
     }
 
-    await deleteProject(params.projectId);
+    await deleteProject(projectId);
 
     return NextResponse.json({ message: "Projeto deletado com sucesso" });
   } catch (error) {

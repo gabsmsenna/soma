@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import z from "zod";
 import { loginSchema } from "@/dtos/login.dto";
-import { AuthService } from "@/services/auth.service";
+import { login } from "@/services/auth.service";
 
 export async function POST(request: Request) {
   try {
@@ -15,7 +15,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { user, token } = await AuthService.login(parsedData.data);
+    const { user, token } = await login(parsedData.data);
 
     return NextResponse.json(
       {

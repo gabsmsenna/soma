@@ -1,78 +1,39 @@
 import { NextResponse } from "next/server";
 import z from "zod";
 import { createProjectSchema } from "@/dtos/project.dto";
-import prisma from "@/lib/prisma";
-import { verifyToken } from "@/services/auth.service";
+import { authenticate } from "@/lib/auth-middleware";
+import { handleError } from "@/lib/error-handler";
+import { verifyOperationOwnership } from "@/services/operation.service";
 import { create, findByOperationId } from "@/services/project.service";
 
-function getTokenFromRequest(request: Request): string | null {
-  const authHeader = request.headers.get("authorization");
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return null;
-  }
-  return authHeader.substring(7);
-}
+// 1. Atualizamos a tipagem para refletir que params é uma Promise
+type RouteContext = { params: Promise<{ operationId: string }> };
 
-export async function GET(
-  request: Request,
-  { params }: { params: { operationId: string } },
-) {
+export async function GET(request: Request, { params }: RouteContext) {
   try {
-    const token = getTokenFromRequest(request);
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    const { userId } = await verifyToken(token);
+    // 2. Aguardamos a Promise resolver para extrair o ID
+    const { operationId } = await params;
 
-    // Verificar se a operação pertence ao usuário
-    const operation = await prisma.operation.findUnique({
-      where: { id: params.operationId, userId },
-    });
-    if (!operation) {
-      return NextResponse.json(
-        { error: "Operação não encontrada" },
-        { status: 404 },
-      );
-    }
+    const { userId } = await authenticate(request);
+    await verifyOperationOwnership(operationId, userId);
 
-    const projects = await findByOperationId(params.operationId);
+    const projects = await findByOperationId(operationId);
     return NextResponse.json(projects);
   } catch (error) {
-    console.error("Erro ao listar projetos:", error);
-    if (error instanceof Error && error.message === "INVALID_TOKEN") {
-      return NextResponse.json({ error: "Token inválido" }, { status: 401 });
-    }
-    return NextResponse.json(
-      { error: "Erro interno do servidor" },
-      { status: 500 },
-    );
+    return handleError(error, "Erro ao listar projetos:");
   }
 }
 
-export async function POST(
-  request: Request,
-  { params }: { params: { operationId: string } },
-) {
+export async function POST(request: Request, { params }: RouteContext) {
   try {
-    const token = getTokenFromRequest(request);
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    const { userId } = await verifyToken(token);
+    const { operationId } = await params;
 
-    // Verificar se a operação pertence ao usuário
-    const operation = await prisma.operation.findUnique({
-      where: { id: params.operationId, userId },
-    });
-    if (!operation) {
-      return NextResponse.json(
-        { error: "Operação não encontrada" },
-        { status: 404 },
-      );
-    }
+    const { userId } = await authenticate(request);
+    await verifyOperationOwnership(operationId, userId);
 
     const body = await request.json();
     const parsedData = createProjectSchema.safeParse(body);
+
     if (!parsedData.success) {
       return NextResponse.json(
         { error: "Dados inválidos", details: z.treeifyError(parsedData.error) },
@@ -82,18 +43,10 @@ export async function POST(
 
     const project = await create({
       ...parsedData.data,
-      operationId: params.operationId,
+      operationId,
     });
-
     return NextResponse.json(project, { status: 201 });
   } catch (error) {
-    console.error("Erro ao criar projeto:", error);
-    if (error instanceof Error && error.message === "INVALID_TOKEN") {
-      return NextResponse.json({ error: "Token inválido" }, { status: 401 });
-    }
-    return NextResponse.json(
-      { error: "Erro interno do servidor" },
-      { status: 500 },
-    );
+    return handleError(error, "Erro ao criar projeto:");
   }
 }

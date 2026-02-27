@@ -45,3 +45,16 @@ export async function deleteOperation(id: string, userId: string) {
     where: { id },
   });
 }
+
+export async function verifyOperationOwnership(
+  operationId: string,
+  userId: string,
+): Promise<void> {
+  const operation = await prisma.operation.findUnique({
+    where: { id: operationId, userId },
+  });
+
+  if (!operation) {
+    throw new Error("OPERATION_NOT_FOUND");
+  }
+}
