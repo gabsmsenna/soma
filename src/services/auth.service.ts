@@ -3,8 +3,8 @@ import { jwtVerify } from "jose";
 import type { LoginDto } from "@/dtos/login.dto";
 import type { RegisterDto } from "@/dtos/register.dto";
 import { generateAuthToken } from "@/lib/generate-auth-token";
-import { problems } from "@/lib/problem-registry";
 import prisma from "@/lib/prisma";
+import { problems } from "@/lib/problem-registry";
 
 export async function register(data: RegisterDto) {
   const { email, password, name, cpf } = data;
