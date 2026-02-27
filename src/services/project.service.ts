@@ -1,7 +1,7 @@
 import type { Project } from "@prisma/client";
 import type { CreateProjectDto, UpdateProjectDto } from "@/dtos/project.dto";
-import { problems } from "@/lib/problem-registry";
 import prisma from "@/lib/prisma";
+import { problems } from "@/lib/problem-registry";
 
 export async function create(
   data: CreateProjectDto & { operationId: string },
@@ -28,6 +28,33 @@ export async function findByOperationId(operationId: string) {
     include: { creatives: true },
     orderBy: { createdAt: "desc" },
   });
+}
+
+export async function findByOperationIdPaginated(
+  operationId: string,
+  page: number,
+  limit: number,
+) {
+  const [data, total] = await Promise.all([
+    prisma.project.findMany({
+      where: { operationId },
+      include: { creatives: true },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.project.count({ where: { operationId } }),
+  ]);
+
+  return {
+    data,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 }
 
 export async function update(

@@ -2,14 +2,41 @@ import type {
   CreateOperationDto,
   UpdateOperationDto,
 } from "@/dtos/operation.dto";
-import { problems } from "@/lib/problem-registry";
 import prisma from "@/lib/prisma";
+import { problems } from "@/lib/problem-registry";
 
 export async function getAll(userId: string) {
   return prisma.operation.findMany({
     where: { userId },
     include: { projects: true },
   });
+}
+
+export async function getAllPaginated(
+  userId: string,
+  page: number,
+  limit: number,
+) {
+  const [data, total] = await Promise.all([
+    prisma.operation.findMany({
+      where: { userId },
+      include: { projects: true },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.operation.count({ where: { userId } }),
+  ]);
+
+  return {
+    data,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 }
 
 export async function createOperation(
