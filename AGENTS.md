@@ -168,6 +168,25 @@ Components are installed in `src/components/ui/`
 - Base color: `zinc`
 - All colors should support dark mode via `dark:` prefix
 
+## Agent Output Protocol
+
+Every time you (the AI agent) complete a task, write code, or modify files, you **MUST** conclude your response with a concise summary of the changes formatted as a Git commit message. 
+
+This allows the user to easily copy and paste the summary into their terminal.
+
+### Commit Message Format
+Follow the Conventional Commits specification. Use the imperative mood for the subject line and provide a brief bulleted list of the actual changes in the body.
+
+Enclose the commit message within specific tags so it is easily identifiable:
+
+```text
+[COMMIT_MESSAGE_START]
+<type>(<optional scope>): <short summary in imperative mood>
+
+- <specific change 1>
+- <specific change 2>
+[COMMIT_MESSAGE_END]
+
 ### Git Conventions
 - Commit messages: concise, imperative mood
 - Branch naming: `feature/`, `fix/`, `refactor/` prefixes
