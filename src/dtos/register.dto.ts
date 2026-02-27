@@ -8,7 +8,7 @@ export const registerSchema = z.object({
   password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
   cpf: z
     .string()
-    .transform((value) => value.replace(/\D/g, "")) // Remove tudo que não for dígito
+    .transform((value) => value.replace(/\D/g, ""))
     .refine(
       (value) => value.length === 11,
       "CPF deve conter exatamente 11 dígitos",

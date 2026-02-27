@@ -6,12 +6,10 @@ import { handleError } from "@/lib/error-handler";
 import { verifyOperationOwnership } from "@/services/operation.service";
 import { create, findByOperationId } from "@/services/project.service";
 
-// 1. Atualizamos a tipagem para refletir que params é uma Promise
 type RouteContext = { params: Promise<{ operationId: string }> };
 
 export async function GET(request: Request, { params }: RouteContext) {
   try {
-    // 2. Aguardamos a Promise resolver para extrair o ID
     const { operationId } = await params;
 
     const { userId } = await authenticate(request);

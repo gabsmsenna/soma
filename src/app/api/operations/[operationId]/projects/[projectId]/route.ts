@@ -13,14 +13,12 @@ function getTokenFromRequest(request: Request): string | null {
   return authHeader.substring(7);
 }
 
-// 1. Criamos a tipagem correta indicando que params é uma Promise
 type RouteContext = {
   params: Promise<{ operationId: string; projectId: string }>;
 };
 
 export async function GET(request: Request, { params }: RouteContext) {
   try {
-    // 2. Extraímos os IDs da Promise
     const { operationId, projectId } = await params;
 
     const token = getTokenFromRequest(request);
@@ -29,7 +27,6 @@ export async function GET(request: Request, { params }: RouteContext) {
     }
     const { userId } = await verifyToken(token);
 
-    // Verificar se a operação pertence ao usuário
     const operation = await prisma.operation.findUnique({
       where: { id: operationId, userId },
     });
@@ -77,7 +74,6 @@ export async function PUT(request: Request, { params }: RouteContext) {
     }
     const { userId } = await verifyToken(token);
 
-    // Verificar se a operação pertence ao usuário
     const operation = await prisma.operation.findUnique({
       where: { id: operationId, userId },
     });
@@ -136,7 +132,6 @@ export async function DELETE(request: Request, { params }: RouteContext) {
     }
     const { userId } = await verifyToken(token);
 
-    // Verificar se a operação pertence ao usuário
     const operation = await prisma.operation.findUnique({
       where: { id: operationId, userId },
     });

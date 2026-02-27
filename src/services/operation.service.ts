@@ -7,7 +7,7 @@ import prisma from "@/lib/prisma";
 export async function getAll(userId: string) {
   return prisma.operation.findMany({
     where: { userId },
-    include: { projects: true }, // opcional, incluir projetos se quiser
+    include: { projects: true },
   });
 }
 
