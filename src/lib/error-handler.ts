@@ -1,20 +1,45 @@
 import { NextResponse } from "next/server";
+import { AppError } from "./app-error";
 
-export function handleError(error: unknown, context: string): NextResponse {
-  console.error(context, error);
+interface ProblemDetailsResponse {
+  type: string;
+  title: string;
+  status: number;
+  detail?: string;
+  instance?: string;
+  [key: string]: unknown;
+}
 
-  if (error instanceof Error) {
-    if (error.message === "INVALID_TOKEN")
-      return NextResponse.json({ error: "Token inválido" }, { status: 401 });
-    if (error.message === "OPERATION_NOT_FOUND")
-      return NextResponse.json(
-        { error: "Operação não encontrada" },
-        { status: 404 },
-      );
+export function handleError(error: unknown, request: Request): NextResponse {
+  if (error instanceof AppError) {
+    const body: ProblemDetailsResponse = {
+      type: error.type,
+      title: error.title,
+      status: error.status,
+      ...(error.detail && { detail: error.detail }),
+      instance: new URL(request.url).pathname,
+      ...error.extensions,
+    };
+
+    console.error(`[${error.status}] ${error.title}:`, error.detail ?? "");
+
+    return new NextResponse(JSON.stringify(body), {
+      status: error.status,
+      headers: { "Content-Type": "application/problem+json" },
+    });
   }
 
-  return NextResponse.json(
-    { error: "Erro interno do servidor" },
-    { status: 500 },
-  );
+  console.error("[500] Erro não tratado:", error);
+
+  const body: ProblemDetailsResponse = {
+    type: "https://soma.api/problems/internal-error",
+    title: "Erro interno do servidor",
+    status: 500,
+    instance: new URL(request.url).pathname,
+  };
+
+  return new NextResponse(JSON.stringify(body), {
+    status: 500,
+    headers: { "Content-Type": "application/problem+json" },
+  });
 }

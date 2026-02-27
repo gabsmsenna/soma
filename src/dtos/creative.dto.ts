@@ -21,5 +21,11 @@ export const updateCreativeSchema = z.object({
   paidAt: z.date().optional(),
 });
 
+export const paginationSchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(10),
+});
+
 export type CreateCreativeDto = z.infer<typeof createCreativeSchema>;
 export type UpdateCreativeDto = z.infer<typeof updateCreativeSchema>;
+export type PaginationDto = z.infer<typeof paginationSchema>;

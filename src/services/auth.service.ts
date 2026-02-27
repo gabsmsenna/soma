@@ -3,6 +3,7 @@ import { jwtVerify } from "jose";
 import type { LoginDto } from "@/dtos/login.dto";
 import type { RegisterDto } from "@/dtos/register.dto";
 import { generateAuthToken } from "@/lib/generate-auth-token";
+import { problems } from "@/lib/problem-registry";
 import prisma from "@/lib/prisma";
 
 export async function register(data: RegisterDto) {
@@ -10,7 +11,7 @@ export async function register(data: RegisterDto) {
 
   const existingUser = await prisma.user.findUnique({ where: { email } });
   if (existingUser) {
-    throw { message: "E-mail já cadastrado", status: 409 };
+    throw problems.emailAlreadyExists();
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -31,13 +32,13 @@ export async function login({ email, password }: LoginDto) {
   });
 
   if (!user) {
-    throw new Error("INVALID_CREDENTIALS");
+    throw problems.invalidCredentials();
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
-    throw new Error("INVALID_CREDENTIALS");
+    throw problems.invalidCredentials();
   }
 
   const token = await generateAuthToken(user.id, user.email);
@@ -63,6 +64,6 @@ export async function verifyToken(
     return { userId: payload.sub as string, email: payload.email as string };
   } catch (error) {
     console.error("Token verification failed:", error);
-    throw new Error("INVALID_TOKEN");
+    throw problems.invalidToken();
   }
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import z from "zod";
 import { registerSchema } from "@/dtos/register.dto";
+import { handleError } from "@/lib/error-handler";
 import { register } from "@/services/auth.service";
 
 export async function POST(request: Request) {
@@ -20,10 +21,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(newUser, { status: 201 });
   } catch (error) {
-    console.error("[REGISTER_ERROR]", error);
-    return NextResponse.json(
-      { error: "Erro interno do servidor" },
-      { status: 500 },
-    );
+    return handleError(error, request);
   }
 }

@@ -101,40 +101,50 @@ export type LoginDto = z.infer<typeof loginSchema>;
 
 ### Error Handling
 
-#### API Routes
-- Wrap logic in try/catch blocks
-- Return appropriate HTTP status codes: `400` (validation), `401` (unauthorized), `409` (conflict), `500` (internal)
-- Log errors with `console.error`
+This project uses **API Problem Details (RFC 9457)** for standardized error responses.
 
+#### Architecture
+- **`AppError`** (`src/lib/app-error.ts`): Custom exception class carrying `type`, `title`, `status`, `detail`, and optional `extensions`
+- **`problems`** (`src/lib/problem-registry.ts`): Factory functions to create `AppError` instances for each domain error
+- **`handleError`** (`src/lib/error-handler.ts`): Centralized handler that converts `AppError` to `application/problem+json` responses
+
+#### Services
+Throw errors using factory functions from `problems`:
 ```typescript
-export async function POST(request: Request) {
+import { problems } from "@/lib/problem-registry";
+
+// 404
+throw problems.resourceNotFound("Projeto não encontrado");
+// 401
+throw problems.invalidCredentials();
+throw problems.invalidToken();
+// 409
+throw problems.emailAlreadyExists();
+```
+
+#### API Routes
+Use `handleError(error, request)` in catch blocks:
+```typescript
+import { handleError } from "@/lib/error-handler";
+
+export async function GET(request: Request) {
   try {
-    const body = await request.json();
-    const parsedData = loginSchema.safeParse(body);
-    if (!parsedData.success) {
-      return NextResponse.json({ error: "Dados inválidos" }, { status: 400 });
-    }
-    const { user, token } = await AuthService.login(parsedData.data);
-    return NextResponse.json({ user, token }, { status: 200 });
+    // ...
   } catch (error) {
-    console.error("Erro no login:", error);
-    return NextResponse.json({ error: "Erro interno do servidor" }, { status: 500 });
+    return handleError(error, request);
   }
 }
 ```
 
-#### Services
-- Use static methods on service classes
-- Throw errors with meaningful messages
-- Return clean data (strip passwords):
-```typescript
-export class AuthService {
-  static async login({ email, password }: LoginDto) {
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) throw new Error("INVALID_CREDENTIALS");
-    const { password: _, ...userWithoutPassword } = user;
-    return { user: userWithoutPassword, token };
-  }
+#### Response Format
+All errors return `Content-Type: application/problem+json`:
+```json
+{
+  "type": "https://soma.api/problems/resource-not-found",
+  "title": "Recurso não encontrado",
+  "status": 404,
+  "detail": "Projeto não encontrado",
+  "instance": "/api/operations/abc/projects/xyz"
 }
 ```
 

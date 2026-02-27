@@ -2,6 +2,7 @@ import type {
   CreateOperationDto,
   UpdateOperationDto,
 } from "@/dtos/operation.dto";
+import { problems } from "@/lib/problem-registry";
 import prisma from "@/lib/prisma";
 
 export async function getAll(userId: string) {
@@ -29,7 +30,7 @@ export async function updateOperation(
     where: { id, userId },
   });
   if (!operation) {
-    throw new Error("OPERATION_NOT_FOUND");
+    throw problems.resourceNotFound("Operação não encontrada");
   }
   return prisma.operation.update({
     where: { id },
@@ -42,7 +43,7 @@ export async function deleteOperation(id: string, userId: string) {
     where: { id, userId },
   });
   if (!operation) {
-    throw new Error("OPERATION_NOT_FOUND");
+    throw problems.resourceNotFound("Operação não encontrada");
   }
   return prisma.operation.delete({
     where: { id },
@@ -58,6 +59,6 @@ export async function verifyOperationOwnership(
   });
 
   if (!operation) {
-    throw new Error("OPERATION_NOT_FOUND");
+    throw problems.resourceNotFound("Operação não encontrada");
   }
 }

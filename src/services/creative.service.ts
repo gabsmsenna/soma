@@ -2,6 +2,7 @@ import type { Creative } from "@prisma/client";
 import { Prisma } from "@prisma/client";
 import type { CreateCreativeDto, UpdateCreativeDto } from "@/dtos/creative.dto";
 import prisma from "@/lib/prisma";
+import { problems } from "@/lib/problem-registry";
 
 export async function create(
   data: CreateCreativeDto & { projectId: string },
@@ -11,7 +12,7 @@ export async function create(
   });
 
   if (!project) {
-    throw new Error("PROJECT_NOT_FOUND");
+    throw problems.resourceNotFound("Projeto não encontrado");
   }
 
   const totalProfit = data.totalProfit ?? new Prisma.Decimal("0");
@@ -34,7 +35,7 @@ export async function findById(id: string) {
     include: { project: { include: { operation: true } } },
   });
 
-  if (!creative) throw new Error("CREATIVE_NOT_FOUND");
+  if (!creative) throw problems.resourceNotFound("Criativo não encontrado");
 
   return creative;
 }
@@ -44,6 +45,32 @@ export async function findByProjectId(projectId: string) {
     where: { projectId },
     orderBy: { createdAt: "desc" },
   });
+}
+
+export async function findByProjectIdPaginated(
+  projectId: string,
+  page: number,
+  limit: number,
+) {
+  const [data, total] = await Promise.all([
+    prisma.creative.findMany({
+      where: { projectId },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.creative.count({ where: { projectId } }),
+  ]);
+
+  return {
+    data,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 }
 
 export async function update(
@@ -70,6 +97,6 @@ export async function verifyProjectOwnership(
   });
 
   if (!project) {
-    throw new Error("PROJECT_NOT_FOUND");
+    throw problems.resourceNotFound("Projeto não encontrado");
   }
 }

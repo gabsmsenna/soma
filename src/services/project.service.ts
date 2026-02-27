@@ -1,5 +1,6 @@
 import type { Project } from "@prisma/client";
 import type { CreateProjectDto, UpdateProjectDto } from "@/dtos/project.dto";
+import { problems } from "@/lib/problem-registry";
 import prisma from "@/lib/prisma";
 
 export async function create(
@@ -16,7 +17,7 @@ export async function findById(id: string) {
     include: { operation: true, creatives: true },
   });
 
-  if (!project) throw new Error("PROJECT_NOT_FOUND");
+  if (!project) throw problems.resourceNotFound("Projeto não encontrado");
 
   return project;
 }

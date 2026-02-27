@@ -18,7 +18,7 @@ export async function GET(request: Request, { params }: RouteContext) {
     const projects = await findByOperationId(operationId);
     return NextResponse.json(projects);
   } catch (error) {
-    return handleError(error, "Erro ao listar projetos:");
+    return handleError(error, request);
   }
 }
 
@@ -45,6 +45,6 @@ export async function POST(request: Request, { params }: RouteContext) {
     });
     return NextResponse.json(project, { status: 201 });
   } catch (error) {
-    return handleError(error, "Erro ao criar projeto:");
+    return handleError(error, request);
   }
 }

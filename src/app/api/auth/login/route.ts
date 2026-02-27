@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import z from "zod";
 import { loginSchema } from "@/dtos/login.dto";
+import { handleError } from "@/lib/error-handler";
 import { login } from "@/services/auth.service";
 
 export async function POST(request: Request) {
@@ -26,10 +27,6 @@ export async function POST(request: Request) {
       { status: 200 },
     );
   } catch (error) {
-    console.error("Erro no login:", error);
-    return NextResponse.json(
-      { error: "Erro interno do servidor" },
-      { status: 500 },
-    );
+    return handleError(error, request);
   }
 }
