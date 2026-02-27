@@ -56,6 +56,9 @@ model Project {
   operationId   String
   operation     Operation   @relation(fields: [operationId], references: [id], onDelete: Cascade)
 
+  // Porcentagem da comissão do freelancer em cima dos criativos (ex: 10.5 para 10.5%)
+  freelancerCutPercentage Decimal @db.Decimal(5, 2) @default(0)
+
   // Define se o projeto está ativo para aparecer no Dashboard principal
   isActive      Boolean     @default(true)
   

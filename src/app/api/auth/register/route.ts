@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import z from "zod";
 import { registerSchema } from "@/dtos/register.dto";
-import { AuthService } from "@/services/auth.service";
+import { register } from "@/services/auth.service";
 
 export async function POST(request: Request) {
   try {
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const newUser = await AuthService.register(parsedData.data);
+    const newUser = await register(parsedData.data);
 
     return NextResponse.json(newUser, { status: 201 });
   } catch (error) {
