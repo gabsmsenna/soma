@@ -1,5 +1,4 @@
 import { Prisma } from "@prisma/client";
-import type { UpdateCreativeDto } from "@/dtos/creative.dto";
 import prisma from "@/lib/prisma";
 import { problems } from "@/lib/problem-registry";
 
@@ -72,7 +71,7 @@ export async function findByProjectIdPaginated(
   };
 }
 
-export async function update(id: string, data: UpdateCreativeDto) {
+export async function update(id: string, data: Prisma.CreativeUpdateInput) {
   return prisma.creative.update({ where: { id }, data });
 }
 
