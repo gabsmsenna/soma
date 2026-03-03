@@ -1,4 +1,5 @@
 import {
+  ArrowUpRight,
   Bell,
   ChevronLeft,
   ChevronRight,

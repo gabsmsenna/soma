@@ -223,12 +223,7 @@ export default function RelatoriosPage() {
                 $1,200 <span className="text-xs text-green-500">+12%</span>
               </div>
               <div className="relative h-48 w-full">
-                <svg
-                  className="w-full h-full "
-                  viewBox="0 0 100 40"
-                  role="img"
-                  aria-label="Sales trend over the last week"
-                >
+                <svg className="w-full h-full" viewBox="0 0 100 40">
                   <defs>
                     <linearGradient
                       id="salGrad"

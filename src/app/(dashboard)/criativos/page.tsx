@@ -120,7 +120,7 @@ export default function CriativosPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
-      <header className="h-20 shrink-0 flex items-center justify-between px-6 border-b sticky top-0 bg-background/80 backdrop-blur-md z-10">
+      <header className="h-20 flex-shrink-0 flex items-center justify-between px-6 border-b sticky top-0 bg-background/80 backdrop-blur-md z-10">
         <div className="flex items-center gap-4 flex-1">
           <SidebarTrigger />
           <Separator orientation="vertical" className="h-6" />
