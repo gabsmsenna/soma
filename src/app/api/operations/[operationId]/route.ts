@@ -22,7 +22,7 @@ export async function GET(
     // we use prisma direct so we can return the payload
     const operation = await prisma.operation.findUnique({
       where: { id: params.operationId, userId },
-      include: { projects: true },
+      include: { creatives: true },
     });
 
     if (!operation) {

@@ -33,10 +33,13 @@ model Operation {
   id            String    @id @default(uuid())
   name          String
   
+  // Porcentagem da comissão do freelancer em cima dos criativos (ex: 10.5 para 10.5%)
+  freelancerCutPercentage Decimal @db.Decimal(5, 2) @default(0)
+  
   userId        String
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  projects      Project[]
+  creatives     Creative[]
 
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -44,33 +47,7 @@ model Operation {
   @@map("operations")
 }
 
-// 3. Projetos / Lançamentos (Ex: "Lançamento Curso Digital Abril", "Campanha Dia das Mães")
-model Project {
-  id            String      @id @default(uuid())
-  name          String
-  
-  // Controle de recebimento da comissão total deste projeto
-  isPaid        Boolean     @default(false)
-  paidAt        DateTime?
-  
-  operationId   String
-  operation     Operation   @relation(fields: [operationId], references: [id], onDelete: Cascade)
-
-  // Porcentagem da comissão do freelancer em cima dos criativos (ex: 10.5 para 10.5%)
-  freelancerCutPercentage Decimal @db.Decimal(5, 2) @default(0)
-
-  // Define se o projeto está ativo para aparecer no Dashboard principal
-  isActive      Boolean     @default(true)
-  
-  creatives     Creative[]
-
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  @@map("projects")
-}
-
-// 4. Criativos / Anúncios
+// 3. Criativos / Anúncios
 model Creative {
   id               String   @id @default(uuid())
   name             String   // Ex: "Vídeo Vendas 01", "Carrossel Y"
@@ -85,8 +62,11 @@ model Creative {
   isPaid           Boolean  @default(false)
   paidAt           DateTime?
   
-  projectId        String
-  project          Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  // Define se o criativo está ativo para aparecer no Dashboard principal
+  isActive         Boolean  @default(true)
+  
+  operationId      String
+  operation        Operation @relation(fields: [operationId], references: [id], onDelete: Cascade)
 
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt

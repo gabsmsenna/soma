@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import z from "zod";
-import { createProjectSchema, paginationSchema } from "@/dtos/project.dto";
+import { createCreativeSchema, paginationSchema } from "@/dtos/creative.dto";
 import { authenticate } from "@/lib/auth-middleware";
 import { handleError } from "@/lib/error-handler";
-import { verifyOperationOwnership } from "@/services/operation.service";
-import { create, findByOperationIdPaginated } from "@/services/project.service";
+import {
+  create,
+  findByOperationIdPaginated,
+  verifyOperationOwnership,
+} from "@/services/creative.service";
 
 type RouteContext = { params: Promise<{ operationId: string }> };
 
@@ -48,7 +51,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     await verifyOperationOwnership(operationId, userId);
 
     const body = await request.json();
-    const parsedData = createProjectSchema.safeParse(body);
+    const parsedData = createCreativeSchema.safeParse(body);
 
     if (!parsedData.success) {
       return NextResponse.json(
@@ -57,11 +60,11 @@ export async function POST(request: Request, { params }: RouteContext) {
       );
     }
 
-    const project = await create({
+    const creative = await create({
       ...parsedData.data,
       operationId,
     });
-    return NextResponse.json(project, { status: 201 });
+    return NextResponse.json(creative, { status: 201 });
   } catch (error) {
     return handleError(error, request);
   }
