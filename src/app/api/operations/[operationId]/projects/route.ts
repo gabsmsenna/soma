@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import z from "zod";
-import { createProjectSchema } from "@/dtos/project.dto";
 import { paginationSchema } from "@/dtos/operation.dto";
+import { createProjectSchema } from "@/dtos/project.dto";
 import { authenticate } from "@/lib/auth-middleware";
 import { handleError } from "@/lib/error-handler";
 import { verifyOperationOwnership } from "@/services/operation.service";
