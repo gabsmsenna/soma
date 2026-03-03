@@ -1,10 +1,16 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeOff, FileText, Lock, Mail, User, Zap } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 import { SocialLogin } from "@/components/auth/social-login";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { type LoginDto, loginSchema } from "@/dtos/login.dto";
+import { type RegisterDto, registerSchema } from "@/dtos/register.dto";
+import { loginUser, registerUser } from "@/lib/auth-api";
 
 const inputCls =
   "pl-4 pr-10 py-3 h-auto bg-gray-50 dark:bg-zinc-800/50 border-gray-200 dark:border-zinc-700 rounded-xl text-gray-700 dark:text-gray-200 text-sm placeholder:text-gray-400 focus-visible:ring-[#FFBB00]/50 focus-visible:border-[#FFBB00]";
@@ -18,6 +24,186 @@ const tabTriggerCls =
   "data-[state=active]:shadow-sm data-[state=active]:font-semibold " +
   "data-[state=active]:text-gray-900 dark:data-[state=active]:text-white " +
   "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300";
+
+function LoginForm() {
+  const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginDto>({ resolver: zodResolver(loginSchema) });
+
+  async function onSubmit(data: LoginDto) {
+    try {
+      const { token } = await loginUser(data.email, data.password);
+      localStorage.setItem("auth_token", token);
+      router.push("/dashboard");
+    } catch (err: unknown) {
+      const problem = err as { detail?: string };
+      setError("root", {
+        message: problem.detail ?? "Erro ao fazer login. Tente novamente.",
+      });
+    }
+  }
+
+  return (
+    <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+      <div className="relative">
+        <Input
+          className={inputCls}
+          placeholder="Insira seu e-mail"
+          type="email"
+          {...register("email")}
+        />
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+          <Mail className="h-5 w-5" />
+        </span>
+        {errors.email && (
+          <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
+        )}
+      </div>
+
+      <div className="relative">
+        <Input
+          className={inputCls}
+          placeholder="Senha"
+          type="password"
+          {...register("password")}
+        />
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+          <EyeOff className="h-5 w-5" />
+        </span>
+        {errors.password && (
+          <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
+        )}
+      </div>
+
+      {errors.root && (
+        <p className="text-xs text-red-500">{errors.root.message}</p>
+      )}
+
+      <Button className={submitBtnCls} type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "Entrando..." : "Entrar"}
+      </Button>
+    </form>
+  );
+}
+
+function RegisterForm() {
+  const router = useRouter();
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterDto>({ resolver: zodResolver(registerSchema) });
+
+  async function onSubmit(data: RegisterDto) {
+    try {
+      const { token } = await registerUser(
+        data.name,
+        data.email,
+        data.password,
+        data.cpf,
+      );
+      localStorage.setItem("auth_token", token);
+      router.push("/dashboard");
+    } catch (err: unknown) {
+      const problem = err as { detail?: string };
+      setError("root", {
+        message: problem.detail ?? "Erro ao cadastrar. Tente novamente.",
+      });
+    }
+  }
+
+  return (
+    <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+      <div className="relative">
+        <Input
+          className={inputCls}
+          placeholder="Nome completo"
+          type="text"
+          {...register("name")}
+        />
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+          <User className="h-5 w-5" />
+        </span>
+        {errors.name && (
+          <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
+        )}
+      </div>
+
+      <div className="relative">
+        <Input
+          className={inputCls}
+          placeholder="Insira seu e-mail"
+          type="email"
+          {...register("email")}
+        />
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+          <Mail className="h-5 w-5" />
+        </span>
+        {errors.email && (
+          <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>
+        )}
+      </div>
+
+      <div className="relative">
+        <Input
+          className={inputCls}
+          placeholder="CPF (apenas números)"
+          type="text"
+          {...register("cpf")}
+        />
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+          <FileText className="h-5 w-5" />
+        </span>
+        {errors.cpf && (
+          <p className="mt-1 text-xs text-red-500">{errors.cpf.message}</p>
+        )}
+      </div>
+
+      <div className="flex gap-4">
+        <div className="relative w-1/2">
+          <Input
+            className={inputCls}
+            placeholder="Senha"
+            type="password"
+            {...register("password")}
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+            <EyeOff className="h-5 w-5" />
+          </span>
+          {errors.password && (
+            <p className="mt-1 text-xs text-red-500">
+              {errors.password.message}
+            </p>
+          )}
+        </div>
+
+        <div className="relative w-1/2">
+          <Input
+            className={inputCls}
+            placeholder="Repita senha"
+            type="password"
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+            <Lock className="h-5 w-5" />
+          </span>
+        </div>
+      </div>
+
+      {errors.root && (
+        <p className="text-xs text-red-500">{errors.root.message}</p>
+      )}
+
+      <Button className={submitBtnCls} type="submit" disabled={isSubmitting}>
+        {isSubmitting ? "Cadastrando..." : "Cadastrar"}
+      </Button>
+    </form>
+  );
+}
 
 export function AuthForm() {
   return (
@@ -52,30 +238,7 @@ export function AuthForm() {
               Faça login para acessar seu painel.
             </p>
           </div>
-
-          <form className="space-y-4">
-            <div className="relative">
-              <Input
-                className={inputCls}
-                placeholder="Insira seu e-mail"
-                type="email"
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <Mail className="h-5 w-5" />
-              </span>
-            </div>
-
-            <div className="relative">
-              <Input className={inputCls} placeholder="Senha" type="password" />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <EyeOff className="h-5 w-5" />
-              </span>
-            </div>
-
-            <Button className={submitBtnCls} type="submit">
-              Entrar
-            </Button>
-          </form>
+          <LoginForm />
         </TabsContent>
 
         {/* Register tab */}
@@ -88,69 +251,7 @@ export function AuthForm() {
               Comece a gerenciar sua carreira freelance hoje.
             </p>
           </div>
-
-          <form className="space-y-4">
-            <div className="relative">
-              <Input
-                className={inputCls}
-                placeholder="Nome completo"
-                type="text"
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <User className="h-5 w-5" />
-              </span>
-            </div>
-
-            <div className="relative">
-              <Input
-                className={inputCls}
-                placeholder="Insira seu e-mail"
-                type="email"
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <Mail className="h-5 w-5" />
-              </span>
-            </div>
-
-            <div className="relative">
-              <Input
-                className={inputCls}
-                placeholder="CPF (apenas números)"
-                type="text"
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <FileText className="h-5 w-5" />
-              </span>
-            </div>
-
-            <div className="flex gap-4">
-              <div className="relative w-1/2">
-                <Input
-                  className={inputCls}
-                  placeholder="Senha"
-                  type="password"
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  <EyeOff className="h-5 w-5" />
-                </span>
-              </div>
-
-              <div className="relative w-1/2">
-                <Input
-                  className={inputCls}
-                  placeholder="Repita senha"
-                  type="password"
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  <Lock className="h-5 w-5" />
-                </span>
-              </div>
-            </div>
-
-            <Button className={submitBtnCls} type="submit">
-              Cadastrar
-            </Button>
-          </form>
+          <RegisterForm />
         </TabsContent>
       </Tabs>
 

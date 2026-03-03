@@ -8,7 +8,7 @@ import { problems } from "@/lib/problem-registry";
 export async function getAll(userId: string) {
   return prisma.operation.findMany({
     where: { userId },
-    include: { creatives: true },
+    include: { projects: true },
   });
 }
 
@@ -20,7 +20,7 @@ export async function getAllPaginated(
   const [data, total] = await Promise.all([
     prisma.operation.findMany({
       where: { userId },
-      include: { creatives: true },
+      include: { projects: true },
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { createdAt: "desc" },

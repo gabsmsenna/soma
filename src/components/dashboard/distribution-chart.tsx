@@ -40,8 +40,8 @@ export function DistributionChart() {
                 stroke="none"
                 dataKey="value"
               >
-                                {distributionData.map((entry) => (
-                                    <Cell key={`cell-${entry.label}`} fill={entry.fill} />
+                {distributionData.map((entry) => (
+                  <Cell key={`cell-${entry.label}`} fill={entry.fill} />
                 ))}
               </Pie>
             </PieChart>

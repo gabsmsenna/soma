@@ -7,6 +7,7 @@ export default defineConfig({
     environment: "node",
     setupFiles: ["./tests/utils/setup/vitest-setup.ts"],
     fileParallelism: false,
+    exclude: ["tests/dashboard-screenshot.spec.ts", "**/node_modules/**"],
   },
   resolve: {
     alias: {

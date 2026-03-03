@@ -17,9 +17,19 @@ export async function POST(request: Request) {
       );
     }
 
-    const newUser = await register(parsedData.data);
+    const { user, token } = await register(parsedData.data);
 
-    return NextResponse.json(newUser, { status: 201 });
+    const response = NextResponse.json({ user, token }, { status: 201 });
+
+    response.cookies.set("auth_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24, // 1 day
+    });
+
+    return response;
   } catch (error) {
     return handleError(error, request);
   }

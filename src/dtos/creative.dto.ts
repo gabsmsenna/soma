@@ -11,7 +11,6 @@ const decimalTransform = z.coerce
 export const createCreativeSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   totalProfit: decimalTransform,
-  isActive: z.boolean().optional().default(true),
 });
 
 export const updateCreativeSchema = z.object({
@@ -20,7 +19,6 @@ export const updateCreativeSchema = z.object({
   freelancerCut: decimalTransform,
   isPaid: z.boolean().optional(),
   paidAt: z.date().optional(),
-  isActive: z.boolean().optional(),
 });
 
 export const paginationSchema = z.object({

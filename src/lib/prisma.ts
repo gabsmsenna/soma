@@ -5,7 +5,10 @@ import { Pool } from "pg";
 const prismaClientSingleton = () => {
   const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL;
 
-  const pool = new Pool({ connectionString });
+  const pool = new Pool({
+    connectionString,
+    max: process.env.NODE_ENV === "test" ? 1 : 10,
+  });
 
   const adapter = new PrismaPg(pool);
 

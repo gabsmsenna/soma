@@ -21,7 +21,7 @@ export async function GET(
 
     const operation = await prisma.operation.findUnique({
       where: { id: operationId, userId },
-      include: { creatives: true },
+      include: { projects: true },
     });
 
     if (!operation) {

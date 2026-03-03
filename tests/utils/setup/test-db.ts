@@ -29,6 +29,7 @@ export function getTestPrismaClient(): PrismaClient {
     host: parsedUrl.hostname,
     port: parseInt(parsedUrl.port || "5432", 10),
     database: parsedUrl.pathname.slice(1),
+    max: 1,
   });
 
   const adapter = new PrismaPg(testPool);
@@ -66,5 +67,9 @@ export async function teardownTestDatabase(): Promise<void> {
   if (testPrisma) {
     await testPrisma.$disconnect();
     testPrisma = null;
+  }
+  if (testPool) {
+    await testPool.end();
+    testPool = null;
   }
 }

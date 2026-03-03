@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
     const { user, token } = await login(parsedData.data);
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         message: "Login realizado com sucesso",
         user: user,
@@ -26,6 +26,16 @@ export async function POST(request: Request) {
       },
       { status: 200 },
     );
+
+    response.cookies.set("auth_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24, // 1 day
+    });
+
+    return response;
   } catch (error) {
     return handleError(error, request);
   }

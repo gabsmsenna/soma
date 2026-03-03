@@ -1,43 +1,20 @@
 import { NextResponse } from "next/server";
-import z from "zod";
-import { createCreativeSchema, paginationSchema } from "@/dtos/creative.dto";
 import { authenticate } from "@/lib/auth-middleware";
 import { handleError } from "@/lib/error-handler";
-import {
-  create,
-  findByOperationIdPaginated,
-  verifyOperationOwnership,
-} from "@/services/creative.service";
+import { verifyOperationOwnership } from "@/services/operation.service";
 
 type RouteContext = { params: Promise<{ operationId: string }> };
 
 export async function GET(request: Request, { params }: RouteContext) {
   try {
     const { operationId } = await params;
-
     const { userId } = await authenticate(request);
     await verifyOperationOwnership(operationId, userId);
 
-    const { searchParams } = new URL(request.url);
-    const queryParams = {
-      page: searchParams.get("page") ?? undefined,
-      limit: searchParams.get("limit") ?? undefined,
-    };
-    const parsedParams = paginationSchema.safeParse(queryParams);
-
-    if (!parsedParams.success) {
-      return NextResponse.json(
-        {
-          error: "Dados inválidos",
-          details: z.treeifyError(parsedParams.error),
-        },
-        { status: 400 },
-      );
-    }
-
-    const { page, limit } = parsedParams.data;
-    const result = await findByOperationIdPaginated(operationId, page, limit);
-    return NextResponse.json(result);
+    return NextResponse.json(
+      { error: "Endpoint movido. Use /projects/:projectId/creatives" },
+      { status: 410 },
+    );
   } catch (error) {
     return handleError(error, request);
   }
@@ -46,28 +23,13 @@ export async function GET(request: Request, { params }: RouteContext) {
 export async function POST(request: Request, { params }: RouteContext) {
   try {
     const { operationId } = await params;
-
     const { userId } = await authenticate(request);
-    const operation = await verifyOperationOwnership(operationId, userId);
+    await verifyOperationOwnership(operationId, userId);
 
-    const body = await request.json();
-    const parsedData = createCreativeSchema.safeParse(body);
-
-    if (!parsedData.success) {
-      return NextResponse.json(
-        { error: "Dados inválidos", details: z.treeifyError(parsedData.error) },
-        { status: 400 },
-      );
-    }
-
-    const creative = await create(
-      {
-        ...parsedData.data,
-        operationId,
-      },
-      operation,
+    return NextResponse.json(
+      { error: "Endpoint movido. Use /projects/:projectId/creatives" },
+      { status: 410 },
     );
-    return NextResponse.json(creative, { status: 201 });
   } catch (error) {
     return handleError(error, request);
   }

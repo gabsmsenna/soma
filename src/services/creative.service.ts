@@ -1,34 +1,29 @@
-import type { Creative, Operation } from "@prisma/client";
 import { Prisma } from "@prisma/client";
-import type { CreateCreativeDto, UpdateCreativeDto } from "@/dtos/creative.dto";
+import type { UpdateCreativeDto } from "@/dtos/creative.dto";
 import prisma from "@/lib/prisma";
 import { problems } from "@/lib/problem-registry";
 
-export async function create(
-  data: CreateCreativeDto & { operationId: string },
-  operation?: Operation,
-): Promise<Creative> {
-  const op =
-    operation ??
-    (await prisma.operation.findUnique({
-      where: { id: data.operationId },
-    }));
+export async function create(data: {
+  name: string;
+  totalProfit: Prisma.Decimal;
+  projectId: string;
+}) {
+  const project = await prisma.project.findUnique({
+    where: { id: data.projectId },
+  });
 
-  if (!op) {
-    throw problems.resourceNotFound("Operação não encontrada");
-  }
+  if (!project) throw problems.resourceNotFound("Projeto não encontrado");
 
-  const totalProfit = data.totalProfit ?? new Prisma.Decimal("0");
-  const freelancerCutPercentage = op.freelancerCutPercentage;
-  const freelancerCut = totalProfit.mul(freelancerCutPercentage).div(100);
+  const freelancerCut = data.totalProfit
+    .mul(project.freelancerCutPercentage)
+    .div(100);
 
   return prisma.creative.create({
     data: {
       name: data.name,
-      totalProfit,
+      totalProfit: data.totalProfit,
       freelancerCut,
-      isActive: data.isActive ?? true,
-      operationId: data.operationId,
+      projectId: data.projectId,
     },
   });
 }
@@ -36,7 +31,7 @@ export async function create(
 export async function findById(id: string) {
   const creative = await prisma.creative.findUnique({
     where: { id },
-    include: { operation: true },
+    include: { project: { include: { operation: true } } },
   });
 
   if (!creative) throw problems.resourceNotFound("Criativo não encontrado");
@@ -44,26 +39,26 @@ export async function findById(id: string) {
   return creative;
 }
 
-export async function findByOperationId(operationId: string) {
+export async function findByProjectId(projectId: string) {
   return prisma.creative.findMany({
-    where: { operationId },
+    where: { projectId },
     orderBy: { createdAt: "desc" },
   });
 }
 
-export async function findByOperationIdPaginated(
-  operationId: string,
+export async function findByProjectIdPaginated(
+  projectId: string,
   page: number,
   limit: number,
 ) {
   const [data, total] = await Promise.all([
     prisma.creative.findMany({
-      where: { operationId },
+      where: { projectId },
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { createdAt: "desc" },
     }),
-    prisma.creative.count({ where: { operationId } }),
+    prisma.creative.count({ where: { projectId } }),
   ]);
 
   return {
@@ -77,10 +72,7 @@ export async function findByOperationIdPaginated(
   };
 }
 
-export async function update(
-  id: string,
-  data: UpdateCreativeDto,
-): Promise<Creative> {
+export async function update(id: string, data: UpdateCreativeDto) {
   return prisma.creative.update({ where: { id }, data });
 }
 
@@ -88,20 +80,49 @@ export async function deleteCreative(id: string): Promise<void> {
   await prisma.creative.delete({ where: { id } });
 }
 
-export async function verifyOperationOwnership(
-  operationId: string,
+export async function findAllByUserId(
   userId: string,
-): Promise<Operation> {
-  const operation = await prisma.operation.findFirst({
-    where: {
-      id: operationId,
-      userId,
+  page: number,
+  limit: number,
+  search?: string,
+) {
+  const where = {
+    project: { operation: { userId } },
+    ...(search
+      ? { name: { contains: search, mode: "insensitive" as const } }
+      : {}),
+  };
+
+  const [data, total] = await Promise.all([
+    prisma.creative.findMany({
+      where,
+      include: { project: { include: { operation: true } } },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.creative.count({ where }),
+  ]);
+
+  return {
+    data,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
     },
+  };
+}
+
+export async function verifyProjectOwnership(
+  projectId: string,
+  userId: string,
+): Promise<void> {
+  const project = await prisma.project.findFirst({
+    where: { id: projectId, operation: { userId } },
+    include: { operation: true },
   });
 
-  if (!operation) {
-    throw problems.resourceNotFound("Operação não encontrada");
-  }
-
-  return operation;
+  if (!project) throw problems.resourceNotFound("Projeto não encontrado");
 }

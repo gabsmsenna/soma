@@ -216,27 +216,17 @@ Components are installed in `src/components/ui/`
 * Base color: `zinc`
 * All colors should support dark mode via `dark:` prefix
 
-## Agent Output Protocol
+## Workflow & Git Rules
 
-Every time you (the AI agent) complete a task, write code, or modify files, you **MUST** conclude your response with a concise summary of the changes formatted as a Git commit message.
+Whenever you successfully complete a requested task, implement a feature, or fix a bug, you must automatically execute the following version control steps before asking for the next prompt:
 
-This allows the user to easily copy and paste the summary into their terminal.
-
-### Commit Message Format
-
-Follow the Conventional Commits specification. Use the imperative mood for the subject line and provide a brief bulleted list of the actual changes in the body.
-
-Enclose the commit message within specific tags so it is easily identifiable:
-
-```text
-[COMMIT_MESSAGE_START]
-<type>(<optional scope>): <short summary in imperative mood>
-
-- <specific change 1>
-- <specific change 2>
-[COMMIT_MESSAGE_END]
-
-```
+1. **Review Changes:** Run `git status` and `git diff` to analyze the exact modifications made.
+2. **Stage Files:** Stage the relevant modified or new files using `git add <files>` or `git add .` if appropriate.
+3. **Commit:** Create a commit using the Conventional Commits specification. 
+   - Use appropriate prefixes (e.g., `feat:`, `fix:`, `refactor:`, `chore:`).
+   - Write a concise, clear imperative summary of the changes.
+   - Execute the commit command (e.g., `git commit -m "feat: add user authentication"`).
+4. **Report:** Briefly confirm to the user that the changes have been committed and display the commit message used.
 
 ### Git Conventions
 
@@ -249,6 +239,25 @@ Enclose the commit message within specific tags so it is easily identifiable:
 * Never commit secrets to repository
 * Use `.env` for local development (gitignored)
 * Required vars: `DATABASE_URL`, `DIRECT_URL` (for Prisma), `AUTH_SECRET` (JWT)
+
+## Database Environment Constraints
+
+> **Important:** There is **no local PostgreSQL instance** available on this machine due to hardware limitations. The only database is a **Supabase cloud instance** configured via environment variables in `.env` (development) and `.env.test` (tests).
+
+### Supabase Connection Pooler Notes
+
+Supabase exposes two pooler endpoints:
+
+| Mode | Port | Used by |
+|------|------|---------|
+| Session pooler | 5432 | `pg.Pool` in `@/lib/prisma` and `test-db.ts` |
+| Transaction pooler | 6543 | Prisma CLI only (`db:push`, `db:generate`) |
+
+**Critical rules:**
+- `pg.Pool` (used by `@prisma/adapter-pg`) **must connect to port 5432** (session pooler). Port 6543 (transaction pooler) causes TCP timeout when used with `pg.Pool` directly.
+- Supabase free tier session pooler has a limited number of concurrent sessions (~10). Running too many pools simultaneously causes `MaxClientsInSessionMode` errors.
+- In `.env.test`, keep `DATABASE_URL` set to the port-5432 session-pooler URL. Leave `DIRECT_URL` unset so `@/lib/prisma` falls through to `DATABASE_URL`.
+- To stay within session limits during test runs: `@/lib/prisma` uses `max: 3` in test mode (`NODE_ENV=test`), `test-db.ts` uses `max: 3`, and `vitest-setup.ts` disconnects `globalThis.prismaGlobal` in `afterAll` so sessions are released before the next test file starts.
 
 ## Additional Resources
 
