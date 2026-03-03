@@ -1,8 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { EyeOff, FileText, Lock, Mail, User, Zap } from "lucide-react";
+import { Eye, EyeOff, FileText, Mail, User, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { SocialLogin } from "@/components/auth/social-login";
 import { Button } from "@/components/ui/button";
@@ -27,6 +28,7 @@ const tabTriggerCls =
 
 function LoginForm() {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -36,8 +38,7 @@ function LoginForm() {
 
   async function onSubmit(data: LoginDto) {
     try {
-      const { token } = await loginUser(data.email, data.password);
-      localStorage.setItem("auth_token", token);
+      await loginUser(data.email, data.password);
       router.push("/dashboard");
     } catch (err: unknown) {
       const problem = err as { detail?: string };
@@ -68,12 +69,20 @@ function LoginForm() {
         <Input
           className={inputCls}
           placeholder="Senha"
-          type="password"
+          type={showPassword ? "text" : "password"}
           {...register("password")}
         />
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-          <EyeOff className="h-5 w-5" />
-        </span>
+        <button
+          type="button"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-600"
+          onClick={() => setShowPassword(!showPassword)}
+        >
+          {showPassword ? (
+            <Eye className="h-5 w-5" />
+          ) : (
+            <EyeOff className="h-5 w-5" />
+          )}
+        </button>
         {errors.password && (
           <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>
         )}
@@ -92,6 +101,7 @@ function LoginForm() {
 
 function RegisterForm() {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -101,13 +111,12 @@ function RegisterForm() {
 
   async function onSubmit(data: RegisterDto) {
     try {
-      const { token } = await registerUser(
+      await registerUser(
         data.name,
         data.email,
         data.password,
         data.cpf,
       );
-      localStorage.setItem("auth_token", token);
       router.push("/dashboard");
     } catch (err: unknown) {
       const problem = err as { detail?: string };
@@ -169,12 +178,20 @@ function RegisterForm() {
           <Input
             className={inputCls}
             placeholder="Senha"
-            type="password"
+            type={showPassword ? "text" : "password"}
             {...register("password")}
           />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-            <EyeOff className="h-5 w-5" />
-          </span>
+          <button
+            type="button"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-600"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? (
+              <Eye className="h-5 w-5" />
+            ) : (
+              <EyeOff className="h-5 w-5" />
+            )}
+          </button>
           {errors.password && (
             <p className="mt-1 text-xs text-red-500">
               {errors.password.message}
@@ -186,11 +203,19 @@ function RegisterForm() {
           <Input
             className={inputCls}
             placeholder="Repita senha"
-            type="password"
+            type={showPassword ? "text" : "password"}
           />
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-            <Lock className="h-5 w-5" />
-          </span>
+          <button
+            type="button"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-600"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? (
+              <Eye className="h-5 w-5" />
+            ) : (
+              <EyeOff className="h-5 w-5" />
+            )}
+          </button>
         </div>
       </div>
 

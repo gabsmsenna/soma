@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   Area,
   AreaChart,
@@ -11,7 +13,17 @@ import {
 } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
 
-const data = [
+const weeklyData = [
+  { name: "Seg", total: 120 },
+  { name: "Ter", total: 180 },
+  { name: "Qua", total: 90 },
+  { name: "Qui", total: 200 },
+  { name: "Sex", total: 150 },
+  { name: "Sáb", total: 80 },
+  { name: "Dom", total: 50 },
+];
+
+const monthlyData = [
   { name: "Jan", total: 100 },
   { name: "Fev", total: 190 },
   { name: "Mar", total: 150 },
@@ -23,6 +35,9 @@ const data = [
 ];
 
 export function CommissionChart() {
+  const [viewMode, setViewMode] = useState<"semanal" | "mensal">("semanal");
+  const data = viewMode === "semanal" ? weeklyData : monthlyData;
+
   return (
     <Card className="col-span-12 lg:col-span-8 backdrop-blur-sm">
       <CardContent className="p-6">
@@ -36,13 +51,23 @@ export function CommissionChart() {
           <div className="flex gap-2">
             <button
               type="button"
-              className="px-3 py-1 text-xs bg-[#FFBB00] text-black font-semibold rounded-lg"
+              onClick={() => setViewMode("semanal")}
+              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
+                viewMode === "semanal"
+                  ? "bg-[#FFBB00] text-black"
+                  : "bg-muted text-muted-foreground"
+              }`}
             >
               Semanal
             </button>
             <button
               type="button"
-              className="px-3 py-1 text-xs bg-muted rounded-lg"
+              onClick={() => setViewMode("mensal")}
+              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
+                viewMode === "mensal"
+                  ? "bg-[#FFBB00] text-black"
+                  : "bg-muted text-muted-foreground"
+              }`}
             >
               Mensal
             </button>
@@ -79,7 +104,11 @@ export function CommissionChart() {
                 axisLine={false}
                 tickMargin={10}
                 tickFormatter={(value) => value.toUpperCase()}
-                style={{ fontWeight: "bold", letterSpacing: "0.1em" }}
+                style={{
+                  fontWeight: "bold",
+                  letterSpacing: "0.1em",
+                  fill: "hsl(var(--muted-foreground))",
+                }}
               />
               <YAxis hide domain={["dataMin - 10", "dataMax + 10"]} />
               <Tooltip
@@ -113,7 +142,9 @@ export function CommissionChart() {
           </ResponsiveContainer>
           <div className="absolute top-8 right-1/4 bg-card px-3 py-1.5 rounded-xl shadow-lg border flex items-center gap-2 pointer-events-none">
             <span className="w-2 h-2 rounded-full bg-[#FFBB00]" />
-            <span className="text-[10px] font-bold">R$ 8.400,00 Peak</span>
+            <span className="text-[10px] font-bold">
+              R$ {viewMode === "semanal" ? "8.400,00" : "8.400,00"} Peak
+            </span>
           </div>
         </div>
       </CardContent>
