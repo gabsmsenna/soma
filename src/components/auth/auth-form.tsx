@@ -207,7 +207,7 @@ function RegisterForm() {
 
 export function AuthForm() {
   return (
-    <div className="w-full md:w-1/2 p-6 md:p-10 lg:p-12 flex flex-col relative bg-white dark:bg-zinc-900 overflow-y-auto scrollbar-hide">
+    <div className="w-full md:w-1/2 p-6 md:p-10 lg:p-12 flex flex-col relative bg-white dark:bg-zinc-900">
       {/* Logo */}
       <div className="mb-6 flex items-center gap-2">
         <div className="w-8 h-8 bg-[#FFBB00] rounded-lg flex items-center justify-center text-black font-bold">
