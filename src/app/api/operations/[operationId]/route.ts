@@ -13,15 +13,14 @@ import {
 
 export async function GET(
   request: Request,
-  { params }: { params: { operationId: string } },
+  { params }: { params: Promise<{ operationId: string }> },
 ) {
   try {
     const { userId } = await authenticate(request);
+    const { operationId } = await params;
 
-    // Instead of duplicating verifyOperationOwnership which expects existence,
-    // we use prisma direct so we can return the payload
     const operation = await prisma.operation.findUnique({
-      where: { id: params.operationId, userId },
+      where: { id: operationId, userId },
       include: { creatives: true },
     });
 
@@ -37,13 +36,13 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { operationId: string } },
+  { params }: { params: Promise<{ operationId: string }> },
 ) {
   try {
     const { userId } = await authenticate(request);
+    const { operationId } = await params;
 
-    // Auth-checks implicitly verifying ownership
-    await verifyOperationOwnership(params.operationId, userId);
+    await verifyOperationOwnership(operationId, userId);
 
     const body = await request.json();
     const parsedData = updateOperationSchema.safeParse(body);
@@ -56,7 +55,7 @@ export async function PUT(
     }
 
     const operation = await updateOperation(
-      params.operationId,
+      operationId,
       userId,
       parsedData.data,
     );
@@ -68,15 +67,15 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { operationId: string } },
+  { params }: { params: Promise<{ operationId: string }> },
 ) {
   try {
     const { userId } = await authenticate(request);
+    const { operationId } = await params;
 
-    // check explicitly verifying ownership handles NOT FOUND for deleted items
-    await verifyOperationOwnership(params.operationId, userId);
+    await verifyOperationOwnership(operationId, userId);
 
-    const operation = await deleteOperation(params.operationId, userId);
+    const operation = await deleteOperation(operationId, userId);
     return NextResponse.json(operation);
   } catch (error) {
     return handleError(error, request);

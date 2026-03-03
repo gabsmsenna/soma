@@ -22,7 +22,8 @@ export function createCreativeFactory(
       ),
     isPaid: overrides?.isPaid ?? false,
     paidAt: overrides?.paidAt ?? null,
-    projectId: overrides?.projectId ?? faker.string.uuid(),
+    isActive: overrides?.isActive ?? true,
+    operationId: overrides?.operationId ?? faker.string.uuid(),
     createdAt: overrides?.createdAt ?? faker.date.past(),
     updatedAt: overrides?.updatedAt ?? faker.date.recent(),
   };
