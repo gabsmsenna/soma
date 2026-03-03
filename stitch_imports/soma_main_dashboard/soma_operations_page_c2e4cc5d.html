@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Soma Operations Management - High Volume</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style type="text/tailwindcss">
+        :root {
+            --primary: #FFBB00;
+            --accent: #FF6C00;
+            --bg-dark: #0D0D0D;
+            --card-dark: #161616;
+            --border-dark: #262626;
+            --text-muted: #94A3B8;
+            --graphite: #353535;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: #F8F9FA;
+        }
+        .glass {
+            background: rgba(22, 22, 22, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--border-dark);
+            border-radius: 10px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#FFBB00",
+                        accent: "#FF6C00",
+                        graphite: "#353535",
+                        "card-dark": "#161616",
+                        "border-dark": "#262626",
+                    },
+                    borderRadius: {
+                        '2xl': '18px',
+                        '3xl': '24px',
+                    }
+                },
+            },
+        };
+    </script>
+</head>
+<body class="min-h-screen flex overflow-hidden">
+<aside class="w-64 border-r border-border-dark hidden lg:flex flex-col bg-card-dark transition-all">
+<div class="p-8 flex items-center gap-3">
+<div class="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-black font-bold text-xl">bolt</span>
+</div>
+<span class="text-2xl font-bold tracking-tight">Soma</span>
+</div>
+<nav class="flex-1 px-4 space-y-1.5 mt-2">
+<a class="flex items-center gap-3 px-4 py-3 text-text-muted hover:bg-white/5 rounded-xl transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary rounded-xl transition-all border border-primary/20" href="#">
+<span class="material-symbols-outlined">layers</span>
+<span class="text-sm font-semibold">Operations</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-text-muted hover:bg-white/5 rounded-xl transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">monitoring</span>
+<span class="text-sm font-medium">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-text-muted hover:bg-white/5 rounded-xl transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">palette</span>
+<span class="text-sm font-medium">Creatives</span>
+</a>
+<div class="pt-8 pb-2 px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600">Enterprise</div>
+<a class="flex items-center gap-3 px-4 py-3 text-text-muted hover:bg-white/5 rounded-xl transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+<div class="p-6">
+<div class="glass rounded-2xl p-4 border border-white/5">
+<div class="flex items-center gap-2 mb-3">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-[10px] font-bold text-text-muted uppercase tracking-wider">Live Balance</span>
+</div>
+<div class="text-xl font-bold">$12,450.80</div>
+<button class="w-full mt-4 py-2.5 bg-primary text-black font-bold text-xs rounded-lg hover:brightness-110 transition-all uppercase tracking-widest">
+                    Top Up
+                </button>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col min-w-0 bg-[#0D0D0D]">
+<header class="h-20 border-b border-border-dark flex items-center justify-between px-10">
+<div>
+<h1 class="text-xl font-bold">Operations Management</h1>
+<p class="text-xs text-text-muted mt-1">Manage and monitor active freelancer campaigns</p>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3 bg-card-dark border border-border-dark rounded-full pl-4 pr-2 py-1.5">
+<span class="material-symbols-outlined text-text-muted text-sm">search</span>
+<input class="bg-transparent border-none text-xs focus:ring-0 w-48 text-white placeholder:text-zinc-600" placeholder="Search operations..." type="text"/>
+</div>
+<button class="relative p-2.5 text-text-muted hover:bg-white/5 rounded-full transition-all">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-accent rounded-full border-2 border-[#0D0D0D]"></span>
+</button>
+<div class="h-8 w-[1px] bg-border-dark"></div>
+<button class="bg-primary hover:bg-primary/90 text-black font-bold px-6 py-2.5 rounded-full text-sm flex items-center gap-2 transition-all shadow-lg shadow-primary/10">
+<span class="material-symbols-outlined font-bold text-lg">add</span>
+                    New Operation
+                </button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto p-10 custom-scrollbar">
+<div class="flex items-center justify-between mb-8">
+<div class="flex gap-2">
+<button class="px-5 py-2 bg-white/5 border border-white/10 rounded-full text-xs font-semibold text-white">All Operations (86)</button>
+<button class="px-5 py-2 hover:bg-white/5 text-text-muted rounded-full text-xs font-semibold">Active</button>
+<button class="px-5 py-2 hover:bg-white/5 text-text-muted rounded-full text-xs font-semibold">Paused</button>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-xs text-text-muted">Sort by:</span>
+<button class="flex items-center gap-2 text-xs font-bold text-white bg-card-dark border border-border-dark px-4 py-2 rounded-lg">
+                        Profit Margin
+                        <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-8 mb-10">
+<div class="glass rounded-3xl p-6 border border-white/5 group hover:border-primary/30 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
+<span class="material-symbols-outlined text-indigo-400 text-3xl">campaign</span>
+</div>
+<div>
+<h3 class="text-lg font-bold group-hover:text-primary transition-colors">Alpha Stream</h3>
+<p class="text-xs text-text-muted">Gerenciado por @AlexRiver</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-white/10 rounded-lg text-text-muted hover:text-white transition-all"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="p-2 hover:bg-rose-500/10 rounded-lg text-text-muted hover:text-rose-500 transition-all"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
+<p class="text-[10px] uppercase tracking-wider text-text-muted font-bold mb-1">porcentagem comissão</p>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-black text-primary">15.5%</span>
+<span class="text-[10px] text-emerald-500 font-bold">+2.4%</span>
+</div>
+</div>
+<div class="bg-white/[0.02] border border-white/5 p-4 rounded-2xl relative overflow-hidden">
+<p class="text-[10px] uppercase tracking-wider text-text-muted font-bold mb-1">lucro total recente</p>
+<div class="flex items-center justify-between">
+<span class="text-lg font-bold">+$4,230</span>
+<div class="flex items-end gap-0.5 h-6">
+<div class="w-1 bg-primary/20 h-2 rounded-full"></div>
+<div class="w-1 bg-primary/40 h-3 rounded-full"></div>
+<div class="w-1 bg-primary/60 h-4 rounded-full"></div>
+<div class="w-1 bg-primary/80 h-3 rounded-full"></div>
+<div class="w-1 bg-primary h-6 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-4">
+<div class="flex -space-x-3">
+<img alt="Creative 1" class="w-10 h-10 rounded-xl border-4 border-card-dark ring-1 ring-white/5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqcSDNuIQcbTVghuhH-n9jwrJhu4AwvzNDg-2o_1s4tOmqyg8KqdsUf6JqFUhgYqbL-T-0Y5L5x4bGY4Kr5aWsNRMyxhF6z4PVg4ekdnRJdSETttboJ0PFDayPShy2F3aaW0Z_lFTM1I8W3YpQPe6c9vStjj4OwnKebrFA5UkscglDbX6yp-_TNgZlLQWFCEIKXuM0f66pr8qXKNrDL3xTJvkjWCLfgTpNHDVsLV-dH6pKGI6bleg0Fxx4Djy_JEhpd7cSf_OAF3Q"/>
+<img alt="Creative 2" class="w-10 h-10 rounded-xl border-4 border-card-dark ring-1 ring-white/5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBU1ZQtht72VGatB_djSlmjKWV0t7cKvUlG72me62_dk0v1Ma_5lDmoAsK2l9V3WsBO46e6iZJmIKuSCv9pvQpPpZQ2eNGdeuog1hzH5Jqr5rWk0QFhtRTK87PzU4NE9ReRxSDR51s2Les_FTUQecrRI_cNKC8hNThiA4bBQiUp8vmy6k9t0flZUTV0kp2u8zqVZOesHf0CIWFAJatZps22TihBw5AlFsovEOwNMkaMkXhoi45Nux1mgIJkY5bq8MS09wgIZxCa0H0"/>
+<div class="w-10 h-10 rounded-xl border-4 border-card-dark ring-1 ring-white/5 bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-text-muted">+12</div>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-white/5 rounded-full text-[10px] font-bold text-text-muted">UGC</span>
+<span class="px-3 py-1 bg-white/5 rounded-full text-[10px] font-bold text-text-muted">Paid Media</span>
+</div>
+</div>
+</div>
+<div class="glass rounded-3xl p-6 border border-white/5 group hover:border-accent/30 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
+<span class="material-symbols-outlined text-amber-400 text-3xl">play_circle</span>
+</div>
+<div>
+<h3 class="text-lg font-bold group-hover:text-accent transition-colors">Beta Launch</h3>
+<p class="text-xs text-text-muted">Gerenciado por @JaneCreative</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-white/10 rounded-lg text-text-muted hover:text-white transition-all"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="p-2 hover:bg-rose-500/10 rounded-lg text-text-muted hover:text-rose-500 transition-all"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
+<p class="text-[10px] uppercase tracking-wider text-text-muted font-bold mb-1">porcentagem comissão</p>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-black text-accent">12.0%</span>
+<span class="text-[10px] text-zinc-500 font-bold">Stable</span>
+</div>
+</div>
+<div class="bg-white/[0.02] border border-white/5 p-4 rounded-2xl relative overflow-hidden">
+<p class="text-[10px] uppercase tracking-wider text-text-muted font-bold mb-1">lucro total recente</p>
+<div class="flex items-center justify-between">
+<span class="text-lg font-bold text-accent">-$1,120</span>
+<div class="flex items-end gap-0.5 h-6">
+<div class="w-1 bg-accent h-6 rounded-full"></div>
+<div class="w-1 bg-accent/80 h-4 rounded-full"></div>
+<div class="w-1 bg-accent/60 h-3 rounded-full"></div>
+<div class="w-1 bg-accent/40 h-5 rounded-full"></div>
+<div class="w-1 bg-accent/20 h-2 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-4">
+<div class="flex -space-x-3">
+<img alt="Creative 3" class="w-10 h-10 rounded-xl border-4 border-card-dark ring-1 ring-white/5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsYDvLho1B5VWDIVlL2xsqL1ew_Hs-agS4ZZqUFuurk86DgNCkY6lYpkV9AbAwAjRVNAy8cWPoYmne1Hmi76LmQZ9R1_zlnUuTsGAoC560VaTlTXm2U7tYvtqubY2W2hCL4yY7_W8itUpgfdQdHJ3aqB8ed1CSEKGxm5myIWzN02BvDI7JTwXzOSAK8vk3Pga4-mZ6XeQ-3iYk8pDT4AMSLSRKLDX4pqz8EWcrbChZoLA0rTLEKTXjSGudFn61GuPQkyPN_yuHn_c"/>
+<img alt="Creative 4" class="w-10 h-10 rounded-xl border-4 border-card-dark ring-1 ring-white/5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGph6FV9sNhhMQKpD72Z0Wr0TAOQsneXMphAnOim84DbT-iYVXF0Cr3PtC18QQysTlmK9WL3p50ckqJ8UEO38HOgvcrT-ya9SNRTvSmxHMc-QY7KbE0xyAr67vhEazprXBL0f-3s4CAh47oc9up_64Sqi_QRWSqB8fJnVEcz1zn-_PYknQlIoebqeG63DcxA29XXdjyx3Wr_bM2uksUabyHkZ9HhqdZ51O6CR_qgElrdfGYwSaXNIWURxb2UZpZAdWscjL9I0rnyM"/>
+<div class="w-10 h-10 rounded-xl border-4 border-card-dark ring-1 ring-white/5 bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-text-muted">+5</div>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-white/5 rounded-full text-[10px] font-bold text-text-muted">Vertical Video</span>
+<span class="px-3 py-1 bg-white/5 rounded-full text-[10px] font-bold text-text-muted">Influencer</span>
+</div>
+</div>
+</div>
+<div class="glass rounded-3xl p-6 border border-white/5 group hover:border-primary/30 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+<span class="material-symbols-outlined text-emerald-400 text-3xl">ads_click</span>
+</div>
+<div>
+<h3 class="text-lg font-bold group-hover:text-primary transition-colors">Search Peak</h3>
+<p class="text-xs text-text-muted">Gerenciado por @KimSearch</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-white/10 rounded-lg text-text-muted hover:text-white transition-all"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="p-2 hover:bg-rose-500/10 rounded-lg text-text-muted hover:text-rose-500 transition-all"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
+<p class="text-[10px] uppercase tracking-wider text-text-muted font-bold mb-1">porcentagem comissão</p>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-black text-primary">22.0%</span>
+<span class="text-[10px] text-emerald-500 font-bold">+8.1%</span>
+</div>
+</div>
+<div class="bg-white/[0.02] border border-white/5 p-4 rounded-2xl relative overflow-hidden">
+<p class="text-[10px] uppercase tracking-wider text-text-muted font-bold mb-1">lucro total recente</p>
+<div class="flex items-center justify-between">
+<span class="text-lg font-bold">+$9,880</span>
+<div class="flex items-end gap-0.5 h-6">
+<div class="w-1 bg-primary/20 h-2 rounded-full"></div>
+<div class="w-1 bg-primary/40 h-3 rounded-full"></div>
+<div class="w-1 bg-primary/60 h-2 rounded-full"></div>
+<div class="w-1 bg-primary/80 h-5 rounded-full"></div>
+<div class="w-1 bg-primary h-6 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-4">
+<div class="flex -space-x-3">
+<img alt="Creative 5" class="w-10 h-10 rounded-xl border-4 border-card-dark ring-1 ring-white/5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGph6FV9sNhhMQKpD72Z0Wr0TAOQsneXMphAnOim84DbT-iYVXF0Cr3PtC18QQysTlmK9WL3p50ckqJ8UEO38HOgvcrT-ya9SNRTvSmxHMc-QY7KbE0xyAr67vhEazprXBL0f-3s4CAh47oc9up_64Sqi_QRWSqB8fJnVEcz1zn-_PYknQlIoebqeG63DcxA29XXdjyx3Wr_bM2uksUabyHkZ9HhqdZ51O6CR_qgElrdfGYwSaXNIWURxb2UZpZAdWscjL9I0rnyM"/>
+<div class="w-10 h-10 rounded-xl border-4 border-card-dark ring-1 ring-white/5 bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-text-muted">+22</div>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-white/5 rounded-full text-[10px] font-bold text-text-muted">Display</span>
+<span class="px-3 py-1 bg-white/5 rounded-full text-[10px] font-bold text-text-muted">Search</span>
+</div>
+</div>
+</div>
+<div class="glass rounded-3xl p-6 border border-white/5 group hover:border-primary/30 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
+<span class="material-symbols-outlined text-purple-400 text-3xl">token</span>
+</div>
+<div>
+<h3 class="text-lg font-bold group-hover:text-primary transition-colors">Token Growth</h3>
+<p class="text-xs text-text-muted">Gerenciado por @MarcusDev</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-white/10 rounded-lg text-text-muted hover:text-white transition-all"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="p-2 hover:bg-rose-500/10 rounded-lg text-text-muted hover:text-rose-500 transition-all"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
+<p class="text-[10px] uppercase tracking-wider text-text-muted font-bold mb-1">porcentagem comissão</p>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-black text-primary">18.2%</span>
+<span class="text-[10px] text-emerald-500 font-bold">+1.5%</span>
+</div>
+</div>
+<div class="bg-white/[0.02] border border-white/5 p-4 rounded-2xl relative overflow-hidden">
+<p class="text-[10px] uppercase tracking-wider text-text-muted font-bold mb-1">lucro total recente</p>
+<div class="flex items-center justify-between">
+<span class="text-lg font-bold">+$2,840</span>
+<div class="flex items-end gap-0.5 h-6">
+<div class="w-1 bg-primary/20 h-3 rounded-full"></div>
+<div class="w-1 bg-primary/40 h-5 rounded-full"></div>
+<div class="w-1 bg-primary/60 h-4 rounded-full"></div>
+<div class="w-1 bg-primary/80 h-2 rounded-full"></div>
+<div class="w-1 bg-primary h-5 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-4">
+<div class="flex -space-x-3">
+<img alt="Creative 6" class="w-10 h-10 rounded-xl border-4 border-card-dark ring-1 ring-white/5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqcSDNuIQcbTVghuhH-n9jwrJhu4AwvzNDg-2o_1s4tOmqyg8KqdsUf6JqFUhgYqbL-T-0Y5L5x4bGY4Kr5aWsNRMyxhF6z4PVg4ekdnRJdSETttboJ0PFDayPShy2F3aaW0Z_lFTM1I8W3YpQPe6c9vStjj4OwnKebrFA5UkscglDbX6yp-_TNgZlLQWFCEIKXuM0f66pr8qXKNrDL3xTJvkjWCLfgTpNHDVsLV-dH6pKGI6bleg0Fxx4Djy_JEhpd7cSf_OAF3Q"/>
+<div class="w-10 h-10 rounded-xl border-4 border-card-dark ring-1 ring-white/5 bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-text-muted">+8</div>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-white/5 rounded-full text-[10px] font-bold text-text-muted">Web3</span>
+<span class="px-3 py-1 bg-white/5 rounded-full text-[10px] font-bold text-text-muted">Social</span>
+</div>
+</div>
+</div>
+<div class="glass rounded-3xl p-6 border border-white/5 group hover:border-accent/30 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20">
+<span class="material-symbols-outlined text-cyan-400 text-3xl">video_stable</span>
+</div>
+<div>
+<h3 class="text-lg font-bold group-hover:text-accent transition-colors">Viral Pulse</h3>
+<p class="text-xs text-text-muted">Gerenciado por @Sandi_V</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-white/10 rounded-lg text-text-muted hover:text-white transition-all"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="p-2 hover:bg-rose-500/10 rounded-lg text-text-muted hover:text-rose-500 transition-all"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
+<p class="text-[10px] uppercase tracking-wider text-text-muted font-bold mb-1">porcentagem comissão</p>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-black text-accent">10.0%</span>
+<span class="text-[10px] text-rose-500 font-bold">-2.1%</span>
+</div>
+</div>
+<div class="bg-white/[0.02] border border-white/5 p-4 rounded-2xl relative overflow-hidden">
+<p class="text-[10px] uppercase tracking-wider text-text-muted font-bold mb-1">lucro total recente</p>
+<div class="flex items-center justify-between">
+<span class="text-lg font-bold text-accent">-$840</span>
+<div class="flex items-end gap-0.5 h-6">
+<div class="w-1 bg-accent/80 h-6 rounded-full"></div>
+<div class="w-1 bg-accent/60 h-5 rounded-full"></div>
+<div class="w-1 bg-accent/40 h-4 rounded-full"></div>
+<div class="w-1 bg-accent/30 h-3 rounded-full"></div>
+<div class="w-1 bg-accent/10 h-2 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-4">
+<div class="flex -space-x-3">
+<img alt="Creative 7" class="w-10 h-10 rounded-xl border-4 border-card-dark ring-1 ring-white/5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBU1ZQtht72VGatB_djSlmjKWV0t7cKvUlG72me62_dk0v1Ma_5lDmoAsK2l9V3WsBO46e6iZJmIKuSCv9pvQpPpZQ2eNGdeuog1hzH5Jqr5rWk0QFhtRTK87PzU4NE9ReRxSDR51s2Les_FTUQecrRI_cNKC8hNThiA4bBQiUp8vmy6k9t0flZUTV0kp2u8zqVZOesHf0CIWFAJatZps22TihBw5AlFsovEOwNMkaMkXhoi45Nux1mgIJkY5bq8MS09wgIZxCa0H0"/>
+<img alt="Creative 8" class="w-10 h-10 rounded-xl border-4 border-card-dark ring-1 ring-white/5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGph6FV9sNhhMQKpD72Z0Wr0TAOQsneXMphAnOim84DbT-iYVXF0Cr3PtC18QQysTlmK9WL3p50ckqJ8UEO38HOgvcrT-ya9SNRTvSmxHMc-QY7KbE0xyAr67vhEazprXBL0f-3s4CAh47oc9up_64Sqi_QRWSqB8fJnVEcz1zn-_PYknQlIoebqeG63DcxA29XXdjyx3Wr_bM2uksUabyHkZ9HhqdZ51O6CR_qgElrdfGYwSaXNIWURxb2UZpZAdWscjL9I0rnyM"/>
+<div class="w-10 h-10 rounded-xl border-4 border-card-dark ring-1 ring-white/5 bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-text-muted">+4</div>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-white/5 rounded-full text-[10px] font-bold text-text-muted">Reels</span>
+<span class="px-3 py-1 bg-white/5 rounded-full text-[10px] font-bold text-text-muted">TikTok</span>
+</div>
+</div>
+</div>
+<div class="glass rounded-3xl p-6 border border-white/5 group hover:border-primary/30 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-orange-500/10 flex items-center justify-center border border-orange-500/20">
+<span class="material-symbols-outlined text-orange-400 text-3xl">shopping_cart</span>
+</div>
+<div>
+<h3 class="text-lg font-bold group-hover:text-primary transition-colors">Market Flow</h3>
+<p class="text-xs text-text-muted">Gerenciado por @EcomExpert</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-white/10 rounded-lg text-text-muted hover:text-white transition-all"><span class="material-symbols-outlined text-lg">edit</span></button>
+<button class="p-2 hover:bg-rose-500/10 rounded-lg text-text-muted hover:text-rose-500 transition-all"><span class="material-symbols-outlined text-lg">delete</span></button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mb-6">
+<div class="bg-white/[0.02] border border-white/5 p-4 rounded-2xl">
+<p class="text-[10px] uppercase tracking-wider text-text-muted font-bold mb-1">porcentagem comissão</p>
+<div class="flex items-baseline gap-2">
+<span class="text-2xl font-black text-primary">20.0%</span>
+<span class="text-[10px] text-emerald-500 font-bold">+5.5%</span>
+</div>
+</div>
+<div class="bg-white/[0.02] border border-white/5 p-4 rounded-2xl relative overflow-hidden">
+<p class="text-[10px] uppercase tracking-wider text-text-muted font-bold mb-1">lucro total recente</p>
+<div class="flex items-center justify-between">
+<span class="text-lg font-bold">+$12,300</span>
+<div class="flex items-end gap-0.5 h-6">
+<div class="w-1 bg-primary/20 h-2 rounded-full"></div>
+<div class="w-1 bg-primary/40 h-4 rounded-full"></div>
+<div class="w-1 bg-primary/60 h-3 rounded-full"></div>
+<div class="w-1 bg-primary/80 h-5 rounded-full"></div>
+<div class="w-1 bg-primary h-6 rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-4">
+<div class="flex -space-x-3">
+<img alt="Creative 9" class="w-10 h-10 rounded-xl border-4 border-card-dark ring-1 ring-white/5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsYDvLho1B5VWDIVlL2xsqL1ew_Hs-agS4ZZqUFuurk86DgNCkY6lYpkV9AbAwAjRVNAy8cWPoYmne1Hmi76LmQZ9R1_zlnUuTsGAoC560VaTlTXm2U7tYvtqubY2W2hCL4yY7_W8itUpgfdQdHJ3aqB8ed1CSEKGxm5myIWzN02BvDI7JTwXzOSAK8vk3Pga4-mZ6XeQ-3iYk8pDT4AMSLSRKLDX4pqz8EWcrbChZoLA0rTLEKTXjSGudFn61GuPQkyPN_yuHn_c"/>
+<img alt="Creative 10" class="w-10 h-10 rounded-xl border-4 border-card-dark ring-1 ring-white/5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGph6FV9sNhhMQKpD72Z0Wr0TAOQsneXMphAnOim84DbT-iYVXF0Cr3PtC18QQysTlmK9WL3p50ckqJ8UEO38HOgvcrT-ya9SNRTvSmxHMc-QY7KbE0xyAr67vhEazprXBL0f-3s4CAh47oc9up_64Sqi_QRWSqB8fJnVEcz1zn-_PYknQlIoebqeG63DcxA29XXdjyx3Wr_bM2uksUabyHkZ9HhqdZ51O6CR_qgElrdfGYwSaXNIWURxb2UZpZAdWscjL9I0rnyM"/>
+<div class="w-10 h-10 rounded-xl border-4 border-card-dark ring-1 ring-white/5 bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-text-muted">+18</div>
+</div>
+<div class="flex gap-2">
+<span class="px-3 py-1 bg-white/5 rounded-full text-[10px] font-bold text-text-muted">E-com</span>
+<span class="px-3 py-1 bg-white/5 rounded-full text-[10px] font-bold text-text-muted">Direct Response</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex justify-center items-center gap-2 py-8">
+<button class="flex items-center gap-2 px-4 py-2 bg-graphite hover:bg-zinc-700 text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+                    Previous
+                </button>
+<div class="flex items-center gap-2 mx-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-xl bg-primary text-black font-bold text-sm shadow-lg shadow-primary/20">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl bg-graphite hover:bg-zinc-700 text-white font-bold text-sm transition-all">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl bg-graphite hover:bg-zinc-700 text-white font-bold text-sm transition-all">3</button>
+<span class="text-text-muted px-1">...</span>
+<button class="w-10 h-10 flex items-center justify-center rounded-xl bg-graphite hover:bg-zinc-700 text-white font-bold text-sm transition-all">14</button>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 bg-graphite hover:bg-zinc-700 text-white rounded-xl text-xs font-bold transition-all">
+                    Next
+                    <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+<div class="mt-4 glass rounded-3xl border border-white/5 overflow-hidden">
+<div class="p-6 border-b border-white/5 flex items-center justify-between">
+<h3 class="font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">history</span>
+                        Recent Activity
+                    </h3>
+<button class="text-xs font-bold text-primary uppercase tracking-widest hover:underline">View All Records</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-white/[0.02]">
+<tr class="text-[10px] uppercase tracking-widest text-text-muted font-black">
+<th class="px-8 py-4">Operation ID</th>
+<th class="px-8 py-4">Network</th>
+<th class="px-8 py-4">Last Sync</th>
+<th class="px-8 py-4 text-right">Volume</th>
+<th class="px-8 py-4 text-center">Health</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/[0.03]">
+<tr class="hover:bg-white/[0.01] transition-colors group">
+<td class="px-8 py-5 text-sm font-medium">#OP-9482</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-blue-500"></div>
+<span class="text-sm">Meta Network</span>
+</div>
+</td>
+<td class="px-8 py-5 text-sm text-text-muted">2 mins ago</td>
+<td class="px-8 py-5 text-sm font-bold text-right">$45,200.00</td>
+<td class="px-8 py-5">
+<div class="flex justify-center">
+<span class="px-3 py-1 bg-emerald-500/10 text-emerald-500 text-[10px] font-black rounded-full uppercase">Optimal</span>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-white/[0.01] transition-colors group">
+<td class="px-8 py-5 text-sm font-medium">#OP-9480</td>
+<td class="px-8 py-5">
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-accent"></div>
+<span class="text-sm">TikTok Ads</span>
+</div>
+</td>
+<td class="px-8 py-5 text-sm text-text-muted">14 mins ago</td>
+<td class="px-8 py-5 text-sm font-bold text-right">$12,840.44</td>
+<td class="px-8 py-5">
+<div class="flex justify-center">
+<span class="px-3 py-1 bg-amber-500/10 text-amber-500 text-[10px] font-black rounded-full uppercase">Review</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+<button class="fixed bottom-10 right-10 w-16 h-16 bg-primary rounded-full shadow-[0_10px_40px_-10px_rgba(255,187,0,0.5)] flex items-center justify-center text-black hover:scale-110 active:scale-95 transition-all z-50 group">
+<span class="material-symbols-outlined text-3xl font-bold group-hover:rotate-90 transition-transform duration-300">add</span>
+</button>
+
+</body></html>

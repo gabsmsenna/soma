@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Soma - Gestão Financeira Digital</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#FF6C00",
+                        "background-light": "#F8F9FA",
+                        "background-dark": "#1A1A1A",
+                        graphite: "#353535",
+                        "card-dark": "#252525"
+                    },
+                    fontFamily: {
+                        display: ["Plus Jakarta Sans", "sans-serif"],
+                        sans: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "12px",
+                        'xl': '24px',
+                    },
+                },
+            },
+        };
+    </script>
+<style>
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .hero-gradient {
+            background: radial-gradient(circle at top right, rgba(255, 108, 0, 0.15), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(69, 58, 255, 0.08), transparent 40%);
+        }
+        .glow {
+            box-shadow: 0 0 20px rgba(255, 108, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-sans selection:bg-primary selection:text-white transition-colors duration-300">
+<nav class="fixed top-0 w-full z-50 border-b border-slate-200/10 bg-white/70 dark:bg-background-dark/70 backdrop-blur-md">
+<div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+<span class="material-symbols-rounded text-white text-2xl">grid_view</span>
+</div>
+<span class="font-display font-bold text-2xl tracking-tight">Soma</span>
+</div>
+<div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600 dark:text-slate-400">
+<a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Funcionalidades</a>
+<a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Planos</a>
+<a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Recursos</a>
+<a class="hover:text-primary dark:hover:text-white transition-colors" href="#">Cases</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-sm font-semibold px-5 py-2.5 rounded-full border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">Login</button>
+<button class="bg-primary hover:bg-orange-600 text-white text-sm font-bold px-6 py-2.5 rounded-full glow transition-all">Começar Agora</button>
+</div>
+</div>
+</nav>
+<section class="relative pt-40 pb-20 overflow-hidden hero-gradient">
+<div class="max-w-7xl mx-auto px-6 text-center">
+<div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 animate-fade-in">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-xs font-semibold tracking-wider uppercase text-slate-400">Novo: Dashboards Automatizados</span>
+</div>
+<h1 class="font-display font-extrabold text-5xl md:text-7xl mb-6 tracking-tight max-w-4xl mx-auto leading-tight">
+                Todo seu lucro digital <span class="text-primary italic">organizado</span> em um único lugar.
+            </h1>
+<p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+                A plataforma financeira definitiva para profissionais de marketing digital. Centralize vendas, controle gastos de anúncios e escale seu ROI.
+            </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
+<button class="w-full sm:w-auto bg-primary hover:bg-orange-600 text-white font-bold px-10 py-5 rounded-2xl text-lg shadow-xl hover:scale-105 transition-all">
+                    Criar conta gratuita
+                </button>
+<button class="w-full sm:w-auto glass hover:bg-white/10 text-slate-900 dark:text-white font-semibold px-10 py-5 rounded-2xl text-lg transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-rounded">play_circle</span>
+                    Ver Demo
+                </button>
+</div>
+<div class="relative max-w-6xl mx-auto">
+<div class="absolute -inset-4 bg-primary/20 blur-[100px] rounded-full opacity-30"></div>
+<div class="relative glass rounded-3xl p-4 shadow-2xl border border-white/10 dark:bg-card-dark/40">
+<div class="grid grid-cols-12 gap-4">
+<div class="hidden lg:block col-span-2 space-y-4">
+<div class="h-8 w-full bg-slate-200/10 rounded-lg"></div>
+<div class="h-8 w-3/4 bg-primary/20 rounded-lg"></div>
+<div class="h-8 w-full bg-slate-200/10 rounded-lg"></div>
+<div class="h-8 w-full bg-slate-200/10 rounded-lg"></div>
+</div>
+<div class="col-span-12 lg:col-span-10 grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="bg-white/5 p-6 rounded-2xl border border-white/5">
+<div class="flex justify-between items-start mb-4">
+<div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+<span class="material-symbols-rounded text-blue-400">payments</span>
+</div>
+<span class="text-emerald-400 text-xs font-bold">+12%</span>
+</div>
+<p class="text-slate-400 text-sm mb-1">Receita Total</p>
+<p class="text-2xl font-bold font-display">R$ 734.241</p>
+</div>
+<div class="md:col-span-2 bg-white/5 p-6 rounded-2xl border border-white/5 h-64 relative overflow-hidden">
+<div class="flex justify-between mb-4">
+<h3 class="font-semibold text-sm">Resumo de Vendas</h3>
+<div class="flex gap-2">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<div class="w-3 h-3 rounded-full bg-blue-400"></div>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0 h-40 flex items-end gap-2 px-6">
+<div class="flex-1 bg-primary/20 h-[60%] rounded-t-lg"></div>
+<div class="flex-1 bg-primary/40 h-[80%] rounded-t-lg"></div>
+<div class="flex-1 bg-primary/60 h-[50%] rounded-t-lg"></div>
+<div class="flex-1 bg-primary/80 h-[90%] rounded-t-lg"></div>
+<div class="flex-1 bg-primary h-[70%] rounded-t-lg"></div>
+<div class="flex-1 bg-primary/30 h-[40%] rounded-t-lg"></div>
+</div>
+</div>
+<div class="md:col-span-3 bg-white/5 p-6 rounded-2xl border border-white/5">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-semibold">Transações Recentes</h3>
+<span class="text-xs text-slate-500">Ver todas</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between py-2 border-b border-white/5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-700"></div>
+<div>
+<p class="text-sm font-medium">Owen Achmad</p>
+<p class="text-xs text-slate-500">Venda Digital</p>
+</div>
+</div>
+<span class="font-semibold">+ R$ 76,00</span>
+</div>
+<div class="flex items-center justify-between py-2 border-b border-white/5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-slate-700"></div>
+<div>
+<p class="text-sm font-medium">Kim do Jang</p>
+<p class="text-xs text-slate-500">Consultoria</p>
+</div>
+</div>
+<span class="font-semibold">+ R$ 46,00</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section class="py-12 border-y border-slate-200/10">
+<div class="max-w-7xl mx-auto px-6">
+<p class="text-center text-sm font-semibold text-slate-500 mb-8 uppercase tracking-[0.2em]">Confiado por grandes players do mercado</p>
+<div class="flex flex-wrap justify-center items-center gap-12 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all">
+<div class="text-2xl font-bold flex items-center gap-2">PLATFORM <span class="bg-slate-300 dark:bg-slate-700 px-1 rounded text-xs uppercase tracking-tighter">Pro</span></div>
+<div class="text-2xl font-bold italic">SCALEUP</div>
+<div class="text-2xl font-black uppercase tracking-widest">Growth</div>
+<div class="text-2xl font-serif">Financials</div>
+<div class="text-2xl font-mono">CODEBASE</div>
+</div>
+</div>
+</section>
+<section class="py-24 max-w-7xl mx-auto px-6">
+<div class="text-center mb-20">
+<h2 class="text-3xl md:text-5xl font-display font-bold mb-6">Controle total na ponta dos dedos</h2>
+<p class="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">Desenvolvemos as ferramentas necessárias para que você foque no que importa: escalar suas operações digitais.</p>
+</div>
+<div class="grid md:grid-cols-3 gap-8">
+<div class="p-8 rounded-3xl bg-slate-50 dark:bg-card-dark border border-slate-100 dark:border-white/5 hover:border-primary/50 transition-all group">
+<div class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary transition-colors">
+<span class="material-symbols-rounded text-primary group-hover:text-white transition-colors">analytics</span>
+</div>
+<h3 class="text-xl font-bold mb-4">Analytics Avançado</h3>
+<p class="text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Acompanhe em tempo real suas métricas de ROI, ROAS e LTV sem precisar de planilhas complexas.
+                </p>
+</div>
+<div class="p-8 rounded-3xl bg-slate-50 dark:bg-card-dark border border-slate-100 dark:border-white/5 hover:border-primary/50 transition-all group">
+<div class="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:bg-blue-500 transition-colors">
+<span class="material-symbols-rounded text-blue-500 group-hover:text-white transition-colors">sync</span>
+</div>
+<h3 class="text-xl font-bold mb-4">Sincronização Direta</h3>
+<p class="text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Integre com Hotmart, Kiwify, Facebook Ads e Google Ads com apenas alguns cliques.
+                </p>
+</div>
+<div class="p-8 rounded-3xl bg-slate-50 dark:bg-card-dark border border-slate-100 dark:border-white/5 hover:border-primary/50 transition-all group">
+<div class="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-6 group-hover:bg-emerald-500 transition-colors">
+<span class="material-symbols-rounded text-emerald-500 group-hover:text-white transition-colors">receipt_long</span>
+</div>
+<h3 class="text-xl font-bold mb-4">Gestão de Notas</h3>
+<p class="text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Automação completa de emissão de notas fiscais para cada venda realizada no seu ecossistema.
+                </p>
+</div>
+</div>
+</section>
+<section class="py-24 bg-graphite text-white relative overflow-hidden">
+<div class="absolute inset-0 bg-primary opacity-5 mix-blend-overlay"></div>
+<div class="max-w-7xl mx-auto px-6 relative z-10">
+<div class="grid md:grid-cols-4 gap-12 text-center">
+<div>
+<p class="text-4xl font-extrabold font-display mb-2 text-primary">R$ 2Bi+</p>
+<p class="text-slate-400 text-sm font-semibold uppercase tracking-wider">Transacionados</p>
+</div>
+<div>
+<p class="text-4xl font-extrabold font-display mb-2">15k+</p>
+<p class="text-slate-400 text-sm font-semibold uppercase tracking-wider">Infoprodutores</p>
+</div>
+<div>
+<p class="text-4xl font-extrabold font-display mb-2">99.9%</p>
+<p class="text-slate-400 text-sm font-semibold uppercase tracking-wider">Uptime</p>
+</div>
+<div>
+<p class="text-4xl font-extrabold font-display mb-2">24/7</p>
+<p class="text-slate-400 text-sm font-semibold uppercase tracking-wider">Suporte VIP</p>
+</div>
+</div>
+</div>
+</section>
+<section class="py-24 max-w-5xl mx-auto px-6">
+<div class="bg-gradient-to-br from-primary to-orange-700 rounded-[40px] p-12 md:p-20 text-center text-white relative overflow-hidden">
+<div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+<div class="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full -ml-20 -mb-20 blur-3xl"></div>
+<h2 class="text-3xl md:text-5xl font-display font-bold mb-8 relative z-10 leading-tight">Pronto para profissionalizar sua operação financeira?</h2>
+<p class="text-lg md:text-xl text-white/80 mb-10 max-w-2xl mx-auto relative z-10">
+                Junte-se a milhares de empreendedores digitais que escalaram seus lucros com a Soma.
+            </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
+<button class="w-full sm:w-auto bg-white text-primary font-bold px-10 py-5 rounded-2xl text-lg hover:shadow-2xl hover:scale-105 transition-all">
+                    Começar teste grátis
+                </button>
+<button class="w-full sm:w-auto bg-transparent border-2 border-white/30 hover:border-white text-white font-bold px-10 py-5 rounded-2xl text-lg transition-all">
+                    Falar com especialista
+                </button>
+</div>
+</div>
+</section>
+<footer class="pt-20 pb-10 border-t border-slate-200/10">
+<div class="max-w-7xl mx-auto px-6">
+<div class="grid md:grid-cols-4 gap-12 mb-20">
+<div class="col-span-1 md:col-span-1">
+<div class="flex items-center gap-2 mb-6">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-rounded text-white text-xl">grid_view</span>
+</div>
+<span class="font-display font-bold text-xl tracking-tight">Soma</span>
+</div>
+<p class="text-slate-500 text-sm leading-relaxed mb-6">
+                        A inteligência financeira que o mercado digital precisava. Simples, robusta e lucrativa.
+                    </p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-primary transition-colors" href="#"><span class="material-symbols-rounded text-sm">share</span></a>
+<a class="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-primary transition-colors" href="#"><span class="material-symbols-rounded text-sm">public</span></a>
+<a class="w-10 h-10 rounded-full glass flex items-center justify-center hover:bg-primary transition-colors" href="#"><span class="material-symbols-rounded text-sm">group</span></a>
+</div>
+</div>
+<div>
+<h4 class="font-bold mb-6">Produto</h4>
+<ul class="space-y-4 text-sm text-slate-500">
+<li><a class="hover:text-primary transition-colors" href="#">Funcionalidades</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Integrações</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Roadmap</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Preços</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold mb-6">Empresa</h4>
+<ul class="space-y-4 text-sm text-slate-500">
+<li><a class="hover:text-primary transition-colors" href="#">Sobre nós</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Carreiras</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Blog</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contatos</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold mb-6">Suporte</h4>
+<ul class="space-y-4 text-sm text-slate-500">
+<li><a class="hover:text-primary transition-colors" href="#">Central de Ajuda</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Documentação</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Privacidade</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Termos de Uso</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 border-t border-slate-200/10 flex flex-col md:row items-center justify-between gap-4">
+<p class="text-xs text-slate-500">© 2024 Soma Financial Management. Todos os direitos reservados.</p>
+<div class="flex items-center gap-4">
+<button class="text-xs text-slate-500 hover:text-white transition-colors">Privacidade</button>
+<button class="text-xs text-slate-500 hover:text-white transition-colors">Segurança</button>
+<div class="flex items-center gap-2 ml-4">
+<span class="material-symbols-rounded text-emerald-500 text-sm">check_circle</span>
+<span class="text-xs text-slate-500">Sistemas Operacionais</span>
+</div>
+</div>
+</div>
+</div>
+</footer>
+<div class="fixed bottom-6 right-6 z-[60]">
+<button class="w-12 h-12 rounded-full glass flex items-center justify-center hover:scale-110 transition-all shadow-xl bg-white dark:bg-card-dark" onclick="document.documentElement.classList.toggle('dark')">
+<span class="material-symbols-rounded dark:hidden">dark_mode</span>
+<span class="material-symbols-rounded hidden dark:block">light_mode</span>
+</button>
+</div>
+<script>
+        // Simple reveal on scroll effect
+        window.addEventListener('scroll', function() {
+            const elements = document.querySelectorAll('.animate-on-scroll');
+            elements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight - 100) {
+                    el.classList.add('opacity-100', 'translate-y-0');
+                    el.classList.remove('opacity-0', 'translate-y-10');
+                }
+            });
+        });
+    </script>
+
+</body></html>

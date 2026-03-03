@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Soma Main Dashboard Light Mode</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#FFBB00",
+                        secondary: "#FF6C00",
+                        background: "#F9FAFB",
+                        sidebar: "#F3F4F6",
+                        "text-dark": "#111827",
+                        graphite: "#353535",
+                        card: "#FFFFFF",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "1rem",
+                    },
+                },
+            },
+        };
+    </script>
+<style type="text/tailwindcss">
+        body { font-family: 'Inter', sans-serif; }
+        .glass {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        @layer components {
+            .nav-link {
+                @apply flex items-center gap-3 px-4 py-3 text-slate-500 hover:bg-slate-200 rounded-lg transition-all;
+            }
+            .nav-link.active {
+                @apply bg-primary/10 text-text-dark border-r-4 border-primary font-medium;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-text-dark transition-colors duration-300">
+<div class="flex min-h-screen">
+<aside class="w-64 border-r border-slate-200 bg-sidebar fixed h-full z-20">
+<div class="p-6 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-text-dark font-bold text-xl shadow-sm">S</div>
+<h1 class="text-xl font-bold tracking-tight text-text-dark uppercase">Soma</h1>
+</div>
+<nav class="mt-4 px-4 space-y-2">
+<p class="px-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">Menu Principal</p>
+<a class="nav-link active" href="#">
+<span class="material-symbols-outlined text-text-dark">dashboard</span>
+                Dashboard
+            </a>
+<a class="nav-link" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+                Operações
+            </a>
+<a class="nav-link" href="#">
+<span class="material-symbols-outlined">palette</span>
+                Criativos
+            </a>
+<a class="nav-link" href="#">
+<span class="material-symbols-outlined">description</span>
+                Relatórios
+            </a>
+<p class="px-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-12 mb-4">Configurações</p>
+<a class="nav-link" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Ajustes
+            </a>
+<a class="nav-link" href="#">
+<span class="material-symbols-outlined">help</span>
+                Ajuda
+            </a>
+</nav>
+<div class="absolute bottom-6 left-4 right-4 p-4 bg-white border border-slate-200 rounded-2xl text-text-dark shadow-sm">
+<div class="flex items-center gap-3">
+<img alt="User avatar" class="w-10 h-10 rounded-full border-2 border-primary" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8f58RNl_eSNzj5-2INn9EjfW3fiGSWOH7rRya0Zp1Pc7o1Ra9sDxwy3mfn_qZsb9pRvuXdl3jZJO9HUu8HT7stp-6Exjk6zutQY69h5fPOErmObpMYI4zi5ddIhL7tXQXsa9JeXAM9c4zGWZnfdiKyWSYE8LZLwDN5lqJPj2NLmHzKahVzZdGsFz24asAQ-NP9ZOCHir6qQCsZLFtetW3kSqz_BK0WaRV0TSYWbwZlm2qXYcWyKlHLieBQ9BqJ0-4F-ECNGVVE1U"/>
+<div class="overflow-hidden">
+<p class="text-sm font-semibold truncate">Alex Rivera</p>
+<p class="text-[10px] text-slate-500">Freelancer Pro</p>
+</div>
+</div>
+</div>
+</aside>
+<main class="ml-64 flex-1 p-8">
+<header class="flex justify-between items-center mb-8">
+<div>
+<h2 class="text-2xl font-bold text-text-dark">Dashboard Financeiro</h2>
+<p class="text-slate-500 text-sm">Visão geral do seu desempenho e comissões.</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-xl">search</span>
+<input class="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl w-64 focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-text-dark placeholder-slate-400 shadow-sm" placeholder="Buscar operações..." type="text"/>
+</div>
+<button class="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-xl relative shadow-sm hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-slate-500">notifications</span>
+<span class="absolute top-2.5 right-2.5 w-2 h-2 bg-secondary rounded-full"></span>
+</button>
+</div>
+</header>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+<div class="bg-card p-6 rounded-2xl shadow-sm border border-slate-200">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-primary/20 rounded-lg text-amber-700">
+<span class="material-symbols-outlined">trending_up</span>
+</div>
+<span class="text-green-600 text-xs font-bold flex items-center">+18% <span class="material-symbols-outlined text-sm ml-1">north_east</span></span>
+</div>
+<p class="text-slate-500 text-xs font-medium uppercase tracking-wider mb-1">Lucro Total Gerado</p>
+<h3 class="text-3xl font-bold text-text-dark">R$ 482.241,00</h3>
+<p class="text-[10px] text-slate-400 mt-2 italic">Volume total em operações de clientes</p>
+</div>
+<div class="bg-card p-6 rounded-2xl shadow-sm border border-slate-200">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-secondary/20 rounded-lg text-secondary">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<span class="text-green-600 text-xs font-bold flex items-center">+12.4% <span class="material-symbols-outlined text-sm ml-1">north_east</span></span>
+</div>
+<p class="text-slate-500 text-xs font-medium uppercase tracking-wider mb-1">Meu Lucro de Comissão</p>
+<h3 class="text-3xl font-bold text-text-dark">R$ 48.224,10</h3>
+<p class="text-[10px] text-slate-400 mt-2 italic">Sua fatia líquida (10% média)</p>
+</div>
+<div class="bg-card p-6 rounded-2xl shadow-sm border border-slate-200">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-blue-100 rounded-lg text-blue-600">
+<span class="material-symbols-outlined">task</span>
+</div>
+<span class="text-slate-400 text-xs font-bold">Ativos</span>
+</div>
+<p class="text-slate-500 text-xs font-medium uppercase tracking-wider mb-1">Projetos Ativos</p>
+<h3 class="text-3xl font-bold text-text-dark">12</h3>
+<p class="text-[10px] text-slate-400 mt-2 italic">Operações em andamento este mês</p>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-6 mb-8">
+<div class="col-span-12 lg:col-span-8 bg-card p-6 rounded-2xl shadow-sm border border-slate-200">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h4 class="font-bold text-lg text-text-dark">Crescimento de Comissões</h4>
+<p class="text-xs text-slate-500">Evolução do seu lucro como freelancer</p>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1 text-xs bg-primary text-text-dark font-semibold rounded-lg shadow-sm">Semanal</button>
+<button class="px-3 py-1 text-xs bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-lg transition-colors">Mensal</button>
+</div>
+</div>
+<div class="h-72 w-full relative">
+<svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 800 240">
+<line class="text-slate-100" stroke="currentColor" stroke-width="1" x1="0" x2="800" y1="40" y2="40"></line>
+<line class="text-slate-100" stroke="currentColor" stroke-width="1" x1="0" x2="800" y1="80" y2="80"></line>
+<line class="text-slate-100" stroke="currentColor" stroke-width="1" x1="0" x2="800" y1="120" y2="120"></line>
+<line class="text-slate-100" stroke="currentColor" stroke-width="1" x1="0" x2="800" y1="160" y2="160"></line>
+<line class="text-slate-100" stroke="currentColor" stroke-width="1" x1="0" x2="800" y1="200" y2="200"></line>
+<path d="M0 200 Q 100 190, 200 150 T 400 130 T 600 80 T 800 50 L 800 240 L 0 240 Z" fill="url(#grad1)"></path>
+<path d="M0 200 Q 100 190, 200 150 T 400 130 T 600 80 T 800 50" fill="none" stroke="#FFBB00" stroke-width="3"></path>
+<defs>
+<linearGradient id="grad1" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#FFBB00;stop-opacity:0.4"></stop>
+<stop offset="100%" style="stop-color:#FFBB00;stop-opacity:0"></stop>
+</linearGradient>
+</defs>
+</svg>
+<div class="absolute top-8 right-1/4 transform bg-white px-3 py-1.5 rounded-xl shadow-lg border border-slate-100 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-[10px] font-bold text-text-dark">R$ 8.400,00 Peak</span>
+</div>
+</div>
+<div class="flex justify-between mt-4 text-[10px] text-slate-400 font-bold px-2 uppercase tracking-widest">
+<span>Jan</span><span>Fev</span><span>Mar</span><span>Abr</span><span>Mai</span><span>Jun</span><span>Jul</span><span>Ago</span>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-4 bg-card p-6 rounded-2xl shadow-sm border border-slate-200">
+<div class="flex justify-between items-center mb-6">
+<h4 class="font-bold text-lg text-text-dark">Distribuição</h4>
+<span class="material-symbols-outlined text-slate-400 cursor-pointer hover:text-slate-600">more_vert</span>
+</div>
+<div class="relative flex justify-center items-center h-48 mb-6">
+<svg class="w-40 h-40 transform -rotate-90" viewBox="0 0 36 36">
+<circle class="text-slate-100" cx="18" cy="18" fill="none" r="15.915" stroke="currentColor" stroke-dasharray="100, 100" stroke-width="4"></circle>
+<circle class="text-primary" cx="18" cy="18" fill="none" r="15.915" stroke="currentColor" stroke-dasharray="50, 100" stroke-linecap="round" stroke-width="4"></circle>
+<circle class="text-secondary" cx="18" cy="18" fill="none" r="15.915" stroke="currentColor" stroke-dasharray="25, 100" stroke-dashoffset="-50" stroke-linecap="round" stroke-width="4"></circle>
+<circle class="text-amber-400" cx="18" cy="18" fill="none" r="15.915" stroke="currentColor" stroke-dasharray="15, 100" stroke-dashoffset="-75" stroke-linecap="round" stroke-width="4"></circle>
+</svg>
+<div class="absolute flex flex-col items-center">
+<span class="text-2xl font-bold text-text-dark">Top 3</span>
+<span class="text-[10px] text-slate-500 uppercase tracking-tighter">Operações</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="text-sm text-slate-600 font-medium">E-commerce XYZ</span>
+</div>
+<span class="text-sm font-bold text-text-dark">50%</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="w-3 h-3 rounded-full bg-secondary"></span>
+<span class="text-sm text-slate-600 font-medium">SaaS Growth</span>
+</div>
+<span class="text-sm font-bold text-text-dark">25%</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="w-3 h-3 rounded-full bg-amber-400"></span>
+<span class="text-sm text-slate-600 font-medium">Imobiliária Premium</span>
+</div>
+<span class="text-sm font-bold text-text-dark">15%</span>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-6">
+<div class="col-span-12 lg:col-span-5 bg-card p-8 rounded-2xl shadow-sm border border-slate-200 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-secondary/10 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-secondary/20 transition-all duration-500"></div>
+<div class="flex flex-col h-full justify-between relative z-10">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<div class="w-2 h-6 bg-secondary rounded-full"></div>
+<h4 class="font-bold text-lg text-text-dark">Meta de Lucro Mensal</h4>
+</div>
+<p class="text-sm text-slate-500 mb-8">Faltam apenas R$ 7.500,00 para atingir sua meta pessoal.</p>
+<div class="mb-6">
+<div class="flex justify-between items-end mb-4">
+<span class="text-4xl font-black text-secondary">85%</span>
+<div class="text-right">
+<p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Objetivo</p>
+<p class="text-lg font-bold text-text-dark">R$ 50.000,00</p>
+</div>
+</div>
+<div class="h-4 w-full bg-slate-100 rounded-full overflow-hidden flex">
+<div class="h-full bg-gradient-to-r from-secondary to-primary w-[85%] rounded-full shadow-[0_0_10px_rgba(255,108,0,0.2)] transition-all duration-1000"></div>
+</div>
+</div>
+</div>
+<div class="bg-secondary/5 border border-secondary/10 p-4 rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary">rocket_launch</span>
+<div>
+<p class="text-[11px] font-bold text-secondary uppercase tracking-wider">Status Atual</p>
+<p class="text-sm font-semibold text-text-dark">R$ 42.500,00 acumulados</p>
+</div>
+</div>
+<button class="bg-secondary text-white text-[11px] font-bold px-4 py-2 rounded-lg shadow-md shadow-secondary/20 hover:scale-105 transition-transform hover:shadow-lg">
+                            IMPULSIONAR
+                        </button>
+</div>
+</div>
+</div>
+<div class="col-span-12 lg:col-span-7 bg-card p-6 rounded-2xl shadow-sm border border-slate-200">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h4 class="font-bold text-lg text-text-dark">Comissões Recentes</h4>
+<p class="text-xs text-slate-500">Histórico de entradas em tempo real</p>
+</div>
+<button class="text-secondary text-sm font-semibold hover:underline flex items-center gap-1">
+                        Ver extrato completo <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 transition-all border border-transparent hover:border-slate-200 group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center text-amber-700 font-bold shadow-inner group-hover:scale-105 transition-transform">EC</div>
+<div>
+<p class="text-sm font-bold text-text-dark">E-commerce XYZ</p>
+<p class="text-[11px] text-slate-500">Hoje, 14:20 • Venda Direta #8821</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-base font-bold text-text-dark">+R$ 1.240,00</p>
+<span class="px-2 py-0.5 bg-green-100 text-green-700 text-[9px] font-bold rounded uppercase tracking-wider">Disponível</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 transition-all border border-transparent hover:border-slate-200 group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-secondary/20 flex items-center justify-center text-secondary font-bold shadow-inner group-hover:scale-105 transition-transform">SG</div>
+<div>
+<p class="text-sm font-bold text-text-dark">SaaS Growth</p>
+<p class="text-[11px] text-slate-500">Ontem • Assinatura Mensal Reversa</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-base font-bold text-text-dark">+R$ 450,00</p>
+<span class="px-2 py-0.5 bg-slate-100 text-slate-500 text-[9px] font-bold rounded uppercase tracking-wider">Processando</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 transition-all border border-transparent hover:border-slate-200 group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 font-bold shadow-inner group-hover:scale-105 transition-transform">IP</div>
+<div>
+<p class="text-sm font-bold text-text-dark">Imobiliária Premium</p>
+<p class="text-[11px] text-slate-500">2 dias atrás • Lead Qualificado CPL</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-base font-bold text-text-dark">+R$ 3.100,00</p>
+<span class="px-2 py-0.5 bg-green-100 text-green-700 text-[9px] font-bold rounded uppercase tracking-wider">Disponível</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 rounded-xl hover:bg-slate-50 transition-all border border-transparent hover:border-slate-200 group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 font-bold shadow-inner group-hover:scale-105 transition-transform">AM</div>
+<div>
+<p class="text-sm font-bold text-text-dark">Agência Moda</p>
+<p class="text-[11px] text-slate-500">3 dias atrás • Fechamento Direto</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-base font-bold text-text-dark">+R$ 890,00</p>
+<span class="px-2 py-0.5 bg-green-100 text-green-700 text-[9px] font-bold rounded uppercase tracking-wider">Disponível</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

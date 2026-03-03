@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Soma - Digital Marketing Financial Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#F97316", // Vibrant Orange
+              secondary: "#FACC15", // Yellow
+              graphite: "#1F2937",
+              "background-light": "#F9FAFB",
+              "background-dark": "#0F172A",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.75rem",
+            },
+          },
+        },
+      };
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .chart-bar { transition: height 0.3s ease; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<aside class="fixed left-0 top-0 h-full w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 z-50 hidden lg:block">
+<div class="p-6 flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-icons-outlined text-white text-xl">insights</span>
+</div>
+<span class="text-xl font-bold tracking-tight">Soma</span>
+</div>
+<nav class="mt-4 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 bg-primary/10 text-primary rounded-xl font-medium" href="#">
+<span class="material-icons-outlined">dashboard</span>
+                Overview
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors" href="#">
+<span class="material-icons-outlined">bar_chart</span>
+                Analytics
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors" href="#">
+<span class="material-icons-outlined">account_balance_wallet</span>
+                Finances
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors" href="#">
+<span class="material-icons-outlined">campaign</span>
+                Ad Accounts
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors" href="#">
+<span class="material-icons-outlined">settings</span>
+                Settings
+            </a>
+</nav>
+<div class="absolute bottom-8 left-0 w-full px-6">
+<div class="p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl">
+<p class="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase mb-2">Power User Plan</p>
+<div class="h-1.5 w-full bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-3/4"></div>
+</div>
+<p class="text-xs text-slate-600 dark:text-slate-300 mt-2">75% of credits used</p>
+</div>
+</div>
+</aside>
+<main class="lg:ml-64 p-8">
+<header class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10">
+<div>
+<h1 class="text-2xl font-bold">Reporting &amp; Analytics</h1>
+<p class="text-slate-500 dark:text-slate-400 text-sm">Real-time financial performance across all channels</p>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<div class="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 shadow-sm">
+<span class="material-icons-outlined text-slate-400 mr-2 text-xl">calendar_today</span>
+<select class="bg-transparent border-none focus:ring-0 text-sm font-medium py-0">
+<option>Last 30 Days</option>
+<option>Last Quarter</option>
+<option>Year to Date</option>
+<option>Custom Range</option>
+</select>
+</div>
+<button class="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl font-medium text-sm shadow-sm hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors">
+<span class="material-icons-outlined text-xl">filter_list</span>
+                    Filters
+                </button>
+<button class="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl font-medium text-sm shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity">
+<span class="material-icons-outlined text-xl">download</span>
+                    Export Report
+                </button>
+</div>
+</header>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Revenue</span>
+<span class="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-bold px-2 py-1 rounded-lg">+12.4%</span>
+</div>
+<div class="text-3xl font-bold tracking-tight">$842,500.00</div>
+<div class="mt-2 text-xs text-slate-400">Vs $749,200 last period</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Net Profit</span>
+<span class="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-bold px-2 py-1 rounded-lg">+8.2%</span>
+</div>
+<div class="text-3xl font-bold tracking-tight">$312,420.00</div>
+<div class="mt-2 text-xs text-slate-400">37% Margin average</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">Ad Spend (ROAS)</span>
+<span class="bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-xs font-bold px-2 py-1 rounded-lg">4.2x</span>
+</div>
+<div class="text-3xl font-bold tracking-tight text-primary">$201,150.00</div>
+<div class="mt-2 text-xs text-slate-400">Total across 14 campaigns</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-4">
+<span class="text-slate-500 dark:text-slate-400 text-sm font-medium">CAC Average</span>
+<span class="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold px-2 py-1 rounded-lg">+3.1%</span>
+</div>
+<div class="text-3xl font-bold tracking-tight text-secondary">$14.20</div>
+<div class="mt-2 text-xs text-slate-400">Customer acquisition cost</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+<div class="lg:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h3 class="font-bold text-lg">Revenue Allocation</h3>
+<p class="text-sm text-slate-400">Monthly breakdown of income vs expenses</p>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+<span class="text-xs font-medium">Income</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-slate-200 dark:bg-slate-700"></span>
+<span class="text-xs font-medium">Expense</span>
+</div>
+</div>
+</div>
+<div class="h-64 flex items-end justify-between gap-2 px-2">
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center items-end gap-1 h-full">
+<div class="w-4 bg-slate-100 dark:bg-slate-800 rounded-t-sm h-[40%]"></div>
+<div class="w-4 bg-primary/20 dark:bg-primary/20 rounded-t-sm h-[60%]"></div>
+</div>
+<span class="text-[10px] text-slate-400 font-medium">Feb</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center items-end gap-1 h-full">
+<div class="w-4 bg-slate-100 dark:bg-slate-800 rounded-t-sm h-[35%]"></div>
+<div class="w-4 bg-primary/40 dark:bg-primary/40 rounded-t-sm h-[75%]"></div>
+</div>
+<span class="text-[10px] text-slate-400 font-medium">Mar</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center items-end gap-1 h-full">
+<div class="w-4 bg-slate-100 dark:bg-slate-800 rounded-t-sm h-[50%]"></div>
+<div class="w-4 bg-primary/60 dark:bg-primary/60 rounded-t-sm h-[90%]"></div>
+</div>
+<span class="text-[10px] text-slate-400 font-medium font-bold text-primary">Apr</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center items-end gap-1 h-full">
+<div class="w-4 bg-slate-100 dark:bg-slate-800 rounded-t-sm h-[30%]"></div>
+<div class="w-4 bg-primary rounded-t-sm h-[100%]"></div>
+</div>
+<span class="text-[10px] text-slate-400 font-medium">May</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center items-end gap-1 h-full">
+<div class="w-4 bg-slate-100 dark:bg-slate-800 rounded-t-sm h-[45%]"></div>
+<div class="w-4 bg-primary/80 dark:bg-primary/80 rounded-t-sm h-[85%]"></div>
+</div>
+<span class="text-[10px] text-slate-400 font-medium">Jun</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center items-end gap-1 h-full">
+<div class="w-4 bg-slate-100 dark:bg-slate-800 rounded-t-sm h-[55%]"></div>
+<div class="w-4 bg-primary/60 dark:bg-primary/60 rounded-t-sm h-[95%]"></div>
+</div>
+<span class="text-[10px] text-slate-400 font-medium">Jul</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center items-end gap-1 h-full">
+<div class="w-4 bg-slate-100 dark:bg-slate-800 rounded-t-sm h-[40%]"></div>
+<div class="w-4 bg-primary rounded-t-sm h-[100%]"></div>
+</div>
+<span class="text-[10px] text-slate-400 font-medium">Aug</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-1 group">
+<div class="w-full flex justify-center items-end gap-1 h-full">
+<div class="w-4 bg-slate-100 dark:bg-slate-800 rounded-t-sm h-[20%]"></div>
+<div class="w-4 bg-primary/40 dark:bg-primary/40 rounded-t-sm h-[60%]"></div>
+</div>
+<span class="text-[10px] text-slate-400 font-medium">Sep</span>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-bold text-lg">Sales Summary</h3>
+<div class="flex gap-1">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</div>
+</div>
+<div class="text-2xl font-bold mb-6">$1,200 <span class="text-xs text-green-500">+12%</span></div>
+<div class="relative h-48 w-full">
+<svg class="w-full h-full drop-shadow-lg" viewBox="0 0 100 40">
+<path d="M0,40 Q15,35 25,30 T45,15 T70,25 T100,5 L100,40 L0,40 Z" fill="url(#grad1)"></path>
+<path d="M0,40 Q15,35 25,30 T45,15 T70,25 T100,5" fill="none" stroke="#F97316" stroke-width="1.5"></path>
+<defs>
+<linearGradient id="grad1" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:rgba(249, 115, 22, 0.3);stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:rgba(249, 115, 22, 0);stop-opacity:1"></stop>
+</linearGradient>
+</defs>
+<circle cx="45" cy="15" fill="#F97316" r="2"></circle>
+<circle cx="100" cy="5" fill="#F97316" r="2"></circle>
+</svg>
+<div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-full bg-slate-800 text-white text-[10px] px-2 py-1 rounded shadow-lg pointer-events-none">
+                        Peak: $1,240
+                    </div>
+</div>
+<div class="flex justify-between mt-4 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+<span>Mon</span>
+<span>Tue</span>
+<span>Wed</span>
+<span>Thu</span>
+<span>Fri</span>
+<span>Sat</span>
+<span>Sun</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div class="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+<div class="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+<h3 class="font-bold text-lg">Top Transactions</h3>
+<div class="relative">
+<span class="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="pl-9 pr-4 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border-none rounded-lg w-48 focus:ring-primary/20" placeholder="Search transactions..." type="text"/>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-slate-50 dark:bg-slate-800/50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+<tr>
+<th class="px-6 py-3">Customer ID</th>
+<th class="px-6 py-3">Category</th>
+<th class="px-6 py-3">Date</th>
+<th class="px-6 py-3">Price</th>
+<th class="px-6 py-3">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4 text-sm font-medium">#345345</td>
+<td class="px-6 py-4 text-sm text-slate-500">Marketing Tooling</td>
+<td class="px-6 py-4 text-sm text-slate-500">Nov 11, 2023</td>
+<td class="px-6 py-4 text-sm font-bold">$440.44</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 text-[10px] font-bold bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-md">COMPLETE</span>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4 text-sm font-medium">#345389</td>
+<td class="px-6 py-4 text-sm text-slate-500">Cloud Hosting</td>
+<td class="px-6 py-4 text-sm text-slate-500">Nov 10, 2023</td>
+<td class="px-6 py-4 text-sm font-bold">$1,200.00</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 text-[10px] font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md">ON DELIVERY</span>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4 text-sm font-medium">#345412</td>
+<td class="px-6 py-4 text-sm text-slate-500">SaaS Subscription</td>
+<td class="px-6 py-4 text-sm text-slate-500">Nov 09, 2023</td>
+<td class="px-6 py-4 text-sm font-bold">$89.00</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 text-[10px] font-bold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-md">CANCELED</span>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+<td class="px-6 py-4 text-sm font-medium">#345431</td>
+<td class="px-6 py-4 text-sm text-slate-500">Social Ads</td>
+<td class="px-6 py-4 text-sm text-slate-500">Nov 09, 2023</td>
+<td class="px-6 py-4 text-sm font-bold">$2,450.00</td>
+<td class="px-6 py-4">
+<span class="px-2 py-1 text-[10px] font-bold bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-md">COMPLETE</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-bold text-lg">Customer Growth</h3>
+<button class="text-primary text-xs font-bold hover:underline">Show all</button>
+</div>
+<div class="flex flex-wrap gap-2 mb-6">
+<div class="flex items-center gap-1.5 px-2 py-1 bg-slate-50 dark:bg-slate-800 rounded-lg text-[10px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> UK 30%
+                    </div>
+<div class="flex items-center gap-1.5 px-2 py-1 bg-slate-50 dark:bg-slate-800 rounded-lg text-[10px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> JP 30%
+                    </div>
+<div class="flex items-center gap-1.5 px-2 py-1 bg-slate-50 dark:bg-slate-800 rounded-lg text-[10px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> PL 30%
+                    </div>
+</div>
+<div class="relative h-40 bg-slate-50 dark:bg-slate-800/50 rounded-xl overflow-hidden flex items-center justify-center">
+<div class="absolute inset-0 opacity-10 dark:opacity-20 flex items-center justify-center">
+<span class="material-icons-outlined text-9xl">public</span>
+</div>
+<div class="absolute top-1/4 left-1/4 w-3 h-3 bg-primary rounded-full animate-ping"></div>
+<div class="absolute top-1/4 left-1/4 w-3 h-3 bg-primary rounded-full"></div>
+<div class="absolute bottom-1/3 right-1/4 w-2 h-2 bg-secondary rounded-full animate-ping"></div>
+<div class="absolute bottom-1/3 right-1/4 w-2 h-2 bg-secondary rounded-full"></div>
+<div class="absolute top-1/2 right-1/2 w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse"></div>
+</div>
+<div class="mt-6 space-y-4">
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium">New Customers</span>
+<span class="text-sm font-bold">+2,431</span>
+</div>
+<div class="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[70%]"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-bold text-lg">All Time Spending</h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary/40"></span>
+<span class="text-[10px] font-bold uppercase text-slate-400">Total Spend</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="text-[10px] font-bold uppercase text-slate-400">Total Sales</span>
+</div>
+</div>
+</div>
+<div class="flex items-end justify-between mb-8">
+<div>
+<div class="text-3xl font-bold">53,423</div>
+<div class="text-[10px] text-slate-400 font-bold uppercase mt-1">Total Users</div>
+</div>
+<div class="text-right">
+<div class="text-3xl font-bold text-primary">2,024</div>
+<div class="text-[10px] text-slate-400 font-bold uppercase mt-1">Monthly Orders</div>
+</div>
+</div>
+<div class="relative h-24 flex items-center">
+<svg class="w-full" viewBox="0 0 400 100">
+<path d="M0,80 Q100,85 200,60 T400,10" fill="none" stroke="#F97316" stroke-linecap="round" stroke-width="3"></path>
+<path d="M0,90 Q100,95 200,80 T400,40" fill="none" stroke="#F97316" stroke-linecap="round" stroke-opacity="0.3" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex items-center gap-4 mt-6">
+<div class="text-4xl font-bold">7.4%</div>
+<div>
+<div class="text-sm font-bold text-green-500">+1.2%</div>
+<div class="text-[10px] text-slate-400 font-bold uppercase">Conversion Rate</div>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col md:flex-row gap-6">
+<div class="flex-1">
+<h3 class="font-bold text-lg mb-2">Product Sales Statics</h3>
+<p class="text-xs text-slate-400 mb-6">Great results with <span class="text-green-500 font-bold">↑ 12%</span> vs last month</p>
+<div class="space-y-6">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="w-1.5 h-6 bg-primary rounded-full"></span>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Premium Ads Bundle</span>
+</div>
+<div class="text-xl font-bold">$52,010</div>
+<div class="text-xs text-slate-500">3200 sales</div>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="w-1.5 h-6 bg-secondary rounded-full"></span>
+<span class="text-[10px] font-bold text-slate-400 uppercase">Growth Catalyst Pack</span>
+</div>
+<div class="text-xl font-bold">$68,000</div>
+<div class="text-xs text-slate-500">1200 sales</div>
+</div>
+</div>
+</div>
+<div class="flex-1 flex items-center justify-center p-4">
+<div class="relative w-40 h-40">
+<svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+<path class="stroke-slate-100 dark:stroke-slate-800" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="4"></path>
+<path class="stroke-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="75, 100" stroke-linecap="round" stroke-width="4"></path>
+<path class="stroke-secondary" d="M18 8.0845 a 10.9155 10.9155 0 0 1 0 21.831 a 10.9155 10.9155 0 0 1 0 -21.831" fill="none" stroke-dasharray="45, 100" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-xs font-bold text-slate-400">AVG</span>
+<span class="text-xl font-bold">82%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<button class="fixed bottom-6 right-6 lg:hidden bg-primary text-white p-4 rounded-full shadow-2xl z-50">
+<span class="material-icons-outlined">menu</span>
+</button>
+
+</body></html>

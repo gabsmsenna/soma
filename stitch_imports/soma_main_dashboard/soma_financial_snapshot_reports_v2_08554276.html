@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Soma Financial Snapshot</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ffbb00",
+                        "background-light": "#f8f8f5",
+                        "background-dark": "#181610", 
+                        "surface-dark": "#231e0f",
+                        "surface-light": "#ffffff",
+                        "border-dark": "#3a3527",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #181610; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3a3527; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #504a3a; 
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display overflow-hidden">
+<div class="flex h-screen w-full">
+<!-- Side Navigation -->
+<aside class="flex w-64 flex-col bg-surface-dark border-r border-border-dark flex-shrink-0">
+<div class="flex items-center gap-3 p-6">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-10" data-alt="Soma logo abstract geometric shape" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDMRfMSc5z6DzgkKB3XZB9s6LV_FUn-8WZvvNOnxSX_bQhLNTiPr_Vs6_CIB20D_sE_z868McxHY6vwBs7uiIGub8hudj3Xb8nfHUhRZ_ttoPCPD18fNtYNVrZzl8-77b-nGq0gEFpJspu9CtyLq7W24rpLyj3rpi6Y4OUtZI0k--XuK2KMcOo7vXdzYVFEdRanNl4Ue7yzDQFfQUwtiY9ssduIeT_JG9vM9PPV8rH0a4lIPBKX2AdCsRhWBAUAu9SEo4MsheT7214");'></div>
+<div class="flex flex-col">
+<h1 class="text-white text-lg font-bold leading-normal">Soma</h1>
+<p class="text-[#bcb39a] text-xs font-normal leading-normal">Marketing Analytics</p>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#bcb39a] hover:bg-white/5 hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#bcb39a] group-hover:text-white">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/20 text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-primary fill-1">pie_chart</span>
+<span class="text-sm font-medium">Snapshot</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#bcb39a] hover:bg-white/5 hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#bcb39a] group-hover:text-white">group</span>
+<span class="text-sm font-medium">Clients</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#bcb39a] hover:bg-white/5 hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#bcb39a] group-hover:text-white">campaign</span>
+<span class="text-sm font-medium">Campaigns</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[#bcb39a] hover:bg-white/5 hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-[#bcb39a] group-hover:text-white">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</a>
+</nav>
+<div class="p-4 border-t border-border-dark">
+<button class="flex w-full cursor-pointer items-center justify-center rounded-lg h-10 bg-primary text-background-dark hover:bg-primary/90 transition-colors text-sm font-bold tracking-wide">
+<span class="material-symbols-outlined mr-2 text-lg">add</span>
+                    New Report
+                </button>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-background-light dark:bg-background-dark">
+<!-- Header -->
+<header class="flex items-center justify-between border-b border-border-dark px-8 py-4 bg-background-light dark:bg-background-dark z-10">
+<div class="flex items-center gap-4">
+<h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Financial Snapshot</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#bcb39a]">search</span>
+<input class="h-10 w-64 rounded-lg bg-surface-dark border-border-dark text-white placeholder-[#bcb39a] pl-10 pr-4 focus:ring-1 focus:ring-primary focus:border-primary text-sm" placeholder="Search reports..." type="text"/>
+</div>
+<button class="size-10 flex items-center justify-center rounded-lg bg-surface-dark text-white hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-xl">notifications</span>
+</button>
+<button class="size-10 flex items-center justify-center rounded-lg bg-surface-dark text-white hover:bg-white/10 transition-colors">
+<span class="material-symbols-outlined text-xl">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Scrollable Content -->
+<div class="flex-1 overflow-y-auto p-8">
+<div class="mx-auto max-w-7xl flex flex-col gap-8">
+<!-- Top Actions & Title -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+<div class="flex flex-col gap-1">
+<p class="text-[#bcb39a] text-sm font-medium uppercase tracking-wider">Performance Overview</p>
+<h3 class="text-white text-3xl font-bold">November 2023</h3>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="flex items-center justify-center h-10 px-4 rounded-lg border border-border-dark bg-surface-dark text-white hover:bg-white/5 transition-colors text-sm font-semibold">
+<span class="material-symbols-outlined mr-2 text-lg">calendar_today</span>
+                                Last 30 Days
+                            </button>
+<button class="flex items-center justify-center h-10 px-4 rounded-lg bg-primary text-background-dark hover:bg-primary/90 transition-colors text-sm font-bold shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined mr-2 text-lg">download</span>
+                                Export PDF
+                            </button>
+<button class="flex items-center justify-center h-10 px-4 rounded-lg bg-surface-dark text-primary border border-primary/30 hover:bg-primary/10 transition-colors text-sm font-bold">
+<span class="material-symbols-outlined mr-2 text-lg">table_view</span>
+                                Export CSV
+                            </button>
+</div>
+</div>
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Card 1 -->
+<div class="p-6 rounded-xl bg-surface-dark border border-border-dark flex flex-col gap-4 hover:border-primary/50 transition-colors group">
+<div class="flex justify-between items-start">
+<div class="p-2 rounded-lg bg-primary/10 text-primary">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<span class="text-[#0bda1d] bg-[#0bda1d]/10 px-2 py-1 rounded text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_up</span> +15%
+                                </span>
+</div>
+<div>
+<p class="text-[#bcb39a] text-sm font-medium mb-1">Lucro Bruto</p>
+<p class="text-white text-2xl font-bold">R$ 45.230,00</p>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="p-6 rounded-xl bg-surface-dark border border-border-dark flex flex-col gap-4 hover:border-primary/50 transition-colors group">
+<div class="flex justify-between items-start">
+<div class="p-2 rounded-lg bg-blue-500/10 text-blue-500">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+</div>
+<span class="text-[#0bda1d] bg-[#0bda1d]/10 px-2 py-1 rounded text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_up</span> +8%
+                                </span>
+</div>
+<div>
+<p class="text-[#bcb39a] text-sm font-medium mb-1">Comissões Recebidas</p>
+<p class="text-white text-2xl font-bold">R$ 12.500,00</p>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="p-6 rounded-xl bg-surface-dark border border-border-dark flex flex-col gap-4 hover:border-primary/50 transition-colors group">
+<div class="flex justify-between items-start">
+<div class="p-2 rounded-lg bg-orange-500/10 text-orange-500">
+<span class="material-symbols-outlined">pending_actions</span>
+</div>
+<span class="text-[#fa4238] bg-[#fa4238]/10 px-2 py-1 rounded text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_down</span> -2%
+                                </span>
+</div>
+<div>
+<p class="text-[#bcb39a] text-sm font-medium mb-1">Comissões Pendentes</p>
+<p class="text-white text-2xl font-bold">R$ 3.450,00</p>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="p-6 rounded-xl bg-surface-dark border border-border-dark flex flex-col gap-4 hover:border-primary/50 transition-colors group">
+<div class="flex justify-between items-start">
+<div class="p-2 rounded-lg bg-purple-500/10 text-purple-500">
+<span class="material-symbols-outlined">monitoring</span>
+</div>
+<span class="text-[#0bda1d] bg-[#0bda1d]/10 px-2 py-1 rounded text-xs font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">trending_up</span> +5%
+                                </span>
+</div>
+<div>
+<p class="text-[#bcb39a] text-sm font-medium mb-1">ROI Médio</p>
+<p class="text-white text-2xl font-bold">320%</p>
+</div>
+</div>
+</div>
+<!-- Charts Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Donut Chart -->
+<div class="lg:col-span-1 p-6 rounded-xl bg-surface-dark border border-border-dark flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h4 class="text-white font-bold text-lg">Distribuição de Lucro</h4>
+<button class="text-[#bcb39a] hover:text-white"><span class="material-symbols-outlined">more_horiz</span></button>
+</div>
+<div class="flex-1 flex items-center justify-center relative min-h-[240px]">
+<!-- CSS Donut Chart representation -->
+<div class="relative size-48 rounded-full border-[24px] border-surface-light/5" style="background: conic-gradient(#ffbb00 0% 35%, #3b82f6 35% 60%, #a855f7 60% 80%, #231e0f 80% 100%); border-radius: 50%;">
+<div class="absolute inset-0 m-auto size-32 bg-surface-dark rounded-full flex flex-col items-center justify-center">
+<span class="text-[#bcb39a] text-xs font-medium">Total Profit</span>
+<span class="text-white text-xl font-bold">100%</span>
+</div>
+</div>
+</div>
+<div class="mt-6 flex flex-col gap-3">
+<div class="flex items-center justify-between text-sm">
+<div class="flex items-center gap-2">
+<span class="size-3 rounded-full bg-primary"></span>
+<span class="text-[#bcb39a]">E-commerce A</span>
+</div>
+<span class="text-white font-bold">35%</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<div class="flex items-center gap-2">
+<span class="size-3 rounded-full bg-blue-500"></span>
+<span class="text-[#bcb39a]">SaaS B2B</span>
+</div>
+<span class="text-white font-bold">25%</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<div class="flex items-center gap-2">
+<span class="size-3 rounded-full bg-purple-500"></span>
+<span class="text-[#bcb39a]">Consulting</span>
+</div>
+<span class="text-white font-bold">20%</span>
+</div>
+</div>
+</div>
+<!-- Line Chart -->
+<div class="lg:col-span-2 p-6 rounded-xl bg-surface-dark border border-border-dark flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<div>
+<h4 class="text-white font-bold text-lg">Meta de Lucro Mensal</h4>
+<p class="text-[#bcb39a] text-sm">Progresso vs Meta (R$ 50k)</p>
+</div>
+<select class="bg-background-dark border border-border-dark text-white text-sm rounded-lg p-2 focus:ring-primary focus:border-primary outline-none">
+<option>This Month</option>
+<option>Last Quarter</option>
+<option>This Year</option>
+</select>
+</div>
+<div class="flex-1 flex items-end gap-2 h-64 w-full px-2 pb-2 relative border-b border-l border-border-dark/50">
+<!-- Grid lines background -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
+<div class="w-full h-px bg-[#bcb39a] border-dashed"></div>
+<div class="w-full h-px bg-[#bcb39a] border-dashed"></div>
+<div class="w-full h-px bg-[#bcb39a] border-dashed"></div>
+<div class="w-full h-px bg-[#bcb39a] border-dashed"></div>
+<div class="w-full h-px bg-[#bcb39a] border-dashed"></div>
+</div>
+<!-- Chart Bars -->
+<div class="flex-1 flex flex-col justify-end items-center gap-2 group">
+<div class="w-full max-w-[40px] bg-primary/20 hover:bg-primary/40 transition-all rounded-t-sm h-[40%] relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-background-light text-background-dark text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">R$ 12k</div>
+</div>
+<span class="text-[#bcb39a] text-xs">Nov 01</span>
+</div>
+<div class="flex-1 flex flex-col justify-end items-center gap-2 group">
+<div class="w-full max-w-[40px] bg-primary/20 hover:bg-primary/40 transition-all rounded-t-sm h-[55%] relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-background-light text-background-dark text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">R$ 18k</div>
+</div>
+<span class="text-[#bcb39a] text-xs">Nov 05</span>
+</div>
+<div class="flex-1 flex flex-col justify-end items-center gap-2 group">
+<div class="w-full max-w-[40px] bg-primary/20 hover:bg-primary/40 transition-all rounded-t-sm h-[45%] relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-background-light text-background-dark text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">R$ 15k</div>
+</div>
+<span class="text-[#bcb39a] text-xs">Nov 10</span>
+</div>
+<div class="flex-1 flex flex-col justify-end items-center gap-2 group">
+<div class="w-full max-w-[40px] bg-primary/20 hover:bg-primary/40 transition-all rounded-t-sm h-[70%] relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-background-light text-background-dark text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">R$ 32k</div>
+</div>
+<span class="text-[#bcb39a] text-xs">Nov 15</span>
+</div>
+<div class="flex-1 flex flex-col justify-end items-center gap-2 group">
+<div class="w-full max-w-[40px] bg-primary/20 hover:bg-primary/40 transition-all rounded-t-sm h-[60%] relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-background-light text-background-dark text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">R$ 28k</div>
+</div>
+<span class="text-[#bcb39a] text-xs">Nov 20</span>
+</div>
+<div class="flex-1 flex flex-col justify-end items-center gap-2 group">
+<div class="w-full max-w-[40px] bg-primary hover:bg-primary/80 transition-all rounded-t-sm h-[85%] relative shadow-[0_0_15px_rgba(255,187,0,0.3)]">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-black text-xs px-2 py-1 rounded opacity-100 whitespace-nowrap font-bold">R$ 45k</div>
+</div>
+<span class="text-primary font-bold text-xs">Nov 25</span>
+</div>
+<div class="flex-1 flex flex-col justify-end items-center gap-2 group opacity-50">
+<div class="w-full max-w-[40px] bg-primary/10 border border-primary/20 border-dashed rounded-t-sm h-[95%]"></div>
+<span class="text-[#bcb39a] text-xs">Goal</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Data Table -->
+<div class="rounded-xl bg-surface-dark border border-border-dark overflow-hidden">
+<div class="p-6 border-b border-border-dark flex justify-between items-center">
+<h4 class="text-white font-bold text-lg">Resumo por Operação</h4>
+<button class="text-primary text-sm font-semibold hover:underline">Ver tudo</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-background-dark/50 text-[#bcb39a] text-xs uppercase tracking-wider">
+<th class="px-6 py-4 font-semibold">Operação</th>
+<th class="px-6 py-4 font-semibold">Total Profit (30d)</th>
+<th class="px-6 py-4 font-semibold">Commission (30d)</th>
+<th class="px-6 py-4 font-semibold">ROI</th>
+<th class="px-6 py-4 font-semibold text-right">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-dark">
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold" data-alt="Gradient Avatar">EC</div>
+<div>
+<p class="text-white text-sm font-medium">E-commerce Alpha</p>
+<p class="text-[#bcb39a] text-xs">Retail</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-white text-sm font-bold">R$ 15.240,00</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-white text-sm">R$ 3.048,00</p>
+</td>
+<td class="px-6 py-4">
+<span class="text-[#0bda1d] text-sm font-medium">450%</span>
+</td>
+<td class="px-6 py-4 text-right">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#0bda1d]/10 text-[#0bda1d]">
+                                                Active
+                                            </span>
+</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white text-xs font-bold" data-alt="Gradient Avatar">SB</div>
+<div>
+<p class="text-white text-sm font-medium">SaaS B2B Tech</p>
+<p class="text-[#bcb39a] text-xs">Software</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-white text-sm font-bold">R$ 8.450,00</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-white text-sm">R$ 1.690,00</p>
+</td>
+<td class="px-6 py-4">
+<span class="text-[#0bda1d] text-sm font-medium">320%</span>
+</td>
+<td class="px-6 py-4 text-right">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#0bda1d]/10 text-[#0bda1d]">
+                                                Active
+                                            </span>
+</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white text-xs font-bold" data-alt="Gradient Avatar">LC</div>
+<div>
+<p class="text-white text-sm font-medium">Local Consulting</p>
+<p class="text-[#bcb39a] text-xs">Services</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-white text-sm font-bold">R$ 4.120,00</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-white text-sm">R$ 824,00</p>
+</td>
+<td class="px-6 py-4">
+<span class="text-[#fa4238] text-sm font-medium">180%</span>
+</td>
+<td class="px-6 py-4 text-right">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-500/10 text-yellow-500">
+                                                Review
+                                            </span>
+</td>
+</tr>
+<tr class="hover:bg-white/5 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-white text-xs font-bold" data-alt="Gradient Avatar">DF</div>
+<div>
+<p class="text-white text-sm font-medium">Dropshipping Fast</p>
+<p class="text-[#bcb39a] text-xs">Retail</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-white text-sm font-bold">R$ 2.800,00</p>
+</td>
+<td class="px-6 py-4">
+<p class="text-white text-sm">R$ 560,00</p>
+</td>
+<td class="px-6 py-4">
+<span class="text-[#0bda1d] text-sm font-medium">210%</span>
+</td>
+<td class="px-6 py-4 text-right">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#0bda1d]/10 text-[#0bda1d]">
+                                                Active
+                                            </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

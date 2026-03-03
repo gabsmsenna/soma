@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Soma Detailed Profit Reports V1 - Light Mode</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ffbb00",
+                        "primary-dark": "#cc9600",
+                        "background-light": "#ffffff",
+                        "background-subtle": "#f8f9fa",
+                        "card-light": "#ffffff",
+                        "text-dark": "#212529",
+                        "text-muted": "#6c757d",
+                        "border-light": "#e9ecef",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"],
+                        "body": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        "subtle": "0 2px 10px rgba(0, 0, 0, 0.03)",
+                        "card": "0 4px 20px rgba(0, 0, 0, 0.04)"
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(248, 249, 250, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.03);
+        }
+        .sidebar-panel {
+            background: #f8f9fa;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(33, 37, 41, 0.2);
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(33, 37, 41, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-background-light text-text-dark font-display min-h-screen flex overflow-hidden">
+<aside class="w-64 sidebar-panel border-r border-border-light flex flex-col justify-between h-screen fixed left-0 top-0 z-50">
+<div class="flex flex-col gap-6 p-6">
+<div class="flex items-center gap-3 pb-6 border-b border-border-light">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-10 w-10 ring-2 ring-primary/20 shadow-sm" data-alt="User profile picture" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBIqxWuRG8uMUkj5Y8j28AtfKXkZyz5aTKr4tq500gpb38OZkXRmWqXYh4RQ8vrY8wBRZP2Qk09saMJRD9gFj3GL8sCsmq_K0VimjGgLcBFRw0rRmFF6tGGhwFJH8vsulu3kCE69rRLZwTfovItfDqLhZ7qymTJ9DhCIjjlIEmiXHRsXwqCc7R5MvxMvP2K_0xNjV_W15rhOAWksGe4lXv6xZELA-iHHYwKNkkkMv40xjYd4Mjbi579ggI3eEJ3VU42EmMxwzMuP4M");'></div>
+<div class="flex flex-col">
+<h1 class="text-text-dark text-base font-bold leading-tight">Soma</h1>
+<p class="text-text-muted text-xs font-medium">Marketing Freelancer</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-text-muted hover:bg-white hover:shadow-sm hover:text-text-dark transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">grid_view</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-text-muted hover:bg-white hover:shadow-sm hover:text-text-dark transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">business_center</span>
+<span class="text-sm font-medium">Operações</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-text-muted hover:bg-white hover:shadow-sm hover:text-text-dark transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">palette</span>
+<span class="text-sm font-medium">Criativos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white shadow-sm text-text-dark border border-gray-100 transition-colors" href="#">
+<span class="material-symbols-outlined text-primary fill-current">bar_chart</span>
+<span class="text-sm font-bold">Relatórios</span>
+</a>
+</nav>
+</div>
+<div class="p-6">
+<button class="flex items-center gap-2 text-text-muted hover:text-text-dark hover:bg-white/50 rounded-lg transition-colors text-sm font-medium w-full px-3 py-2">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+                Sair
+            </button>
+</div>
+</aside>
+<main class="flex-1 ml-64 p-8 overflow-y-auto h-screen custom-scrollbar bg-white">
+<div class="max-w-[1200px] mx-auto flex flex-col gap-8">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h2 class="text-3xl font-bold text-text-dark tracking-tight">Detalhamento de Lucro</h2>
+<p class="text-text-muted mt-1">Análise detalhada por operação e criativo</p>
+</div>
+<div class="flex items-center bg-background-subtle border border-border-light rounded-full p-1 pl-4 shadow-sm">
+<span class="text-sm text-text-muted mr-3 font-medium">Período:</span>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm text-text-muted hover:text-text-dark transition-all">
+<span class="material-symbols-outlined text-lg">chevron_left</span>
+</button>
+<span class="text-primary-dark font-bold text-sm px-2">Últimos 30 dias</span>
+<button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm text-text-muted hover:text-text-dark transition-all">
+<span class="material-symbols-outlined text-lg">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="glass-panel p-5 rounded-2xl flex flex-col justify-between h-[160px] relative overflow-hidden group hover:border-primary/30 transition-all bg-white">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all"></div>
+<div>
+<p class="text-text-muted text-sm font-medium mb-1">Lucro Total (Operações)</p>
+<h3 class="text-3xl font-bold text-text-dark">R$ 152.400<span class="text-lg text-text-muted font-normal">,00</span></h3>
+</div>
+<div class="flex items-end justify-between">
+<div class="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg text-xs font-bold border border-emerald-100">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+                            +8%
+                        </div>
+<svg fill="none" height="30" viewBox="0 0 80 30" width="80" xmlns="http://www.w3.org/2000/svg">
+<path d="M1 25L15 18L25 22L40 10L55 15L79 1" stroke="#ffbb00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M1 25L15 18L25 22L40 10L55 15L79 1V30H1V25Z" fill="url(#grad1)" opacity="0.2"></path>
+<defs>
+<linearGradient gradientUnits="userSpaceOnUse" id="grad1" x1="40" x2="40" y1="0" y2="30">
+<stop stop-color="#ffbb00"></stop>
+<stop offset="1" stop-color="#ffbb00" stop-opacity="0"></stop>
+</linearGradient>
+</defs>
+</svg>
+</div>
+</div>
+<div class="glass-panel p-5 rounded-2xl flex flex-col justify-between h-[160px] relative overflow-hidden group hover:border-primary/30 transition-all bg-white">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all"></div>
+<div>
+<p class="text-text-muted text-sm font-medium mb-1">Meu Lucro (Comissão)</p>
+<h3 class="text-3xl font-bold text-text-dark">R$ 15.240<span class="text-lg text-text-muted font-normal">,00</span></h3>
+</div>
+<div class="flex items-end justify-between">
+<div class="flex items-center gap-1 text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg text-xs font-bold border border-emerald-100">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+                            +12%
+                        </div>
+<svg fill="none" height="30" viewBox="0 0 80 30" width="80" xmlns="http://www.w3.org/2000/svg">
+<path d="M1 20L20 25L40 15L60 18L79 5" stroke="#ffbb00" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M1 20L20 25L40 15L60 18L79 5V30H1V20Z" fill="url(#grad1)" opacity="0.2"></path>
+</svg>
+</div>
+</div>
+<div class="glass-panel p-5 rounded-2xl flex flex-col justify-between h-[160px] relative overflow-hidden group hover:border-primary/30 transition-all bg-white">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/5 rounded-full blur-2xl group-hover:bg-emerald-500/10 transition-all"></div>
+<div>
+<p class="text-text-muted text-sm font-medium mb-1">Criativo + Lucrativo</p>
+<h3 class="text-2xl font-bold text-text-dark truncate">CRI_042_V2</h3>
+<p class="text-emerald-600 text-sm font-bold mt-1">ROI 8.4x</p>
+</div>
+<div class="flex items-end justify-between">
+<div class="flex items-center gap-1 text-text-muted text-xs">
+                            Op. Alpha
+                        </div>
+<svg fill="none" height="30" viewBox="0 0 80 30" width="80" xmlns="http://www.w3.org/2000/svg">
+<path d="M1 28L15 20L30 22L50 10L65 12L79 2" stroke="#10b981" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<div class="glass-panel p-5 rounded-2xl flex flex-col justify-between h-[160px] relative overflow-hidden group hover:border-primary/30 transition-all bg-white">
+<div class="absolute -right-6 -top-6 w-24 h-24 bg-red-500/5 rounded-full blur-2xl group-hover:bg-red-500/10 transition-all"></div>
+<div>
+<p class="text-text-muted text-sm font-medium mb-1">Criativo - Lucrativo</p>
+<h3 class="text-2xl font-bold text-text-dark truncate">CRI_011_V1</h3>
+<p class="text-red-500 text-sm font-bold mt-1">ROI 0.8x</p>
+</div>
+<div class="flex items-end justify-between">
+<div class="flex items-center gap-1 text-text-muted text-xs">
+                            Op. Epsilon
+                        </div>
+<svg fill="none" height="30" viewBox="0 0 80 30" width="80" xmlns="http://www.w3.org/2000/svg">
+<path d="M1 10L20 8L40 15L60 20L79 25" stroke="#ef4444" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-6">
+<div class="glass-panel rounded-2xl p-6 overflow-hidden bg-white">
+<div class="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-gray-100 gap-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
+<span class="material-symbols-outlined text-primary-dark text-2xl">rocket_launch</span>
+</div>
+<div>
+<h3 class="text-xl font-bold text-text-dark">Operação Alpha Protocol</h3>
+<p class="text-sm text-text-muted">ID: #OP-8821 • Status: <span class="text-emerald-600 font-semibold">Ativa</span></p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<p class="text-xs text-text-muted uppercase tracking-wider mb-1">Lucro Total Op.</p>
+<p class="text-xl font-bold text-text-dark">R$ 42.150,00</p>
+</div>
+<div class="text-right">
+<p class="text-xs text-text-muted uppercase tracking-wider mb-1">Meu Lucro (10%)</p>
+<p class="text-xl font-bold text-primary-dark">R$ 4.215,00</p>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-text-muted hover:text-text-dark transition-colors">
+<span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</div>
+<div class="mt-6">
+<h4 class="text-sm font-bold text-text-dark mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-base text-text-muted">palette</span>
+                        Desempenho dos Criativos
+                    </h4>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="text-xs text-text-muted border-b border-gray-100">
+<th class="py-3 px-4 font-medium uppercase tracking-wider">Criativo</th>
+<th class="py-3 px-4 font-medium uppercase tracking-wider text-right">Lucro Total</th>
+<th class="py-3 px-4 font-medium uppercase tracking-wider text-right">Meu Lucro</th>
+<th class="py-3 px-4 font-medium uppercase tracking-wider text-center">Tendência</th>
+<th class="py-3 px-4 font-medium uppercase tracking-wider text-right">Ação</th>
+</tr>
+</thead>
+<tbody class="text-sm text-text-dark">
+<tr class="group hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-gray-100 flex items-center justify-center text-xs font-bold text-text-muted border border-gray-200">IMG</div>
+<div>
+<p class="font-bold text-text-dark">CRI_042_V2_Video_Hook</p>
+<p class="text-xs text-text-muted">Video Ads • 15s</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 text-right font-medium text-text-muted">R$ 18.200,00</td>
+<td class="py-4 px-4 text-right font-bold text-text-dark">R$ 1.820,00</td>
+<td class="py-4 px-4 text-center">
+<div class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-bold border border-emerald-100">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+                                        Ascensão
+                                    </div>
+</td>
+<td class="py-4 px-4 text-right">
+<button class="text-text-muted hover:text-primary-dark transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-gray-100 flex items-center justify-center text-xs font-bold text-text-muted border border-gray-200">IMG</div>
+<div>
+<p class="font-bold text-text-dark">CRI_042_V1_Static</p>
+<p class="text-xs text-text-muted">Image • 1080x1080</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 text-right font-medium text-text-muted">R$ 12.500,00</td>
+<td class="py-4 px-4 text-right font-bold text-text-dark">R$ 1.250,00</td>
+<td class="py-4 px-4 text-center">
+<div class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-bold border border-emerald-100">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+                                        Estável
+                                    </div>
+</td>
+<td class="py-4 px-4 text-right">
+<button class="text-text-muted hover:text-primary-dark transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-gray-100 flex items-center justify-center text-xs font-bold text-text-muted border border-gray-200">IMG</div>
+<div>
+<p class="font-bold text-text-dark">CRI_038_Carousel</p>
+<p class="text-xs text-text-muted">Carousel • 5 Slides</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 text-right font-medium text-text-muted">R$ 11.450,00</td>
+<td class="py-4 px-4 text-right font-bold text-text-dark">R$ 1.145,00</td>
+<td class="py-4 px-4 text-center">
+<div class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-50 text-red-600 text-xs font-bold border border-red-100">
+<span class="material-symbols-outlined text-sm">trending_down</span>
+                                        Queda
+                                    </div>
+</td>
+<td class="py-4 px-4 text-right">
+<button class="text-text-muted hover:text-primary-dark transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="glass-panel rounded-2xl p-6 overflow-hidden bg-white">
+<div class="flex flex-col md:flex-row md:items-center justify-between pb-6 border-b border-gray-100 gap-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center border border-gray-200">
+<span class="material-symbols-outlined text-text-dark text-2xl">flight_takeoff</span>
+</div>
+<div>
+<h3 class="text-xl font-bold text-text-dark">Operação Beta Launch</h3>
+<p class="text-sm text-text-muted">ID: #OP-9932 • Status: <span class="text-emerald-600 font-semibold">Ativa</span></p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<p class="text-xs text-text-muted uppercase tracking-wider mb-1">Lucro Total Op.</p>
+<p class="text-xl font-bold text-text-dark">R$ 31.800,00</p>
+</div>
+<div class="text-right">
+<p class="text-xs text-text-muted uppercase tracking-wider mb-1">Meu Lucro (12%)</p>
+<p class="text-xl font-bold text-primary-dark">R$ 3.816,00</p>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-text-muted hover:text-text-dark transition-colors">
+<span class="material-symbols-outlined">expand_more</span>
+</button>
+</div>
+</div>
+<div class="mt-6">
+<h4 class="text-sm font-bold text-text-dark mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-base text-text-muted">palette</span>
+                        Desempenho dos Criativos
+                    </h4>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="text-xs text-text-muted border-b border-gray-100">
+<th class="py-3 px-4 font-medium uppercase tracking-wider">Criativo</th>
+<th class="py-3 px-4 font-medium uppercase tracking-wider text-right">Lucro Total</th>
+<th class="py-3 px-4 font-medium uppercase tracking-wider text-right">Meu Lucro</th>
+<th class="py-3 px-4 font-medium uppercase tracking-wider text-center">Tendência</th>
+<th class="py-3 px-4 font-medium uppercase tracking-wider text-right">Ação</th>
+</tr>
+</thead>
+<tbody class="text-sm text-text-dark">
+<tr class="group hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-gray-100 flex items-center justify-center text-xs font-bold text-text-muted border border-gray-200">IMG</div>
+<div>
+<p class="font-bold text-text-dark">CRI_055_Story_Motion</p>
+<p class="text-xs text-text-muted">Story • Motion</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 text-right font-medium text-text-muted">R$ 20.100,00</td>
+<td class="py-4 px-4 text-right font-bold text-text-dark">R$ 2.412,00</td>
+<td class="py-4 px-4 text-center">
+<div class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-600 text-xs font-bold border border-emerald-100">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+                                        Ascensão
+                                    </div>
+</td>
+<td class="py-4 px-4 text-right">
+<button class="text-text-muted hover:text-primary-dark transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0">
+<td class="py-4 px-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-gray-100 flex items-center justify-center text-xs font-bold text-text-muted border border-gray-200">IMG</div>
+<div>
+<p class="font-bold text-text-dark">CRI_051_Reels_UGC</p>
+<p class="text-xs text-text-muted">Reels • UGC</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-4 text-right font-medium text-text-muted">R$ 11.700,00</td>
+<td class="py-4 px-4 text-right font-bold text-text-dark">R$ 1.404,00</td>
+<td class="py-4 px-4 text-center">
+<div class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-red-50 text-red-600 text-xs font-bold border border-red-100">
+<span class="material-symbols-outlined text-sm">trending_down</span>
+                                        Queda
+                                    </div>
+</td>
+<td class="py-4 px-4 text-right">
+<button class="text-text-muted hover:text-primary-dark transition-colors">
+<span class="material-symbols-outlined text-lg">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="glass-panel rounded-2xl p-6 overflow-hidden hover:border-primary/30 hover:shadow-lg transition-all cursor-pointer group bg-white">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center border border-gray-200 group-hover:border-primary/30 transition-colors">
+<span class="material-symbols-outlined text-text-dark text-2xl group-hover:text-primary-dark transition-colors">bolt</span>
+</div>
+<div>
+<h3 class="text-xl font-bold text-text-dark group-hover:text-primary-dark transition-colors">Operação Gamma Scale</h3>
+<p class="text-sm text-text-muted">ID: #OP-7712 • Status: <span class="text-amber-500 font-semibold">Pausada</span></p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right">
+<p class="text-xs text-text-muted uppercase tracking-wider mb-1">Lucro Total Op.</p>
+<p class="text-xl font-bold text-text-dark">R$ 15.400,00</p>
+</div>
+<div class="text-right">
+<p class="text-xs text-text-muted uppercase tracking-wider mb-1">Meu Lucro (15%)</p>
+<p class="text-xl font-bold text-gray-500">R$ 2.310,00</p>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-text-muted hover:text-text-dark transition-colors">
+<span class="material-symbols-outlined transform rotate-180">expand_less</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-gray-200">
+<p class="text-sm text-text-muted">Mostrando <span class="text-text-dark font-bold">3</span> de <span class="text-text-dark font-bold">12</span> operações</p>
+<div class="flex gap-2">
+<button class="px-4 py-2 text-sm text-text-muted hover:text-text-dark hover:bg-gray-100 rounded-lg transition-colors border border-transparent hover:border-gray-200">Anterior</button>
+<button class="px-4 py-2 text-sm text-primary-dark bg-primary/10 rounded-lg border border-primary/20 font-bold">1</button>
+<button class="px-4 py-2 text-sm text-text-muted hover:text-text-dark hover:bg-gray-100 rounded-lg transition-colors border border-transparent hover:border-gray-200">2</button>
+<button class="px-4 py-2 text-sm text-text-muted hover:text-text-dark hover:bg-gray-100 rounded-lg transition-colors border border-transparent hover:border-gray-200">3</button>
+<button class="px-4 py-2 text-sm text-text-muted hover:text-text-dark hover:bg-gray-100 rounded-lg transition-colors border border-transparent hover:border-gray-200">Próximo</button>
+</div>
+</div>
+</div>
+</main>
+
+</body></html>
