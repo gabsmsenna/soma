@@ -1,4 +1,4 @@
-import type { Creative } from "@prisma/client";
+import type { Creative, Operation } from "@prisma/client";
 import { Prisma } from "@prisma/client";
 import type { CreateCreativeDto, UpdateCreativeDto } from "@/dtos/creative.dto";
 import prisma from "@/lib/prisma";
@@ -6,17 +6,20 @@ import { problems } from "@/lib/problem-registry";
 
 export async function create(
   data: CreateCreativeDto & { operationId: string },
+  operation?: Operation,
 ): Promise<Creative> {
-  const operation = await prisma.operation.findUnique({
-    where: { id: data.operationId },
-  });
+  const op =
+    operation ??
+    (await prisma.operation.findUnique({
+      where: { id: data.operationId },
+    }));
 
-  if (!operation) {
+  if (!op) {
     throw problems.resourceNotFound("Operação não encontrada");
   }
 
   const totalProfit = data.totalProfit ?? new Prisma.Decimal("0");
-  const freelancerCutPercentage = operation.freelancerCutPercentage;
+  const freelancerCutPercentage = op.freelancerCutPercentage;
   const freelancerCut = totalProfit.mul(freelancerCutPercentage).div(100);
 
   return prisma.creative.create({
@@ -88,7 +91,7 @@ export async function deleteCreative(id: string): Promise<void> {
 export async function verifyOperationOwnership(
   operationId: string,
   userId: string,
-): Promise<void> {
+): Promise<Operation> {
   const operation = await prisma.operation.findFirst({
     where: {
       id: operationId,
@@ -99,4 +102,6 @@ export async function verifyOperationOwnership(
   if (!operation) {
     throw problems.resourceNotFound("Operação não encontrada");
   }
+
+  return operation;
 }

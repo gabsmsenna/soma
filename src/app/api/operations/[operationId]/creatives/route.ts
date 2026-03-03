@@ -48,7 +48,7 @@ export async function POST(request: Request, { params }: RouteContext) {
     const { operationId } = await params;
 
     const { userId } = await authenticate(request);
-    await verifyOperationOwnership(operationId, userId);
+    const operation = await verifyOperationOwnership(operationId, userId);
 
     const body = await request.json();
     const parsedData = createCreativeSchema.safeParse(body);
@@ -60,10 +60,13 @@ export async function POST(request: Request, { params }: RouteContext) {
       );
     }
 
-    const creative = await create({
-      ...parsedData.data,
-      operationId,
-    });
+    const creative = await create(
+      {
+        ...parsedData.data,
+        operationId,
+      },
+      operation,
+    );
     return NextResponse.json(creative, { status: 201 });
   } catch (error) {
     return handleError(error, request);
