@@ -17,7 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Soma — Gestão Freelancer",
-  description: "Gerencie suas operações, criativos e comissões como freelancer.",
+  description:
+    "Gerencie suas operações, criativos e comissões como freelancer.",
 };
 
 export default function RootLayout({
@@ -36,9 +37,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <TooltipProvider>
-            {children}
-          </TooltipProvider>
+          <TooltipProvider>{children}</TooltipProvider>
         </ThemeProvider>
       </body>
     </html>
