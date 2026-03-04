@@ -1,7 +1,6 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,13 +15,13 @@ import { Label } from "@/components/ui/label";
 
 interface OperationFormDialogProps {
   children?: React.ReactNode;
+  onCreated?: () => void;
 }
 
-export function OperationFormDialog({ children }: OperationFormDialogProps) {
+export function OperationFormDialog({ children, onCreated }: OperationFormDialogProps) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -48,7 +47,7 @@ export function OperationFormDialog({ children }: OperationFormDialogProps) {
         }
 
         setOpen(false);
-        router.refresh();
+        onCreated?.();
       } catch {
         setError("Erro ao criar operação. Tente novamente.");
       }

@@ -1,8 +1,11 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
 import {
-  Bell,
   ChevronLeft,
   ChevronRight,
   Edit,
+  Loader2,
   Plus,
   Search,
   Trash2,
@@ -11,115 +14,146 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { OperationFormDialog } from "./_components/operation-form-dialog";
 
-const operations = [
-  {
-    name: "Alpha Stream",
-    manager: "@AlexRiver",
-    commission: "15.5%",
-    commissionChange: "+2.4%",
-    profit: "+R$ 4.230",
-    profitPositive: true,
-    tags: ["UGC", "Paid Media"],
-    iconColor: "text-indigo-600",
-    hoverBorder: "hover:border-[#FFBB00]/50",
-    hoverShadow: "hover:shadow-[#FFBB00]/5",
-  },
-  {
-    name: "Beta Launch",
-    manager: "@JaneCreative",
-    commission: "12.0%",
-    commissionChange: "Stable",
-    profit: "-R$ 1.120",
-    profitPositive: false,
-    tags: ["Vertical Video", "Influencer"],
-    iconColor: "text-amber-500",
-    hoverBorder: "hover:border-orange-500/50",
-    hoverShadow: "hover:shadow-orange-500/5",
-  },
-  {
-    name: "Search Peak",
-    manager: "@KimSearch",
-    commission: "22.0%",
-    commissionChange: "+8.1%",
-    profit: "+R$ 9.880",
-    profitPositive: true,
-    tags: ["Display", "Search"],
-    iconColor: "text-emerald-600",
-    hoverBorder: "hover:border-[#FFBB00]/50",
-    hoverShadow: "hover:shadow-[#FFBB00]/5",
-  },
-  {
-    name: "Token Growth",
-    manager: "@MarcusDev",
-    commission: "18.2%",
-    commissionChange: "+1.5%",
-    profit: "+R$ 2.840",
-    profitPositive: true,
-    tags: ["Web3", "Social"],
-    iconColor: "text-purple-600",
-    hoverBorder: "hover:border-[#FFBB00]/50",
-    hoverShadow: "hover:shadow-[#FFBB00]/5",
-  },
-  {
-    name: "Viral Pulse",
-    manager: "@Sandi_V",
-    commission: "10.0%",
-    commissionChange: "-2.1%",
-    profit: "-R$ 840",
-    profitPositive: false,
-    tags: ["Reels", "TikTok"],
-    iconColor: "text-cyan-600",
-    hoverBorder: "hover:border-orange-500/50",
-    hoverShadow: "hover:shadow-orange-500/5",
-  },
-  {
-    name: "Market Flow",
-    manager: "@EcomExpert",
-    commission: "20.0%",
-    commissionChange: "+5.5%",
-    profit: "+R$ 12.300",
-    profitPositive: true,
-    tags: ["E-com", "Direct Response"],
-    iconColor: "text-orange-500",
-    hoverBorder: "hover:border-[#FFBB00]/50",
-    hoverShadow: "hover:shadow-[#FFBB00]/5",
-  },
+interface Creative {
+  id: string;
+  name: string;
+  totalProfit: string;
+  freelancerCut: string;
+  isActive: boolean;
+  isPaid: boolean;
+  paidAt: string | null;
+  operationId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Operation {
+  id: string;
+  name: string;
+  freelancerCutPercentage: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+  creatives: Creative[];
+}
+
+interface PaginationInfo {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+interface OperationsResponse {
+  data: Operation[];
+  pagination: PaginationInfo;
+}
+
+const ICON_COLORS = [
+  "text-indigo-600",
+  "text-amber-500",
+  "text-emerald-600",
+  "text-purple-600",
+  "text-cyan-600",
+  "text-orange-500",
+  "text-rose-500",
+  "text-teal-500",
 ];
 
-const recentActivity = [
-  {
-    id: "#OP-9482",
-    network: "Meta Network",
-    dotColor: "bg-blue-500",
-    lastSync: "2 mins ago",
-    volume: "$45,200.00",
-    health: "Optimal",
-    healthColor:
-      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200",
-  },
-  {
-    id: "#OP-9480",
-    network: "TikTok Ads",
-    dotColor: "bg-orange-500",
-    lastSync: "14 mins ago",
-    volume: "$12,840.44",
-    health: "Review",
-    healthColor:
-      "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200",
-  },
-];
+function getIconColor(index: number) {
+  return ICON_COLORS[index % ICON_COLORS.length];
+}
+
+function formatBRL(value: number): string {
+  return value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}
+
+function calcTotalProfit(creatives: Creative[]): number {
+  return creatives.reduce((sum, c) => sum + Number(c.totalProfit), 0);
+}
 
 export default function OperacoesPage() {
+  const [operations, setOperations] = useState<Operation[]>([]);
+  const [pagination, setPagination] = useState<PaginationInfo | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+
+  const fetchOperations = useCallback(async (p: number) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/operations?page=${p}&limit=10`);
+      if (res.ok) {
+        const json: OperationsResponse = await res.json();
+        setOperations(json.data);
+        setPagination(json.pagination);
+      }
+    } catch (err) {
+      console.error("Erro ao buscar operações:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchOperations(page);
+  }, [page, fetchOperations]);
+
+  function handlePageChange(newPage: number) {
+    if (newPage < 1 || (pagination && newPage > pagination.totalPages)) return;
+    setPage(newPage);
+  }
+
+  function handleOperationCreated() {
+    fetchOperations(page);
+  }
+
+  function renderPaginationButtons() {
+    if (!pagination || pagination.totalPages <= 1) return null;
+    const pages: (number | "...")[] = [];
+    const { totalPages } = pagination;
+
+    if (totalPages <= 5) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (page > 3) pages.push("...");
+      for (
+        let i = Math.max(2, page - 1);
+        i <= Math.min(totalPages - 1, page + 1);
+        i++
+      ) {
+        pages.push(i);
+      }
+      if (page < totalPages - 2) pages.push("...");
+      pages.push(totalPages);
+    }
+
+    return pages.map((p, idx) =>
+      p === "..." ? (
+        <span key={`dots-${idx}`} className="text-muted-foreground px-1">
+          ...
+        </span>
+      ) : (
+        <button
+          key={p}
+          type="button"
+          onClick={() => handlePageChange(p)}
+          className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold text-sm transition-all ${p === page
+            ? "bg-[#FFBB00] text-black shadow-md"
+            : "bg-card border hover:bg-muted"
+            }`}
+        >
+          {p}
+        </button>
+      ),
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
@@ -142,257 +176,149 @@ export default function OperacoesPage() {
               placeholder="Buscar operações..."
             />
           </div>
-          <button
-            type="button"
-            className="relative p-2.5 text-muted-foreground hover:bg-muted rounded-full transition-all"
-          >
-            <Bell className="h-5 w-5" />
-            <span className="absolute top-2 right-2 w-2 h-2 bg-orange-500 rounded-full border-2 border-background" />
-          </button>
         </div>
       </header>
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
-        {/* Filters */}
-        <div className="flex items-center justify-between">
-          <div className="flex gap-2">
-            <button
-              type="button"
-              className="px-5 py-2 bg-foreground text-background rounded-full text-xs font-semibold shadow-md"
-            >
-              Todas (86)
-            </button>
-            <button
-              type="button"
-              className="px-5 py-2 hover:bg-muted text-muted-foreground hover:text-foreground rounded-full text-xs font-semibold transition-colors"
-            >
-              Ativas
-            </button>
-            <button
-              type="button"
-              className="px-5 py-2 hover:bg-muted text-muted-foreground hover:text-foreground rounded-full text-xs font-semibold transition-colors"
-            >
-              Pausadas
-            </button>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground">Ordenar por:</span>
-            <button
-              type="button"
-              className="flex items-center gap-2 text-xs font-bold bg-card border px-4 py-2 rounded-lg hover:bg-muted transition-colors shadow-sm"
-            >
-              Margem de Lucro
-              <ChevronRight className="h-3 w-3 rotate-90" />
-            </button>
-          </div>
-        </div>
-
         {/* Operations Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
-          {operations.map((op) => (
-            <div
-              key={op.name}
-              className={`bg-muted/50 rounded-3xl p-6 border border-transparent ${op.hoverBorder} transition-all duration-300 shadow-sm hover:shadow-lg ${op.hoverShadow} group`}
-            >
-              <div className="flex justify-between items-start mb-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-card flex items-center justify-center border shadow-sm">
-                    <span className={`${op.iconColor} text-2xl font-bold`}>
-                      {op.name.charAt(0)}
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold group-hover:text-[#FFBB00] transition-colors">
-                      {op.name}
-                    </h3>
-                    <p className="text-xs text-muted-foreground">
-                      Gerenciado por {op.manager}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    className="p-2 hover:bg-card rounded-lg text-muted-foreground hover:text-foreground transition-all"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </button>
-                  <button
-                    type="button"
-                    className="p-2 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg text-muted-foreground hover:text-red-600 transition-all"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
+        {loading ? (
+          <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={`skeleton-${i}`}
+                className="bg-muted/50 rounded-3xl p-6 border animate-pulse min-h-[260px] flex items-center justify-center"
+              >
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
               </div>
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-card p-4 rounded-2xl border shadow-sm">
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-1">
-                    Porcentagem comissão
-                  </p>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-black">{op.commission}</span>
-                    <span
-                      className={`text-[10px] font-bold ${op.commissionChange.startsWith("+")
-                          ? "text-emerald-600"
-                          : op.commissionChange.startsWith("-")
-                            ? "text-red-500"
-                            : "text-muted-foreground"
-                        }`}
-                    >
-                      {op.commissionChange}
-                    </span>
-                  </div>
-                </div>
-                <div className="bg-card p-4 rounded-2xl border shadow-sm">
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-1">
-                    Lucro total recente
-                  </p>
-                  <span
-                    className={`text-lg font-bold ${op.profitPositive ? "" : "text-orange-500"}`}
-                  >
-                    {op.profit}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between mt-4">
-                <div className="flex -space-x-2">
-                  <div className="w-8 h-8 rounded-lg bg-muted border-2 border-card flex items-center justify-center text-[9px] font-bold text-muted-foreground">
-                    +{Math.floor(Math.random() * 20) + 3}
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  {op.tags.map((tag) => (
-                    <Badge
-                      key={tag}
-                      variant="outline"
-                      className="text-[10px] font-bold rounded-full"
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-
-          <OperationFormDialog>
-            <div className="border-2 border-dashed rounded-3xl p-6 flex flex-col items-center justify-center text-center group hover:border-[#FFBB00]/50 transition-all cursor-pointer bg-muted/20 min-h-[200px]">
-              <div className="h-16 w-16 bg-[#FFBB00]/10 text-[#FFBB00] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                <Plus className="h-8 w-8" />
-              </div>
-              <p className="font-bold mb-1">Nova Operação</p>
-              <p className="text-xs text-muted-foreground">
-                Adicione uma nova operação para começar a monitorar os lucros.
-              </p>
-            </div>
-          </OperationFormDialog>
-        </div>
-
-        {/* Pagination */}
-        <div className="flex justify-center items-center gap-2 py-4">
-          <button
-            type="button"
-            className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-xl text-xs font-bold transition-all"
-          >
-            <ChevronLeft className="h-3 w-3" /> Anterior
-          </button>
-          <div className="flex items-center gap-2 mx-4">
-            <button
-              type="button"
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#FFBB00] text-black font-bold text-sm shadow-md"
-            >
-              1
-            </button>
-            <button
-              type="button"
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-card border hover:bg-muted font-bold text-sm transition-all"
-            >
-              2
-            </button>
-            <button
-              type="button"
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-card border hover:bg-muted font-bold text-sm transition-all"
-            >
-              3
-            </button>
-            <span className="text-muted-foreground px-1">...</span>
-            <button
-              type="button"
-              className="w-10 h-10 flex items-center justify-center rounded-xl bg-card border hover:bg-muted font-bold text-sm transition-all"
-            >
-              14
-            </button>
+            ))}
           </div>
-          <button
-            type="button"
-            className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-xl text-xs font-bold transition-all"
-          >
-            Próximo <ChevronRight className="h-3 w-3" />
-          </button>
-        </div>
+        ) : (
+          <div className="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
+            {operations.map((op, idx) => {
+              const totalProfit = calcTotalProfit(op.creatives);
+              const activeCreatives = op.creatives.filter(
+                (c) => c.isActive,
+              ).length;
 
-        {/* Recent Activity Table */}
-        <div className="bg-card rounded-3xl border shadow-sm overflow-hidden">
-          <div className="p-6 border-b flex items-center justify-between bg-muted/50">
-            <h3 className="font-bold flex items-center gap-2">
-              <span className="text-[#FFBB00]">⏱</span>
-              Atividade Recente
-            </h3>
-            <button
-              type="button"
-              className="text-xs font-bold text-[#FFBB00] uppercase tracking-widest hover:underline"
-            >
-              Ver Todos
-            </button>
-          </div>
-          <Table>
-            <TableHeader>
-              <TableRow className="text-[10px] uppercase tracking-widest text-muted-foreground font-black">
-                <TableHead className="px-8">Operation ID</TableHead>
-                <TableHead className="px-8">Network</TableHead>
-                <TableHead className="px-8">Last Sync</TableHead>
-                <TableHead className="px-8 text-right">Volume</TableHead>
-                <TableHead className="px-8 text-center">Health</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentActivity.map((a) => (
-                <TableRow
-                  key={a.id}
-                  className="hover:bg-muted/50 transition-colors"
+              return (
+                <div
+                  key={op.id}
+                  className="bg-muted/50 rounded-3xl p-6 border border-transparent hover:border-[#FFBB00]/50 transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-[#FFBB00]/5 group"
                 >
-                  <TableCell className="px-8 py-5 text-sm font-medium">
-                    {a.id}
-                  </TableCell>
-                  <TableCell className="px-8 py-5">
-                    <div className="flex items-center gap-2">
-                      <div className={`w-2 h-2 rounded-full ${a.dotColor}`} />
-                      <span className="text-sm">{a.network}</span>
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 rounded-2xl bg-card flex items-center justify-center border shadow-sm">
+                        <span
+                          className={`${getIconColor(idx)} text-2xl font-bold`}
+                        >
+                          {op.name.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold group-hover:text-[#FFBB00] transition-colors">
+                          {op.name}
+                        </h3>
+                        <p className="text-xs text-muted-foreground">
+                          {op.creatives.length} criativo
+                          {op.creatives.length !== 1 ? "s" : ""}
+                        </p>
+                      </div>
                     </div>
-                  </TableCell>
-                  <TableCell className="px-8 py-5 text-sm text-muted-foreground">
-                    {a.lastSync}
-                  </TableCell>
-                  <TableCell className="px-8 py-5 text-sm font-bold text-right">
-                    {a.volume}
-                  </TableCell>
-                  <TableCell className="px-8 py-5">
-                    <div className="flex justify-center">
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        className="p-2 hover:bg-card rounded-lg text-muted-foreground hover:text-foreground transition-all"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </button>
+                      <button
+                        type="button"
+                        className="p-2 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg text-muted-foreground hover:text-red-600 transition-all"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="bg-card p-4 rounded-2xl border shadow-sm">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-1">
+                        Porcentagem comissão
+                      </p>
+                      <span className="text-2xl font-black">
+                        {op.freelancerCutPercentage}%
+                      </span>
+                    </div>
+                    <div className="bg-card p-4 rounded-2xl border shadow-sm">
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-1">
+                        Lucro total
+                      </p>
+                      <span className={`text-lg font-bold ${totalProfit > 0 ? "text-emerald-500" :
+                          totalProfit < 0 ? "text-orange-500" :
+                            ""
+                        }`}>
+                        {formatBRL(totalProfit)}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between mt-4">
+                    <div className="flex -space-x-2">
+                      <div className="w-8 h-8 rounded-lg bg-muted border-2 border-card flex items-center justify-center text-[9px] font-bold text-muted-foreground">
+                        +{op.creatives.length}
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
                       <Badge
                         variant="outline"
-                        className={`text-[10px] font-black uppercase border ${a.healthColor}`}
+                        className="text-[10px] font-bold rounded-full"
                       >
-                        {a.health}
+                        {activeCreatives} ativo
+                        {activeCreatives !== 1 ? "s" : ""}
                       </Badge>
                     </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            <OperationFormDialog onCreated={handleOperationCreated}>
+              <div className="border-2 border-dashed rounded-3xl p-6 flex flex-col items-center justify-center text-center group hover:border-[#FFBB00]/50 transition-all cursor-pointer bg-muted/20 min-h-[200px]">
+                <div className="h-16 w-16 bg-[#FFBB00]/10 text-[#FFBB00] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Plus className="h-8 w-8" />
+                </div>
+                <p className="font-bold mb-1">Nova Operação</p>
+                <p className="text-xs text-muted-foreground">
+                  Adicione uma nova operação para começar a monitorar os lucros.
+                </p>
+              </div>
+            </OperationFormDialog>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {pagination && pagination.totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 py-4">
+            <button
+              type="button"
+              onClick={() => handlePageChange(page - 1)}
+              disabled={page === 1}
+              className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-xl text-xs font-bold transition-all disabled:opacity-50"
+            >
+              <ChevronLeft className="h-3 w-3" /> Anterior
+            </button>
+            <div className="flex items-center gap-2 mx-4">
+              {renderPaginationButtons()}
+            </div>
+            <button
+              type="button"
+              onClick={() => handlePageChange(page + 1)}
+              disabled={page === pagination.totalPages}
+              className="flex items-center gap-2 px-4 py-2 bg-muted text-foreground rounded-xl text-xs font-bold transition-all disabled:opacity-50"
+            >
+              Próximo <ChevronRight className="h-3 w-3" />
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
