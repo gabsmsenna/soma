@@ -4,7 +4,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Edit,
-  Plus,
   Search,
   Trash2,
 } from "lucide-react";
@@ -20,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { OperationFormDialog } from "./_components/operation-form-dialog";
 
 const operations = [
   {
@@ -150,13 +150,7 @@ export default function OperacoesPage() {
             <span className="absolute top-2 right-2 w-2 h-2 bg-orange-500 rounded-full border-2 border-background" />
           </button>
           <Separator orientation="vertical" className="h-6" />
-          <button
-            type="button"
-            className="bg-[#FFBB00] hover:bg-yellow-400 text-black font-bold px-6 py-2.5 rounded-full text-sm flex items-center gap-2 transition-all shadow-lg shadow-[#FFBB00]/20 hover:-translate-y-0.5"
-          >
-            <Plus className="h-4 w-4 font-bold" />
-            Nova Operação
-          </button>
+          <OperationFormDialog />
         </div>
       </header>
 
