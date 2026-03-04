@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -12,31 +12,45 @@ import {
   YAxis,
 } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
+import type { CommissionsChartResponse } from "@/dtos/dashboard.dto";
 
-const weeklyData = [
-  { name: "Seg", total: 120 },
-  { name: "Ter", total: 180 },
-  { name: "Qua", total: 90 },
-  { name: "Qui", total: 200 },
-  { name: "Sex", total: 150 },
-  { name: "Sáb", total: 80 },
-  { name: "Dom", total: 50 },
-];
+function formatBRL(value: number): string {
+  return value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}
 
-const monthlyData = [
-  { name: "Jan", total: 100 },
-  { name: "Fev", total: 190 },
-  { name: "Mar", total: 150 },
-  { name: "Abr", total: 130 },
-  { name: "Mai", total: 80 },
-  { name: "Jun", total: 50 },
-  { name: "Jul", total: 240 },
-  { name: "Ago", total: 240 },
-];
+function formatLabel(dateStr: string, period: "weekly" | "monthly"): string {
+  const date = new Date(dateStr + "T00:00:00");
+  if (period === "weekly") {
+    return date.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" });
+  }
+  return date.toLocaleDateString("pt-BR", { month: "short", year: "2-digit" });
+}
 
 export function CommissionChart() {
   const [viewMode, setViewMode] = useState<"semanal" | "mensal">("semanal");
-  const data = viewMode === "semanal" ? weeklyData : monthlyData;
+  const [chartData, setChartData] = useState<CommissionsChartResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    const period = viewMode === "semanal" ? "weekly" : "monthly";
+
+    fetch(`/api/dashboard/commissions?period=${period}`)
+      .then((res) => res.json())
+      .then((json: CommissionsChartResponse) => setChartData(json))
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [viewMode]);
+
+  const data =
+    chartData?.data.map((d) => ({
+      name: formatLabel(d.label, chartData.period),
+      totalProfit: d.totalProfit,
+      myProfit: d.myProfit,
+    })) ?? [];
 
   return (
     <Card className="col-span-12 lg:col-span-8 backdrop-blur-sm">
@@ -52,100 +66,100 @@ export function CommissionChart() {
             <button
               type="button"
               onClick={() => setViewMode("semanal")}
-              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
-                viewMode === "semanal"
+              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${viewMode === "semanal"
                   ? "bg-[#FFBB00] text-black"
                   : "bg-muted text-muted-foreground"
-              }`}
+                }`}
             >
               Semanal
             </button>
             <button
               type="button"
               onClick={() => setViewMode("mensal")}
-              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
-                viewMode === "mensal"
+              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${viewMode === "mensal"
                   ? "bg-[#FFBB00] text-black"
                   : "bg-muted text-muted-foreground"
-              }`}
+                }`}
             >
               Mensal
             </button>
           </div>
         </div>
         <div className="h-[310px] w-full relative">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={data}
-              margin={{
-                top: 5,
-                right: 10,
-                left: 10,
-                bottom: 0,
-              }}
-            >
-              <defs>
-                <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#FFBB00" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#FFBB00" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                vertical={false}
-                stroke="hsl(var(--muted))"
-                strokeOpacity={0.3}
-              />
-              <XAxis
-                dataKey="name"
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={10}
-                tickLine={false}
-                axisLine={false}
-                tickMargin={10}
-                tickFormatter={(value) => value.toUpperCase()}
-                style={{
-                  fontWeight: "bold",
-                  letterSpacing: "0.1em",
-                  fill: "hsl(var(--muted-foreground))",
+          {loading ? (
+            <div className="flex items-center justify-center h-full">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : data.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-sm text-muted-foreground">
+                Nenhum dado de comissão disponível.
+              </p>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart
+                data={data}
+                margin={{
+                  top: 5,
+                  right: 10,
+                  left: 10,
+                  bottom: 0,
                 }}
-              />
-              <YAxis hide domain={["dataMin - 10", "dataMax + 10"]} />
-              <Tooltip
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    return (
-                      <div className="bg-card px-3 py-1.5 rounded-xl shadow-lg border flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-[#FFBB00]" />
-                        <span className="text-[10px] font-bold">
-                          R${" "}
-                          {((payload[0].value as number) * 35).toLocaleString(
-                            "pt-BR",
-                            { minimumFractionDigits: 2 },
-                          )}
-                        </span>
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
-              <Area
-                type="monotone"
-                dataKey="total"
-                stroke="#FFBB00"
-                strokeWidth={3}
-                fillOpacity={1}
-                fill="url(#colorTotal)"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-          <div className="absolute top-8 right-1/4 bg-card px-3 py-1.5 rounded-xl shadow-lg border flex items-center gap-2 pointer-events-none">
-            <span className="w-2 h-2 rounded-full bg-[#FFBB00]" />
-            <span className="text-[10px] font-bold">
-              R$ {viewMode === "semanal" ? "8.400,00" : "8.400,00"} Peak
-            </span>
-          </div>
+              >
+                <defs>
+                  <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#FFBB00" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#FFBB00" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="hsl(var(--muted))"
+                  strokeOpacity={0.3}
+                />
+                <XAxis
+                  dataKey="name"
+                  stroke="hsl(var(--muted-foreground))"
+                  fontSize={10}
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={10}
+                  tickFormatter={(value) => String(value).toUpperCase()}
+                  style={{
+                    fontWeight: "bold",
+                    letterSpacing: "0.1em",
+                    fill: "hsl(var(--muted-foreground))",
+                  }}
+                />
+                <YAxis hide domain={["dataMin - 10", "dataMax + 10"]} />
+                <Tooltip
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="bg-card px-3 py-1.5 rounded-xl shadow-lg border flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-[#FFBB00]" />
+                          <span className="text-[10px] font-bold">
+                            {formatBRL(payload[0].value as number)}
+                          </span>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="myProfit"
+                  stroke="#FFBB00"
+                  strokeWidth={3}
+                  fillOpacity={1}
+                  fill="url(#colorTotal)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </CardContent>
     </Card>

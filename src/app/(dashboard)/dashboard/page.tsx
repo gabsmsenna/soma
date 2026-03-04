@@ -3,7 +3,6 @@ import { DistributionChart } from "@/components/dashboard/distribution-chart";
 import { Header } from "@/components/dashboard/header";
 import { KpiGrid } from "@/components/dashboard/kpi-grid";
 import { MonthlyGoal } from "@/components/dashboard/monthly-goal";
-import { RecentCommissions } from "@/components/dashboard/recent-commissions";
 
 export default function DashboardPage() {
   return (
@@ -29,9 +28,6 @@ export default function DashboardPage() {
         <div className="grid grid-cols-12 gap-6">
           {/* Monthly Goal */}
           <MonthlyGoal />
-
-          {/* Recent Commissions */}
-          <RecentCommissions />
         </div>
       </div>
     </div>

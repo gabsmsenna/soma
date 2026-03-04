@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
@@ -71,6 +72,11 @@ const settingsNavItems = [
 export function AppSidebar() {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isDark = theme === "dark";
 
@@ -149,22 +155,39 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton
+                <div
+                  role="group"
+                  aria-label="Alternar tema"
+                  className="peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm cursor-pointer hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-[width,height,padding] h-8 [&>svg]:size-4 [&>svg]:shrink-0 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2!"
                   onClick={() => setTheme(isDark ? "light" : "dark")}
-                  tooltip={isDark ? "Modo Claro" : "Modo Escuro"}
                 >
-                  {isDark ? (
-                    <Sun className="h-4 w-4" />
+                  {mounted ? (
+                    isDark ? (
+                      <Sun className="h-4 w-4" />
+                    ) : (
+                      <Moon className="h-4 w-4" />
+                    )
                   ) : (
-                    <Moon className="h-4 w-4" />
+                    <Sun className="h-4 w-4" />
                   )}
-                  <span>{isDark ? "Modo Claro" : "Modo Escuro"}</span>
+                  <span>
+                    {mounted
+                      ? isDark
+                        ? "Modo Claro"
+                        : "Modo Escuro"
+                      : "Modo Claro"}
+                  </span>
                   <Switch
-                    checked={isDark}
+                    checked={mounted ? isDark : false}
                     className="ml-auto"
                     aria-label="Alternar tema"
+                    tabIndex={-1}
+                    onClick={(e) => e.stopPropagation()}
+                    onCheckedChange={(checked) =>
+                      setTheme(checked ? "dark" : "light")
+                    }
                   />
-                </SidebarMenuButton>
+                </div>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
