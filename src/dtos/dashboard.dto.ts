@@ -28,7 +28,7 @@ export interface MetricCard {
 
 export interface SummaryResponse {
     totalProfit: MetricCard;
-    activeProjects: MetricCard;
+    activeCreatives: MetricCard;
     myProfit: MetricCard;
 }
 

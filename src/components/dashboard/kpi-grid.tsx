@@ -60,14 +60,14 @@ export function KpiGrid() {
       iconColor: "text-orange-500",
     },
     {
-      label: "Projetos Ativos",
-      value: String(data.activeProjects.value),
+      label: "Criativos Ativos",
+      value: String(data.activeCreatives.value),
       change:
-        data.activeProjects.percentChange !== 0
-          ? `${data.activeProjects.percentChange >= 0 ? "+" : ""}${data.activeProjects.percentChange}%`
+        data.activeCreatives.percentChange !== 0
+          ? `${data.activeCreatives.percentChange >= 0 ? "+" : ""}${data.activeCreatives.percentChange}%`
           : "Ativos",
-      trend: data.activeProjects.trend,
-      subtitle: "Operações em andamento este mês",
+      trend: data.activeCreatives.trend,
+      subtitle: "Criativos em andamento este mês",
       iconBg: "bg-blue-500/20",
       iconColor: "text-blue-500",
     },
@@ -84,8 +84,8 @@ export function KpiGrid() {
               </div>
               <span
                 className={`text-xs font-bold flex items-center gap-1 ${kpi.trend === "up"
-                    ? "text-green-500"
-                    : "text-muted-foreground"
+                  ? "text-green-500"
+                  : "text-muted-foreground"
                   }`}
               >
                 {kpi.change}

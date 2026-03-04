@@ -29,51 +29,36 @@ model User {
 
 // 2. Operações (campanhas de cliente)
 model Operation {
-  id        String    @id @default(uuid())
-  name      String
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  projects  Project[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
-  @@map("operations")
-}
-
-// 3. Projetos (dentro de uma operação)
-model Project {
   id                      String     @id @default(uuid())
   name                    String
   freelancerCutPercentage Decimal    @db.Decimal(5, 2) @default(0)
-  isActive                Boolean    @default(true)
-  isPaid                  Boolean    @default(false)
-  paidAt                  DateTime?
-  operationId             String
-  operation               Operation  @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  userId                  String
+  user                    User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   creatives               Creative[]
   createdAt               DateTime   @default(now())
   updatedAt               DateTime   @updatedAt
 
-  @@map("projects")
+  @@map("operations")
 }
 
-// 4. Criativos / Anúncios (dentro de um projeto)
+// 3. Criativos / Anúncios (dentro de uma operação)
 model Creative {
   id            String    @id @default(uuid())
   name          String
   totalProfit   Decimal   @db.Decimal(10, 2)
   freelancerCut Decimal   @db.Decimal(10, 2)
+  isActive      Boolean   @default(true)
   isPaid        Boolean   @default(false)
   paidAt        DateTime?
-  projectId     String
-  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  operationId   String
+  operation     Operation @relation(fields: [operationId], references: [id], onDelete: Cascade)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
   @@map("creatives")
 }
 
-// 5. Meta mensal de lucro do freelancer
+// 4. Meta mensal de lucro do freelancer
 model MonthlyGoal {
   id        String   @id @default(uuid())
   amount    Decimal  @db.Decimal(10, 2)

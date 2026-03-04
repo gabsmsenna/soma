@@ -6,13 +6,14 @@ import z from "zod";
 import { AppError } from "@/lib/app-error";
 import { getServerSession } from "@/lib/session";
 import * as CreativeService from "@/services/creative.service";
+import { verifyOperationOwnership } from "@/services/operation.service";
 import { toCreativeViewModel } from "./_mappers";
 import type { ActionResult, CreativeViewModel } from "./_types";
 
 const createCreativeSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   totalProfit: z.number().positive("Lucro deve ser positivo"),
-  projectId: z.string().min(1, "Projeto é obrigatório"),
+  operationId: z.string().min(1, "Operação é obrigatória"),
 });
 
 const updateCreativeSchema = z.object({
@@ -45,7 +46,7 @@ function errorResult(error: unknown): ActionResult<never> {
 export async function createCreative(input: {
   name: string;
   totalProfit: number;
-  projectId: string;
+  operationId: string;
 }): Promise<ActionResult<CreativeViewModel>> {
   try {
     const session = await getServerSession();
@@ -72,15 +73,15 @@ export async function createCreative(input: {
       };
     }
 
-    await CreativeService.verifyProjectOwnership(
-      parsed.data.projectId,
+    await verifyOperationOwnership(
+      parsed.data.operationId,
       session.userId,
     );
 
     const created = await CreativeService.create({
       name: parsed.data.name,
       totalProfit: new Prisma.Decimal(parsed.data.totalProfit),
-      projectId: parsed.data.projectId,
+      operationId: parsed.data.operationId,
     });
 
     const full = await CreativeService.findById(created.id);
@@ -121,7 +122,7 @@ export async function updateCreative(
     }
 
     const existing = await CreativeService.findById(id);
-    if (existing.project.operation.userId !== session.userId) {
+    if (existing.operation.userId !== session.userId) {
       return {
         success: false,
         error: {
@@ -165,7 +166,7 @@ export async function deleteCreative(id: string): Promise<ActionResult<void>> {
     }
 
     const existing = await CreativeService.findById(id);
-    if (existing.project.operation.userId !== session.userId) {
+    if (existing.operation.userId !== session.userId) {
       return {
         success: false,
         error: {
@@ -201,7 +202,7 @@ export async function markAsPaid(
     }
 
     const existing = await CreativeService.findById(id);
-    if (existing.project.operation.userId !== session.userId) {
+    if (existing.operation.userId !== session.userId) {
       return {
         success: false,
         error: {

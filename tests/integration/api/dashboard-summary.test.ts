@@ -45,21 +45,15 @@ describe("Dashboard Summary API (GET /api/dashboard/summary)", () => {
     });
 
     it("deve retornar métricas com trend up quando mês atual > mês anterior", async () => {
-        // Setup: operação -> projeto -> criativos em meses diferentes
         const now = new Date();
         const currentMonth = new Date(now.getFullYear(), now.getMonth(), 15);
         const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 15);
 
         const operation = await prisma.operation.create({
-            data: { name: "Op Dashboard", userId: testUser.id },
-        });
-
-        const project = await prisma.project.create({
             data: {
-                name: "Projeto Dashboard",
+                name: "Op Dashboard",
+                userId: testUser.id,
                 freelancerCutPercentage: new Prisma.Decimal("10.00"),
-                isActive: true,
-                operationId: operation.id,
             },
         });
 
@@ -69,7 +63,8 @@ describe("Dashboard Summary API (GET /api/dashboard/summary)", () => {
                 name: "Criativo Anterior",
                 totalProfit: new Prisma.Decimal("1000.00"),
                 freelancerCut: new Prisma.Decimal("100.00"),
-                projectId: project.id,
+                isActive: true,
+                operationId: operation.id,
                 createdAt: lastMonth,
             },
         });
@@ -80,7 +75,8 @@ describe("Dashboard Summary API (GET /api/dashboard/summary)", () => {
                 name: "Criativo Atual",
                 totalProfit: new Prisma.Decimal("2000.00"),
                 freelancerCut: new Prisma.Decimal("200.00"),
-                projectId: project.id,
+                isActive: true,
+                operationId: operation.id,
                 createdAt: currentMonth,
             },
         });
@@ -108,8 +104,8 @@ describe("Dashboard Summary API (GET /api/dashboard/summary)", () => {
         expect(body.myProfit.percentChange).toBe(100);
         expect(body.myProfit.trend).toBe("up");
 
-        // activeProjects: 1 ativo nos dois meses → 0%
-        expect(body.activeProjects.value).toBe(1);
+        // activeCreatives: 2 ativos
+        expect(body.activeCreatives.value).toBe(2);
     });
 
     it("deve retornar trend down quando mês atual < mês anterior", async () => {
@@ -118,15 +114,10 @@ describe("Dashboard Summary API (GET /api/dashboard/summary)", () => {
         const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 15);
 
         const operation = await prisma.operation.create({
-            data: { name: "Op Down", userId: testUser.id },
-        });
-
-        const project = await prisma.project.create({
             data: {
-                name: "Projeto Down",
+                name: "Op Down",
+                userId: testUser.id,
                 freelancerCutPercentage: new Prisma.Decimal("10.00"),
-                isActive: true,
-                operationId: operation.id,
             },
         });
 
@@ -136,7 +127,8 @@ describe("Dashboard Summary API (GET /api/dashboard/summary)", () => {
                 name: "Criativo Anterior Grande",
                 totalProfit: new Prisma.Decimal("5000.00"),
                 freelancerCut: new Prisma.Decimal("500.00"),
-                projectId: project.id,
+                isActive: true,
+                operationId: operation.id,
                 createdAt: lastMonth,
             },
         });
@@ -147,7 +139,8 @@ describe("Dashboard Summary API (GET /api/dashboard/summary)", () => {
                 name: "Criativo Atual Menor",
                 totalProfit: new Prisma.Decimal("2000.00"),
                 freelancerCut: new Prisma.Decimal("200.00"),
-                projectId: project.id,
+                isActive: true,
+                operationId: operation.id,
                 createdAt: currentMonth,
             },
         });
@@ -192,7 +185,7 @@ describe("Dashboard Summary API (GET /api/dashboard/summary)", () => {
         expect(body.myProfit.percentChange).toBe(0);
         expect(body.myProfit.trend).toBe("down");
 
-        expect(body.activeProjects.value).toBe(0);
+        expect(body.activeCreatives.value).toBe(0);
     });
 
     it("deve retornar 401 sem token", async () => {

@@ -8,7 +8,6 @@ import { deleteCreative, markAsPaid } from "../actions";
 interface CreativeActionButtonsProps {
   creativeId: string;
   isPaid: boolean;
-  projectId: string;
   creativeName: string;
 }
 

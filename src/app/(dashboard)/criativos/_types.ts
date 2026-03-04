@@ -5,11 +5,9 @@ export interface CreativeViewModel {
   freelancerCutFormatted: string;
   totalProfit: string;
   freelancerCut: string;
+  isActive: boolean;
   isPaid: boolean;
   paidAt: string | null;
-  projectId: string;
-  projectName: string;
-  projectIsActive: boolean;
   operationId: string;
   operationName: string;
   createdAt: string;
@@ -34,6 +32,6 @@ export interface PaginationMeta {
 export type ActionResult<T = void> =
   | { success: true; data: T }
   | {
-      success: false;
-      error: { title: string; detail: string; status: number };
-    };
+    success: false;
+    error: { title: string; detail: string; status: number };
+  };

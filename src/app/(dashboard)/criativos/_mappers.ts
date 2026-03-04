@@ -1,8 +1,8 @@
-import type { Creative, Operation, Project } from "@prisma/client";
+import type { Creative, Operation } from "@prisma/client";
 import type { CreativeMetrics, CreativeViewModel } from "./_types";
 
 type CreativeWithRelations = Creative & {
-  project: Project & { operation: Operation };
+  operation: Operation;
 };
 
 function formatBRL(value: string | number): string {
@@ -22,13 +22,11 @@ export function toCreativeViewModel(
     freelancerCut: c.freelancerCut.toString(),
     totalProfitFormatted: formatBRL(c.totalProfit.toString()),
     freelancerCutFormatted: formatBRL(c.freelancerCut.toString()),
+    isActive: c.isActive,
     isPaid: c.isPaid,
     paidAt: c.paidAt ? c.paidAt.toISOString() : null,
-    projectId: c.projectId,
-    projectName: c.project.name,
-    projectIsActive: c.project.isActive,
-    operationId: c.project.operationId,
-    operationName: c.project.operation.name,
+    operationId: c.operationId,
+    operationName: c.operation.name,
     createdAt: c.createdAt.toISOString(),
     updatedAt: c.updatedAt.toISOString(),
   };
@@ -37,7 +35,7 @@ export function toCreativeViewModel(
 export function computeMetrics(
   creatives: CreativeViewModel[],
 ): CreativeMetrics {
-  const totalActive = creatives.filter((c) => c.projectIsActive).length;
+  const totalActive = creatives.filter((c) => c.isActive).length;
 
   const totalProfit = creatives.reduce(
     (sum, c) => sum + Number(c.totalProfit),

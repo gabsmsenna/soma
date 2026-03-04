@@ -33,7 +33,7 @@ describe("OperationService", () => {
   });
 
   describe("getAll", () => {
-    it("deve retornar todas as operações do usuário com projetos", async () => {
+    it("deve retornar todas as operações do usuário com criativos", async () => {
       const mockOperations = [
         {
           id: "op-1",
@@ -41,7 +41,7 @@ describe("OperationService", () => {
           userId,
           createdAt: new Date(),
           updatedAt: new Date(),
-          projects: [],
+          creatives: [],
         },
         {
           id: "op-2",
@@ -49,7 +49,7 @@ describe("OperationService", () => {
           userId,
           createdAt: new Date(),
           updatedAt: new Date(),
-          projects: [],
+          creatives: [],
         },
       ];
 
@@ -60,7 +60,7 @@ describe("OperationService", () => {
       expect(result).toEqual(mockOperations);
       expect(mockPrisma.operation.findMany).toHaveBeenCalledWith({
         where: { userId },
-        include: { projects: true },
+        include: { creatives: true },
       });
     });
   });
@@ -74,7 +74,7 @@ describe("OperationService", () => {
           userId,
           createdAt: new Date(),
           updatedAt: new Date(),
-          projects: [],
+          creatives: [],
         },
       ];
       const page = 1;
@@ -101,7 +101,7 @@ describe("OperationService", () => {
       });
       expect(mockPrisma.operation.findMany).toHaveBeenCalledWith({
         where: { userId },
-        include: { projects: true },
+        include: { creatives: true },
         skip: 0,
         take: limit,
         orderBy: { createdAt: "desc" },

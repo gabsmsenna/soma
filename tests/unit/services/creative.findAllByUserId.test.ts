@@ -23,35 +23,26 @@ const mockPrisma = prisma.default as unknown as ReturnType<
 
 describe("CreativeService.findAllByUserId", () => {
   const userId = "user-123";
-  const projectId = "project-456";
+  const operationId = "operation-456";
 
   const mockCreative = {
     id: "creative-1",
     name: "Test Creative",
-    projectId,
+    operationId,
     totalProfit: new Prisma.Decimal(1000),
     freelancerCut: new Prisma.Decimal(100),
+    isActive: true,
     isPaid: false,
     paidAt: null,
     createdAt: new Date(),
     updatedAt: new Date(),
-    project: {
-      id: projectId,
-      name: "Test Project",
+    operation: {
+      id: operationId,
+      name: "Test Operation",
       freelancerCutPercentage: new Prisma.Decimal(10),
-      isActive: true,
-      isPaid: false,
-      paidAt: null,
-      operationId: "op-1",
+      userId,
       createdAt: new Date(),
       updatedAt: new Date(),
-      operation: {
-        id: "op-1",
-        name: "Test Operation",
-        userId,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
     },
   };
 
@@ -73,8 +64,8 @@ describe("CreativeService.findAllByUserId", () => {
       totalPages: 1,
     });
     expect(mockPrisma.creative.findMany).toHaveBeenCalledWith({
-      where: { project: { operation: { userId } } },
-      include: { project: { include: { operation: true } } },
+      where: { operation: { userId } },
+      include: { operation: true },
       skip: 0,
       take: 12,
       orderBy: { createdAt: "desc" },
@@ -89,10 +80,10 @@ describe("CreativeService.findAllByUserId", () => {
 
     expect(mockPrisma.creative.findMany).toHaveBeenCalledWith({
       where: {
-        project: { operation: { userId } },
+        operation: { userId },
         name: { contains: "banner", mode: "insensitive" },
       },
-      include: { project: { include: { operation: true } } },
+      include: { operation: true },
       skip: 0,
       take: 12,
       orderBy: { createdAt: "desc" },

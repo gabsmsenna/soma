@@ -17,12 +17,16 @@ vi.mock("@/services/creative.service", () => ({
   findById: vi.fn(),
   update: vi.fn(),
   deleteCreative: vi.fn(),
-  verifyProjectOwnership: vi.fn(),
+}));
+
+// Mock operation service
+vi.mock("@/services/operation.service", () => ({
+  verifyOperationOwnership: vi.fn(),
 }));
 
 describe("criativos/actions", () => {
   const userId = "user-123";
-  const projectId = "project-456";
+  const operationId = "op-1";
   const creativeId = "creative-789";
 
   const mockSession = { userId, email: "test@test.com" };
@@ -30,30 +34,21 @@ describe("criativos/actions", () => {
   const mockCreativeFromDB = {
     id: creativeId,
     name: "Test Creative",
-    projectId,
+    operationId,
     totalProfit: new Prisma.Decimal(1000),
     freelancerCut: new Prisma.Decimal(100),
+    isActive: true,
     isPaid: false,
     paidAt: null,
     createdAt: new Date("2024-01-01"),
     updatedAt: new Date("2024-01-01"),
-    project: {
-      id: projectId,
-      name: "Test Project",
+    operation: {
+      id: operationId,
+      name: "Test Operation",
       freelancerCutPercentage: new Prisma.Decimal(10),
-      isActive: true,
-      isPaid: false,
-      paidAt: null,
-      operationId: "op-1",
+      userId,
       createdAt: new Date("2024-01-01"),
       updatedAt: new Date("2024-01-01"),
-      operation: {
-        id: "op-1",
-        name: "Test Operation",
-        userId,
-        createdAt: new Date("2024-01-01"),
-        updatedAt: new Date("2024-01-01"),
-      },
     },
   };
 
@@ -65,9 +60,12 @@ describe("criativos/actions", () => {
     it("returns success with CreativeViewModel on valid input", async () => {
       const { getServerSession } = await import("@/lib/session");
       const CreativeService = await import("@/services/creative.service");
+      const { verifyOperationOwnership } = await import(
+        "@/services/operation.service"
+      );
 
       vi.mocked(getServerSession).mockResolvedValue(mockSession);
-      vi.mocked(CreativeService.verifyProjectOwnership).mockResolvedValue();
+      vi.mocked(verifyOperationOwnership).mockResolvedValue();
       vi.mocked(CreativeService.create).mockResolvedValue(
         mockCreativeFromDB as any,
       );
@@ -79,7 +77,7 @@ describe("criativos/actions", () => {
       const result = await createCreative({
         name: "Test Creative",
         totalProfit: 1000,
-        projectId,
+        operationId,
       });
 
       expect(result.success).toBe(true);
@@ -97,7 +95,7 @@ describe("criativos/actions", () => {
       const result = await createCreative({
         name: "Test Creative",
         totalProfit: 1000,
-        projectId,
+        operationId,
       });
 
       expect(result.success).toBe(false);
@@ -114,7 +112,7 @@ describe("criativos/actions", () => {
       const result = await createCreative({
         name: "",
         totalProfit: -1,
-        projectId,
+        operationId,
       });
 
       expect(result.success).toBe(false);
@@ -162,12 +160,9 @@ describe("criativos/actions", () => {
 
       const otherUserCreative = {
         ...mockCreativeFromDB,
-        project: {
-          ...mockCreativeFromDB.project,
-          operation: {
-            ...mockCreativeFromDB.project.operation,
-            userId: "other-user",
-          },
+        operation: {
+          ...mockCreativeFromDB.operation,
+          userId: "other-user",
         },
       };
       vi.mocked(CreativeService.findById).mockResolvedValue(

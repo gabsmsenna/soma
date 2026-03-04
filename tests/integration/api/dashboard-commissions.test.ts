@@ -46,15 +46,10 @@ describe("Dashboard Commissions API (GET /api/dashboard/commissions)", () => {
 
     it("deve agrupar dados por mês corretamente", async () => {
         const operation = await prisma.operation.create({
-            data: { name: "Op Chart", userId: testUser.id },
-        });
-
-        const project = await prisma.project.create({
             data: {
-                name: "Projeto Chart",
+                name: "Op Chart",
+                userId: testUser.id,
                 freelancerCutPercentage: new Prisma.Decimal("10.00"),
-                isActive: true,
-                operationId: operation.id,
             },
         });
 
@@ -64,7 +59,7 @@ describe("Dashboard Commissions API (GET /api/dashboard/commissions)", () => {
                 name: "Jan Criativo",
                 totalProfit: new Prisma.Decimal("1000.00"),
                 freelancerCut: new Prisma.Decimal("100.00"),
-                projectId: project.id,
+                operationId: operation.id,
                 createdAt: new Date(2026, 0, 15), // Janeiro
             },
         });
@@ -74,7 +69,7 @@ describe("Dashboard Commissions API (GET /api/dashboard/commissions)", () => {
                 name: "Fev Criativo",
                 totalProfit: new Prisma.Decimal("2000.00"),
                 freelancerCut: new Prisma.Decimal("200.00"),
-                projectId: project.id,
+                operationId: operation.id,
                 createdAt: new Date(2026, 1, 15), // Fevereiro
             },
         });
@@ -102,15 +97,10 @@ describe("Dashboard Commissions API (GET /api/dashboard/commissions)", () => {
 
     it("deve agrupar dados por semana corretamente", async () => {
         const operation = await prisma.operation.create({
-            data: { name: "Op Weekly", userId: testUser.id },
-        });
-
-        const project = await prisma.project.create({
             data: {
-                name: "Projeto Weekly",
+                name: "Op Weekly",
+                userId: testUser.id,
                 freelancerCutPercentage: new Prisma.Decimal("10.00"),
-                isActive: true,
-                operationId: operation.id,
             },
         });
 
@@ -120,7 +110,7 @@ describe("Dashboard Commissions API (GET /api/dashboard/commissions)", () => {
                 name: "Semana 1",
                 totalProfit: new Prisma.Decimal("500.00"),
                 freelancerCut: new Prisma.Decimal("50.00"),
-                projectId: project.id,
+                operationId: operation.id,
                 createdAt: new Date(2026, 0, 5), // primeira semana Jan
             },
         });
@@ -130,7 +120,7 @@ describe("Dashboard Commissions API (GET /api/dashboard/commissions)", () => {
                 name: "Semana 2",
                 totalProfit: new Prisma.Decimal("800.00"),
                 freelancerCut: new Prisma.Decimal("80.00"),
-                projectId: project.id,
+                operationId: operation.id,
                 createdAt: new Date(2026, 0, 19), // terceira semana Jan
             },
         });

@@ -45,20 +45,14 @@ describe("Dashboard Ranking API (GET /api/dashboard/ranking)", () => {
     });
 
     it("deve retornar top 5 operações ordenadas por lucro DESC", async () => {
-        // Criar 6 operações com projetos e criativos com lucros diferentes
         const amounts = [500, 1000, 200, 3000, 800, 1500];
 
         for (let i = 0; i < amounts.length; i++) {
             const op = await prisma.operation.create({
-                data: { name: `Operação ${i + 1}`, userId: testUser.id },
-            });
-
-            const proj = await prisma.project.create({
                 data: {
-                    name: `Projeto ${i + 1}`,
+                    name: `Operação ${i + 1}`,
+                    userId: testUser.id,
                     freelancerCutPercentage: new Prisma.Decimal("10.00"),
-                    isActive: true,
-                    operationId: op.id,
                 },
             });
 
@@ -67,7 +61,7 @@ describe("Dashboard Ranking API (GET /api/dashboard/ranking)", () => {
                     name: `Criativo ${i + 1}`,
                     totalProfit: new Prisma.Decimal(`${amounts[i] * 10}.00`),
                     freelancerCut: new Prisma.Decimal(`${amounts[i]}.00`),
-                    projectId: proj.id,
+                    operationId: op.id,
                 },
             });
         }
@@ -104,15 +98,10 @@ describe("Dashboard Ranking API (GET /api/dashboard/ranking)", () => {
 
     it("deve retornar menos de 5 quando há poucas operações", async () => {
         const op = await prisma.operation.create({
-            data: { name: "Única Operação", userId: testUser.id },
-        });
-
-        const proj = await prisma.project.create({
             data: {
-                name: "Único Projeto",
+                name: "Única Operação",
+                userId: testUser.id,
                 freelancerCutPercentage: new Prisma.Decimal("10.00"),
-                isActive: true,
-                operationId: op.id,
             },
         });
 
@@ -121,7 +110,7 @@ describe("Dashboard Ranking API (GET /api/dashboard/ranking)", () => {
                 name: "Único Criativo",
                 totalProfit: new Prisma.Decimal("5000.00"),
                 freelancerCut: new Prisma.Decimal("500.00"),
-                projectId: proj.id,
+                operationId: op.id,
             },
         });
 

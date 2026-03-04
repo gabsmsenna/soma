@@ -48,12 +48,12 @@ export function CreativeFormDialog({
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
     const totalProfit = Number(formData.get("totalProfit"));
-    const projectId = formData.get("projectId") as string;
+    const operationId = formData.get("operationId") as string;
 
     startTransition(async () => {
       const result = isEdit
         ? await updateCreative(creative.id, { name, totalProfit })
-        : await createCreative({ name, totalProfit, projectId });
+        : await createCreative({ name, totalProfit, operationId });
 
       if (result.success) {
         setOpen(false);
@@ -106,11 +106,11 @@ export function CreativeFormDialog({
           </div>
           {!isEdit && (
             <div className="space-y-2">
-              <Label htmlFor="projectId">ID do Projeto</Label>
+              <Label htmlFor="operationId">ID da Operação</Label>
               <Input
-                id="projectId"
-                name="projectId"
-                placeholder="ID do projeto"
+                id="operationId"
+                name="operationId"
+                placeholder="ID da operação"
                 required
               />
             </div>

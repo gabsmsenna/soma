@@ -135,15 +135,10 @@ describe("Dashboard Goals API (/api/dashboard/goals)", () => {
 
             // Criar criativos no mês atual
             const operation = await prisma.operation.create({
-                data: { name: "Op Goals", userId: testUser.id },
-            });
-
-            const project = await prisma.project.create({
                 data: {
-                    name: "Projeto Goals",
+                    name: "Op Goals",
+                    userId: testUser.id,
                     freelancerCutPercentage: new Prisma.Decimal("10.00"),
-                    isActive: true,
-                    operationId: operation.id,
                 },
             });
 
@@ -152,7 +147,7 @@ describe("Dashboard Goals API (/api/dashboard/goals)", () => {
                     name: "Criativo Meta",
                     totalProfit: new Prisma.Decimal("50000.00"),
                     freelancerCut: new Prisma.Decimal("7500.00"),
-                    projectId: project.id,
+                    operationId: operation.id,
                     createdAt: currentMonth,
                 },
             });

@@ -40,7 +40,7 @@ export async function getSummary(userId: string): Promise<SummaryResponse> {
         new Date(now.getFullYear(), now.getMonth() - 1, 1),
     );
 
-    const userFilter = { project: { operation: { userId } } };
+    const userFilter = { operation: { userId } };
 
     // Aggregate current month
     const currentAgg = await prisma.creative.aggregate({
@@ -54,13 +54,13 @@ export async function getSummary(userId: string): Promise<SummaryResponse> {
         _sum: { totalProfit: true, freelancerCut: true },
     });
 
-    // Active projects count (current month)
-    const activeProjectsCurrent = await prisma.project.count({
+    // Active creatives count (current)
+    const activeCreativesCurrent = await prisma.creative.count({
         where: { operation: { userId }, isActive: true },
     });
 
-    // Active projects count (previous month — projects that existed and were active)
-    const activeProjectsPrev = await prisma.project.count({
+    // Active creatives count (previous month)
+    const activeCreativesPrev = await prisma.creative.count({
         where: {
             operation: { userId },
             isActive: true,
@@ -75,7 +75,7 @@ export async function getSummary(userId: string): Promise<SummaryResponse> {
 
     return {
         totalProfit: calcMetricCard(curTotal, prevTotal),
-        activeProjects: calcMetricCard(activeProjectsCurrent, activeProjectsPrev),
+        activeCreatives: calcMetricCard(activeCreativesCurrent, activeCreativesPrev),
         myProfit: calcMetricCard(curCut, prevCut),
     };
 }
@@ -97,8 +97,7 @@ export async function getCommissionsChart(
         COALESCE(SUM(c."totalProfit"), 0) AS total_profit,
         COALESCE(SUM(c."freelancerCut"), 0) AS my_profit
       FROM creatives c
-      JOIN projects p ON c."projectId" = p.id
-      JOIN operations o ON p."operationId" = o.id
+      JOIN operations o ON c."operationId" = o.id
       WHERE o."userId" = ${userId}
       GROUP BY DATE_TRUNC(${Prisma.raw(`'${truncUnit}'`)}, c."createdAt")
       ORDER BY DATE_TRUNC(${Prisma.raw(`'${truncUnit}'`)}, c."createdAt") ASC
@@ -127,8 +126,7 @@ export async function getTopOperations(
         o.name AS operation_name,
         COALESCE(SUM(c."freelancerCut"), 0) AS total_profit
       FROM creatives c
-      JOIN projects p ON c."projectId" = p.id
-      JOIN operations o ON p."operationId" = o.id
+      JOIN operations o ON c."operationId" = o.id
       WHERE o."userId" = ${userId}
       GROUP BY o.id, o.name
       ORDER BY total_profit DESC
@@ -177,7 +175,7 @@ export async function getGoal(
 
     const agg = await prisma.creative.aggregate({
         where: {
-            project: { operation: { userId } },
+            operation: { userId },
             createdAt: { gte: start, lt: end },
         },
         _sum: { freelancerCut: true },

@@ -7,7 +7,6 @@ import {
   mockPrismaCount,
   mockPrismaCreate,
   mockPrismaDelete,
-  mockPrismaFindFirst,
   mockPrismaFindMany,
   mockPrismaFindUnique,
   mockPrismaUpdate,
@@ -28,7 +27,7 @@ const mockPrisma = prisma.default as unknown as ReturnType<
 >;
 
 describe("CreativeService", () => {
-  const projectId = "project-123";
+  const operationId = "operation-123";
   const creativeId = "creative-456";
   const userId = "user-789";
 
@@ -41,17 +40,14 @@ describe("CreativeService", () => {
       const createData = {
         name: "Novo Criativo",
         totalProfit: new Prisma.Decimal(100),
-        projectId,
+        operationId,
       };
 
-      const mockProject = {
-        id: projectId,
-        name: "Projeto 1",
-        operationId: "op-1",
+      const mockOperation = {
+        id: operationId,
+        name: "Operação 1",
+        userId,
         freelancerCutPercentage: new Prisma.Decimal(10), // 10%
-        isActive: true,
-        isPaid: false,
-        paidAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -59,61 +55,63 @@ describe("CreativeService", () => {
       const mockCreatedCreative = {
         id: creativeId,
         name: "Novo Criativo",
-        projectId,
+        operationId,
         totalProfit: new Prisma.Decimal(100),
         freelancerCut: new Prisma.Decimal(10),
+        isActive: true,
         isPaid: false,
         paidAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
-      mockPrisma.project.findUnique = mockPrismaFindUnique(mockProject);
+      mockPrisma.operation.findUnique = mockPrismaFindUnique(mockOperation);
       mockPrisma.creative.create = mockPrismaCreate(mockCreatedCreative);
 
       const result = await CreativeService.create(createData);
 
       expect(result).toEqual(mockCreatedCreative);
-      expect(mockPrisma.project.findUnique).toHaveBeenCalledWith({
-        where: { id: projectId },
+      expect(mockPrisma.operation.findUnique).toHaveBeenCalledWith({
+        where: { id: operationId },
       });
       expect(mockPrisma.creative.create).toHaveBeenCalledWith({
         data: {
           name: createData.name,
           totalProfit: createData.totalProfit,
           freelancerCut: new Prisma.Decimal(10),
-          projectId: createData.projectId, // wait, data in creative.service: projectId data.projectId
+          operationId: createData.operationId,
         },
       });
     });
 
-    it("deve lançar erro se projeto não existir", async () => {
+    it("deve lançar erro se operação não existir", async () => {
       const createData = {
         name: "Novo Criativo",
         totalProfit: new Prisma.Decimal(100),
-        projectId,
+        operationId,
       };
-      mockPrisma.project.findUnique = mockPrismaFindUnique(null);
+      mockPrisma.operation.findUnique = mockPrismaFindUnique(null);
 
       await expect(CreativeService.create(createData)).rejects.toThrow(
-        problems.resourceNotFound("Projeto não encontrado"),
+        problems.resourceNotFound("Operação não encontrada"),
       );
     });
   });
 
   describe("findById", () => {
-    it("deve retornar um criativo por ID com projeto e operação", async () => {
+    it("deve retornar um criativo por ID com operação", async () => {
       const mockCreative = {
         id: creativeId,
         name: "Criativo 1",
-        projectId,
+        operationId,
         totalProfit: new Prisma.Decimal(100),
         freelancerCut: new Prisma.Decimal(10),
+        isActive: true,
         isPaid: false,
         paidAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
-        project: {} as any,
+        operation: {} as any,
       };
 
       mockPrisma.creative.findUnique = mockPrismaFindUnique(mockCreative);
@@ -123,7 +121,7 @@ describe("CreativeService", () => {
       expect(result).toEqual(mockCreative);
       expect(mockPrisma.creative.findUnique).toHaveBeenCalledWith({
         where: { id: creativeId },
-        include: { project: { include: { operation: true } } },
+        include: { operation: true },
       });
     });
 
@@ -136,15 +134,16 @@ describe("CreativeService", () => {
     });
   });
 
-  describe("findByProjectId", () => {
-    it("deve retornar criativos de um projeto", async () => {
+  describe("findByOperationId", () => {
+    it("deve retornar criativos de uma operação", async () => {
       const mockCreatives = [
         {
           id: creativeId,
           name: "Criativo 1",
-          projectId,
+          operationId,
           totalProfit: new Prisma.Decimal(100),
           freelancerCut: new Prisma.Decimal(10),
+          isActive: true,
           isPaid: false,
           paidAt: null,
           createdAt: new Date(),
@@ -154,25 +153,26 @@ describe("CreativeService", () => {
 
       mockPrisma.creative.findMany = mockPrismaFindMany(mockCreatives);
 
-      const result = await CreativeService.findByProjectId(projectId);
+      const result = await CreativeService.findByOperationId(operationId);
 
       expect(result).toEqual(mockCreatives);
       expect(mockPrisma.creative.findMany).toHaveBeenCalledWith({
-        where: { projectId },
+        where: { operationId },
         orderBy: { createdAt: "desc" },
       });
     });
   });
 
-  describe("findByProjectIdPaginated", () => {
+  describe("findByOperationIdPaginated", () => {
     it("deve retornar criativos paginados", async () => {
       const mockCreatives = [
         {
           id: creativeId,
           name: "Criativo 1",
-          projectId,
+          operationId,
           totalProfit: new Prisma.Decimal(100),
           freelancerCut: new Prisma.Decimal(10),
+          isActive: true,
           isPaid: false,
           paidAt: null,
           createdAt: new Date(),
@@ -186,8 +186,8 @@ describe("CreativeService", () => {
       mockPrisma.creative.findMany = mockPrismaFindMany(mockCreatives);
       mockPrisma.creative.count = mockPrismaCount(total);
 
-      const result = await CreativeService.findByProjectIdPaginated(
-        projectId,
+      const result = await CreativeService.findByOperationIdPaginated(
+        operationId,
         page,
         limit,
       );
@@ -202,13 +202,13 @@ describe("CreativeService", () => {
         },
       });
       expect(mockPrisma.creative.findMany).toHaveBeenCalledWith({
-        where: { projectId },
+        where: { operationId },
         skip: 0,
         take: limit,
         orderBy: { createdAt: "desc" },
       });
       expect(mockPrisma.creative.count).toHaveBeenCalledWith({
-        where: { projectId },
+        where: { operationId },
       });
     });
   });
@@ -223,9 +223,10 @@ describe("CreativeService", () => {
       const mockUpdatedCreative = {
         id: creativeId,
         name: "Criativo Atualizado",
-        projectId,
+        operationId,
         totalProfit: new Prisma.Decimal(200),
         freelancerCut: new Prisma.Decimal(20),
+        isActive: true,
         isPaid: false,
         paidAt: null,
         createdAt: new Date(),
@@ -253,36 +254,6 @@ describe("CreativeService", () => {
       expect(mockPrisma.creative.delete).toHaveBeenCalledWith({
         where: { id: creativeId },
       });
-    });
-  });
-
-  describe("verifyProjectOwnership", () => {
-    it("deve verificar se projeto pertence à operação do usuário", async () => {
-      const mockProject = {
-        id: projectId,
-      };
-
-      mockPrisma.project.findFirst = mockPrismaFindFirst(mockProject);
-
-      await expect(
-        CreativeService.verifyProjectOwnership(projectId, userId),
-      ).resolves.toBeUndefined();
-
-      expect(mockPrisma.project.findFirst).toHaveBeenCalledWith({
-        where: {
-          id: projectId,
-          operation: { userId },
-        },
-        include: { operation: true },
-      });
-    });
-
-    it("deve lançar erro se projeto não pertence ou não for encontrado", async () => {
-      mockPrisma.project.findFirst = mockPrismaFindFirst(null);
-
-      await expect(
-        CreativeService.verifyProjectOwnership(projectId, userId),
-      ).rejects.toThrow(problems.resourceNotFound("Projeto não encontrado"));
     });
   });
 });
