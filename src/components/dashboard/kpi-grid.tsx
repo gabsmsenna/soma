@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowDownRight, ArrowUpRight, Loader2, TrendingUp } from "lucide-react";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  Loader2,
+  TrendingUp,
+} from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { SummaryResponse } from "@/dtos/dashboard.dto";
 
@@ -83,10 +88,11 @@ export function KpiGrid() {
                 <TrendingUp className={`h-5 w-5 ${kpi.iconColor}`} />
               </div>
               <span
-                className={`text-xs font-bold flex items-center gap-1 ${kpi.trend === "up"
-                  ? "text-green-500"
-                  : "text-muted-foreground"
-                  }`}
+                className={`text-xs font-bold flex items-center gap-1 ${
+                  kpi.trend === "up"
+                    ? "text-green-500"
+                    : "text-muted-foreground"
+                }`}
               >
                 {kpi.change}
                 {kpi.trend === "up" ? (

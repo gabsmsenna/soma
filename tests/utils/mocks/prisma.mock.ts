@@ -3,13 +3,13 @@ import { vi } from "vitest";
 
 export type MockPrismaClient = {
   [K in keyof PrismaClient]: PrismaClient[K] extends object
-  ? {
-    // biome-ignore lint/complexity/noBannedTypes: Prisma client methods are functions
-    [M in keyof PrismaClient[K]]: PrismaClient[K][M] extends Function
-    ? ReturnType<typeof vi.fn>
-    : PrismaClient[K][M];
-  }
-  : PrismaClient[K];
+    ? {
+        // biome-ignore lint/complexity/noBannedTypes: Prisma client methods are functions
+        [M in keyof PrismaClient[K]]: PrismaClient[K][M] extends Function
+          ? ReturnType<typeof vi.fn>
+          : PrismaClient[K][M];
+      }
+    : PrismaClient[K];
 };
 
 export function createMockPrismaClient(): MockPrismaClient {

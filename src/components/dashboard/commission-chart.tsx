@@ -33,7 +33,9 @@ function formatLabel(dateStr: string, period: "weekly" | "monthly"): string {
 
 export function CommissionChart() {
   const [viewMode, setViewMode] = useState<"semanal" | "mensal">("semanal");
-  const [chartData, setChartData] = useState<CommissionsChartResponse | null>(null);
+  const [chartData, setChartData] = useState<CommissionsChartResponse | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

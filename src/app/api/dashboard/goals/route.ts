@@ -6,39 +6,39 @@ import { handleError } from "@/lib/error-handler";
 import { getGoal, upsertGoal } from "@/services/dashboard.service";
 
 export async function GET(request: Request) {
-    try {
-        const { userId } = await authenticate(request);
-        const now = new Date();
-        const result = await getGoal(userId, now.getMonth() + 1, now.getFullYear());
-        return NextResponse.json(result);
-    } catch (error) {
-        return handleError(error, request);
-    }
+  try {
+    const { userId } = await authenticate(request);
+    const now = new Date();
+    const result = await getGoal(userId, now.getMonth() + 1, now.getFullYear());
+    return NextResponse.json(result);
+  } catch (error) {
+    return handleError(error, request);
+  }
 }
 
 export async function POST(request: Request) {
-    try {
-        const { userId } = await authenticate(request);
-        const body = await request.json();
+  try {
+    const { userId } = await authenticate(request);
+    const body = await request.json();
 
-        const parsed = monthlyGoalSchema.safeParse(body);
-        if (!parsed.success) {
-            return NextResponse.json(
-                { error: "Dados inválidos", details: z.treeifyError(parsed.error) },
-                { status: 400 },
-            );
-        }
-
-        const now = new Date();
-        const goal = await upsertGoal(
-            userId,
-            now.getMonth() + 1,
-            now.getFullYear(),
-            parsed.data.amount,
-        );
-
-        return NextResponse.json(goal);
-    } catch (error) {
-        return handleError(error, request);
+    const parsed = monthlyGoalSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Dados inválidos", details: z.treeifyError(parsed.error) },
+        { status: 400 },
+      );
     }
+
+    const now = new Date();
+    const goal = await upsertGoal(
+      userId,
+      now.getMonth() + 1,
+      now.getFullYear(),
+      parsed.data.amount,
+    );
+
+    return NextResponse.json(goal);
+  } catch (error) {
+    return handleError(error, request);
+  }
 }

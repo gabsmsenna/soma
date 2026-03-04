@@ -98,9 +98,7 @@ export function DistributionChart() {
                   className="flex items-center justify-between"
                 >
                   <div className="flex items-center gap-3">
-                    <span
-                      className={`w-3 h-3 rounded-full ${d.colorClass}`}
-                    />
+                    <span className={`w-3 h-3 rounded-full ${d.colorClass}`} />
                     <span className="text-sm font-medium truncate max-w-[120px]">
                       {d.label}
                     </span>

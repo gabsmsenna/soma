@@ -73,10 +73,7 @@ export async function createCreative(input: {
       };
     }
 
-    await verifyOperationOwnership(
-      parsed.data.operationId,
-      session.userId,
-    );
+    await verifyOperationOwnership(parsed.data.operationId, session.userId);
 
     const created = await CreativeService.create({
       name: parsed.data.name,

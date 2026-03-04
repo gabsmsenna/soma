@@ -111,12 +111,7 @@ function RegisterForm() {
 
   async function onSubmit(data: RegisterDto) {
     try {
-      await registerUser(
-        data.name,
-        data.email,
-        data.password,
-        data.cpf,
-      );
+      await registerUser(data.name, data.email, data.password, data.cpf);
       router.push("/dashboard");
     } catch (err: unknown) {
       const problem = err as { detail?: string };

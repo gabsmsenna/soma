@@ -9,8 +9,9 @@ interface CreativeCardProps {
 export function CreativeCard({ creative }: CreativeCardProps) {
   return (
     <div
-      className={`bg-card/50 dark:bg-card/30 backdrop-blur-sm border rounded-2xl p-5 flex flex-col group hover:border-[#FFBB00]/50 transition-all duration-300 ${!creative.isActive ? "opacity-70" : ""
-        }`}
+      className={`bg-card/50 dark:bg-card/30 backdrop-blur-sm border rounded-2xl p-5 flex flex-col group hover:border-[#FFBB00]/50 transition-all duration-300 ${
+        !creative.isActive ? "opacity-70" : ""
+      }`}
     >
       <div className="flex justify-between items-start mb-4">
         <div className="h-10 w-10 bg-[#FFBB00]/20 text-[#FFBB00] rounded-lg flex items-center justify-center">
@@ -21,12 +22,14 @@ export function CreativeCard({ creative }: CreativeCardProps) {
             {creative.isActive ? "Ativo" : "Inativo"}
           </span>
           <div
-            className={`w-10 h-5 ${creative.isActive ? "bg-[#FFBB00]" : "bg-muted"
-              } rounded-full relative shadow-inner`}
+            className={`w-10 h-5 ${
+              creative.isActive ? "bg-[#FFBB00]" : "bg-muted"
+            } rounded-full relative shadow-inner`}
           >
             <div
-              className={`absolute top-1 w-3 h-3 bg-white rounded-full ${creative.isActive ? "right-1" : "left-1"
-                }`}
+              className={`absolute top-1 w-3 h-3 bg-white rounded-full ${
+                creative.isActive ? "right-1" : "left-1"
+              }`}
             />
           </div>
         </div>
@@ -54,10 +57,11 @@ export function CreativeCard({ creative }: CreativeCardProps) {
           <span className="text-muted-foreground">Pago?</span>
           <Badge
             variant="outline"
-            className={`text-xs font-bold ${creative.isPaid
+            className={`text-xs font-bold ${
+              creative.isPaid
                 ? "bg-green-500/10 text-green-500 border-green-500/20"
                 : "bg-[#FFBB00]/10 text-[#FFBB00] border-[#FFBB00]/20"
-              }`}
+            }`}
           >
             {creative.isPaid ? "SIM" : "PENDENTE"}
           </Badge>
