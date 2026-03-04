@@ -89,7 +89,7 @@ export function AppSidebar() {
           </div>
           <div>
             <h1 className="text-lg font-bold tracking-tight uppercase">Soma</h1>
-            <p className="text-xs text-muted-foreground">Micro SaaS</p>
+            <p className="text-xs text-muted-foreground">Gestão de Freelancing</p>
           </div>
         </div>
       </SidebarHeader>
