@@ -31,7 +31,9 @@ function formatLabel(dateStr: string, period: "weekly" | "monthly"): string {
 
 export function CommissionChart() {
   const [viewMode, setViewMode] = useState<"semanal" | "mensal">("semanal");
-  const [chartData, setChartData] = useState<CommissionsChartResponse | null>(null);
+  const [chartData, setChartData] = useState<CommissionsChartResponse | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -66,20 +68,22 @@ export function CommissionChart() {
             <button
               type="button"
               onClick={() => setViewMode("semanal")}
-              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${viewMode === "semanal"
+              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
+                viewMode === "semanal"
                   ? "bg-[#FFBB00] text-black"
                   : "bg-muted text-muted-foreground"
-                }`}
+              }`}
             >
               Semanal
             </button>
             <button
               type="button"
               onClick={() => setViewMode("mensal")}
-              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${viewMode === "mensal"
+              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
+                viewMode === "mensal"
                   ? "bg-[#FFBB00] text-black"
                   : "bg-muted text-muted-foreground"
-                }`}
+              }`}
             >
               Mensal
             </button>

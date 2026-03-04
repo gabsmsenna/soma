@@ -11,6 +11,7 @@
     "format": "biome format --write",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
+    "db:update": "prisma generate && prisma db push",
     "db:migrate": "prisma migrate dev --name init",
     "db:studio": "prisma studio",
     "test": "vitest",
