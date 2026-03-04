@@ -84,12 +84,16 @@ export async function findAllByUserId(
   page: number,
   limit: number,
   search?: string,
+  status: string = "active",
+  operation: string = "all"
 ) {
-  const where = {
+  const where: Prisma.CreativeWhereInput = {
     operation: { userId },
     ...(search
       ? { name: { contains: search, mode: "insensitive" as const } }
       : {}),
+    ...(status === "active" ? { isActive: true } : status === "inactive" ? { isActive: false } : {}),
+    ...(operation !== "all" && operation ? { operationId: operation } : {}),
   };
 
   const [data, total] = await Promise.all([

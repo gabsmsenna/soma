@@ -11,7 +11,7 @@ import { computeMetrics, toCreativeViewModel } from "./_mappers";
 const PAGE_LIMIT = 12;
 
 interface CriativosPageProps {
-  searchParams: Promise<{ page?: string; search?: string }>;
+  searchParams: Promise<{ page?: string; search?: string; status?: string; operation?: string }>;
 }
 
 export default async function CriativosPage({
@@ -20,7 +20,7 @@ export default async function CriativosPage({
   const session = await getServerSession();
   if (!session) redirect("/login");
 
-  const { page: pageParam, search } = await searchParams;
+  const { page: pageParam, search, status, operation } = await searchParams;
   const page = Math.max(1, Number(pageParam ?? 1));
 
   const { data, pagination } = await findAllByUserId(
@@ -28,6 +28,8 @@ export default async function CriativosPage({
     page,
     PAGE_LIMIT,
     search,
+    status,
+    operation
   );
 
   const creatives = data.map(toCreativeViewModel);
