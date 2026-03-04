@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   ChevronLeft,
   ChevronRight,
@@ -9,6 +10,7 @@ import {
   Plus,
   Search,
   Trash2,
+  ArchiveX,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -38,6 +40,7 @@ interface Operation {
   userId: string;
   createdAt: string;
   updatedAt: string;
+  active: boolean;
   creatives: Creative[];
 }
 
@@ -80,6 +83,14 @@ function calcTotalProfit(creatives: Creative[]): number {
 }
 
 export default function OperacoesPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const searchParam = searchParams.get("search") || "";
+  const statusParam = searchParams.get("status") || "active";
+  const [searchValue, setSearchValue] = useState(searchParam);
+
   const [operations, setOperations] = useState<Operation[]>([]);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -92,10 +103,19 @@ export default function OperacoesPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [operationToDelete, setOperationToDelete] = useState<Operation | null>(null);
 
-  const fetchOperations = useCallback(async (p: number) => {
+  const fetchOperations = useCallback(async (p: number, search?: string, status?: string) => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/operations?page=${p}&limit=10`);
+      const url = new URL("/api/operations", window.location.origin);
+      url.searchParams.set("page", String(p));
+      url.searchParams.set("limit", "10");
+      if (search) {
+        url.searchParams.set("search", search);
+      }
+      if (status) {
+        url.searchParams.set("status", status);
+      }
+      const res = await fetch(url.toString());
       if (res.ok) {
         const json: OperationsResponse = await res.json();
         setOperations(json.data);
@@ -109,8 +129,28 @@ export default function OperacoesPage() {
   }, []);
 
   useEffect(() => {
-    fetchOperations(page);
-  }, [page, fetchOperations]);
+    setSearchValue(searchParam);
+  }, [searchParam]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchValue !== searchParam) {
+        const params = new URLSearchParams(searchParams.toString());
+        if (searchValue) {
+          params.set("search", searchValue);
+        } else {
+          params.delete("search");
+        }
+        params.set("page", "1");
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchValue, searchParam, searchParams, pathname, router]);
+
+  useEffect(() => {
+    fetchOperations(page, searchParam, statusParam);
+  }, [page, searchParam, statusParam, fetchOperations]);
 
   function handlePageChange(newPage: number) {
     if (newPage < 1 || (pagination && newPage > pagination.totalPages)) return;
@@ -118,11 +158,11 @@ export default function OperacoesPage() {
   }
 
   function handleOperationCreated() {
-    fetchOperations(page);
+    fetchOperations(page, searchParam, statusParam);
   }
 
   function handleOperationUpdated() {
-    fetchOperations(page);
+    fetchOperations(page, searchParam, statusParam);
   }
 
   function handleEditClick(op: Operation) {
@@ -146,7 +186,7 @@ export default function OperacoesPage() {
         toast.success("Operação excluída", {
           description: `A operação "${operationToDelete.name}" foi removida com sucesso.`,
         });
-        fetchOperations(page);
+        fetchOperations(page, searchParam, statusParam);
       } else {
         const data = await res.json();
         toast.error("Erro ao excluir", {
@@ -220,11 +260,32 @@ export default function OperacoesPage() {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => {
+              const params = new URLSearchParams(searchParams.toString());
+              if (statusParam === "active") {
+                params.set("status", "inactive");
+              } else {
+                params.delete("status");
+              }
+              params.set("page", "1");
+              router.push(`${pathname}?${params.toString()}`, { scroll: false });
+            }}
+            className={`text-xs font-medium px-4 py-1.5 rounded-full border transition-all whitespace-nowrap hidden md:block ${statusParam === "inactive"
+              ? "bg-[#FFBB00] text-black border-[#FFBB00] shadow-sm"
+              : "bg-transparent text-muted-foreground border-border hover:bg-muted focus:ring-2 focus:ring-[#FFBB00]"
+              }`}
+          >
+            {statusParam === "inactive" ? "Ocultar Inativas" : "Mostrar Inativas"}
+          </button>
           <div className="relative hidden md:flex items-center gap-3 bg-muted border rounded-full pl-4 pr-2 py-1.5">
             <Search className="text-muted-foreground h-4 w-4" />
             <Input
               className="bg-transparent border-none text-xs focus-visible:ring-0 w-48 h-6 p-0"
               placeholder="Buscar operações..."
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
             />
           </div>
         </div>
@@ -267,8 +328,14 @@ export default function OperacoesPage() {
                         </span>
                       </div>
                       <div>
-                        <h3 className="text-lg font-bold group-hover:text-[#FFBB00] transition-colors">
+                        <h3 className="text-lg font-bold group-hover:text-[#FFBB00] transition-colors flex items-center gap-2">
                           {op.name}
+                          {!op.active && (
+                            <Badge variant="secondary" className="text-[10px] h-5 px-1.5 flex items-center gap-1 opacity-80 cursor-default" title="Operação Inativa">
+                              <ArchiveX className="w-3 h-3" />
+                              <span className="hidden sm:inline">Inativa</span>
+                            </Badge>
+                          )}
                         </h3>
                         <p className="text-xs text-muted-foreground">
                           {op.creatives.length} criativo

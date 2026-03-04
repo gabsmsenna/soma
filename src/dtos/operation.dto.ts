@@ -31,6 +31,9 @@ export type UpdateOperationDto = z.infer<typeof updateOperationSchema>;
 export const paginationSchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(10),
+  search: z.string().optional(),
+  status: z.enum(["active", "inactive", "all"]).default("active"),
+  operation: z.string().optional(),
 });
 
 export type PaginationDto = z.infer<typeof paginationSchema>;

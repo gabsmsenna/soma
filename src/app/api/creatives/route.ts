@@ -13,6 +13,9 @@ export async function GET(request: Request) {
     const queryParams = {
       page: searchParams.get("page") ?? undefined,
       limit: searchParams.get("limit") ?? undefined,
+      search: searchParams.get("search") ?? undefined,
+      status: searchParams.get("status") ?? undefined,
+      operation: searchParams.get("operation") ?? undefined,
     };
     const parsedParams = paginationSchema.safeParse(queryParams);
 
@@ -26,10 +29,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const { page, limit } = parsedParams.data;
-    const search = searchParams.get("search") ?? undefined;
-    const status = searchParams.get("status") ?? "active";
-    const operation = searchParams.get("operation") ?? "all";
+    const { page, limit, search, status, operation } = parsedParams.data;
 
     const result = await findAllByUserId(
       userId,
