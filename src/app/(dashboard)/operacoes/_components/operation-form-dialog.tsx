@@ -14,7 +14,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function OperationFormDialog() {
+interface OperationFormDialogProps {
+  children?: React.ReactNode;
+}
+
+export function OperationFormDialog({ children }: OperationFormDialogProps) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -54,13 +58,15 @@ export function OperationFormDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button
-          type="button"
-          className="bg-[#FFBB00] hover:bg-yellow-400 text-black font-bold px-6 py-2.5 rounded-full text-sm flex items-center gap-2 transition-all shadow-lg shadow-[#FFBB00]/20 hover:-translate-y-0.5"
-        >
-          <Plus className="h-4 w-4 font-bold" />
-          Nova Operação
-        </button>
+        {children ?? (
+          <button
+            type="button"
+            className="bg-[#FFBB00] hover:bg-yellow-400 text-black font-bold px-6 py-2.5 rounded-full text-sm flex items-center gap-2 transition-all shadow-lg shadow-[#FFBB00]/20 hover:-translate-y-0.5"
+          >
+            <Plus className="h-4 w-4 font-bold" />
+            Nova Operação
+          </button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

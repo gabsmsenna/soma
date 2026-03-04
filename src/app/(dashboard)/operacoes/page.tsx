@@ -1,9 +1,9 @@
 import {
-  ArrowUpRight,
   Bell,
   ChevronLeft,
   ChevronRight,
   Edit,
+  Plus,
   Search,
   Trash2,
 } from "lucide-react";
@@ -149,8 +149,6 @@ export default function OperacoesPage() {
             <Bell className="h-5 w-5" />
             <span className="absolute top-2 right-2 w-2 h-2 bg-orange-500 rounded-full border-2 border-background" />
           </button>
-          <Separator orientation="vertical" className="h-6" />
-          <OperationFormDialog />
         </div>
       </header>
 
@@ -236,13 +234,12 @@ export default function OperacoesPage() {
                   <div className="flex items-baseline gap-2">
                     <span className="text-2xl font-black">{op.commission}</span>
                     <span
-                      className={`text-[10px] font-bold ${
-                        op.commissionChange.startsWith("+")
+                      className={`text-[10px] font-bold ${op.commissionChange.startsWith("+")
                           ? "text-emerald-600"
                           : op.commissionChange.startsWith("-")
                             ? "text-red-500"
                             : "text-muted-foreground"
-                      }`}
+                        }`}
                     >
                       {op.commissionChange}
                     </span>
@@ -279,6 +276,18 @@ export default function OperacoesPage() {
               </div>
             </div>
           ))}
+
+          <OperationFormDialog>
+            <div className="border-2 border-dashed rounded-3xl p-6 flex flex-col items-center justify-center text-center group hover:border-[#FFBB00]/50 transition-all cursor-pointer bg-muted/20 min-h-[200px]">
+              <div className="h-16 w-16 bg-[#FFBB00]/10 text-[#FFBB00] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Plus className="h-8 w-8" />
+              </div>
+              <p className="font-bold mb-1">Nova Operação</p>
+              <p className="text-xs text-muted-foreground">
+                Adicione uma nova operação para começar a monitorar os lucros.
+              </p>
+            </div>
+          </OperationFormDialog>
         </div>
 
         {/* Pagination */}
