@@ -14,7 +14,9 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { toast } from "sonner";
 import { OperationFormDialog } from "./_components/operation-form-dialog";
+import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 
 interface Creative {
   id: string;
@@ -82,6 +84,13 @@ export default function OperacoesPage() {
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [editingOperation, setEditingOperation] = useState<Operation | null>(
+    null,
+  );
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [operationToDelete, setOperationToDelete] = useState<Operation | null>(null);
 
   const fetchOperations = useCallback(async (p: number) => {
     setLoading(true);
@@ -110,6 +119,48 @@ export default function OperacoesPage() {
 
   function handleOperationCreated() {
     fetchOperations(page);
+  }
+
+  function handleOperationUpdated() {
+    fetchOperations(page);
+  }
+
+  function handleEditClick(op: Operation) {
+    setEditingOperation(op);
+    setEditDialogOpen(true);
+  }
+
+  function handleDeleteClick(op: Operation) {
+    setOperationToDelete(op);
+    setDeleteDialogOpen(true);
+  }
+
+  async function handleConfirmDelete() {
+    if (!operationToDelete) return;
+
+    try {
+      const res = await fetch(`/api/operations/${operationToDelete.id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        toast.success("Operação excluída", {
+          description: `A operação "${operationToDelete.name}" foi removida com sucesso.`,
+        });
+        fetchOperations(page);
+      } else {
+        const data = await res.json();
+        toast.error("Erro ao excluir", {
+          description: data.detail ?? data.error ?? "Não foi possível remover a operação.",
+        });
+      }
+    } catch {
+      toast.error("Erro inesperado", {
+        description: "Houve um problema ao excluir a operação. Tente novamente.",
+      });
+    } finally {
+      setDeleteDialogOpen(false);
+      setOperationToDelete(null);
+    }
   }
 
   function renderPaginationButtons() {
@@ -228,12 +279,16 @@ export default function OperacoesPage() {
                     <div className="flex gap-2">
                       <button
                         type="button"
+                        onClick={() => handleEditClick(op)}
+                        title="Editar operação"
                         className="p-2 hover:bg-card rounded-lg text-muted-foreground hover:text-foreground transition-all"
                       >
                         <Edit className="h-4 w-4" />
                       </button>
                       <button
                         type="button"
+                        onClick={() => handleDeleteClick(op)}
+                        title="Remover operação"
                         className="p-2 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg text-muted-foreground hover:text-red-600 transition-all"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -254,8 +309,8 @@ export default function OperacoesPage() {
                         Lucro total
                       </p>
                       <span className={`text-lg font-bold ${totalProfit > 0 ? "text-emerald-500" :
-                          totalProfit < 0 ? "text-orange-500" :
-                            ""
+                        totalProfit < 0 ? "text-orange-500" :
+                          ""
                         }`}>
                         {formatBRL(totalProfit)}
                       </span>
@@ -294,6 +349,31 @@ export default function OperacoesPage() {
             </OperationFormDialog>
           </div>
         )}
+
+        {/* Edit Dialog (controlled) */}
+        {editingOperation && (
+          <OperationFormDialog
+            operation={editingOperation}
+            open={editDialogOpen}
+            onOpenChange={(o) => {
+              setEditDialogOpen(o);
+              if (!o) setEditingOperation(null);
+            }}
+            onUpdated={handleOperationUpdated}
+          />
+        )}
+
+        {/* Delete Confirmation Dialog */}
+        <DeleteConfirmationDialog
+          open={deleteDialogOpen}
+          onOpenChange={(open) => {
+            setDeleteDialogOpen(open);
+            if (!open) setOperationToDelete(null);
+          }}
+          onConfirm={handleConfirmDelete}
+          itemName={operationToDelete?.name}
+          title="Excluir Operação"
+        />
 
         {/* Pagination */}
         {pagination && pagination.totalPages > 1 && (

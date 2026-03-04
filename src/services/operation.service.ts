@@ -7,7 +7,7 @@ import { problems } from "@/lib/problem-registry";
 
 export async function getAll(userId: string) {
   return prisma.operation.findMany({
-    where: { userId },
+    where: { userId, active: true },
     include: { creatives: true },
   });
 }
@@ -19,13 +19,13 @@ export async function getAllPaginated(
 ) {
   const [data, total] = await Promise.all([
     prisma.operation.findMany({
-      where: { userId },
+      where: { userId, active: true },
       include: { creatives: true },
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { createdAt: "desc" },
     }),
-    prisma.operation.count({ where: { userId } }),
+    prisma.operation.count({ where: { userId, active: true } }),
   ]);
 
   return {
@@ -54,7 +54,7 @@ export async function updateOperation(
   data: UpdateOperationDto,
 ) {
   const operation = await prisma.operation.findFirst({
-    where: { id, userId },
+    where: { id, userId, active: true },
   });
   if (!operation) {
     throw problems.resourceNotFound("Operação não encontrada");
@@ -67,13 +67,14 @@ export async function updateOperation(
 
 export async function deleteOperation(id: string, userId: string) {
   const operation = await prisma.operation.findFirst({
-    where: { id, userId },
+    where: { id, userId, active: true },
   });
   if (!operation) {
     throw problems.resourceNotFound("Operação não encontrada");
   }
-  return prisma.operation.delete({
+  return prisma.operation.update({
     where: { id },
+    data: { active: false },
   });
 }
 

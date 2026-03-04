@@ -1,0 +1,1 @@
+-- Migration placeholder (empty - schema was applied manually)

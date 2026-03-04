@@ -1,7 +1,8 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,15 +14,42 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-interface OperationFormDialogProps {
-  children?: React.ReactNode;
-  onCreated?: () => void;
+interface Operation {
+  id: string;
+  name: string;
+  freelancerCutPercentage: string;
 }
 
-export function OperationFormDialog({ children, onCreated }: OperationFormDialogProps) {
-  const [open, setOpen] = useState(false);
+interface OperationFormDialogProps {
+  children?: React.ReactNode;
+  /** Quando fornecido, o dialog entra em modo edição */
+  operation?: Operation;
+  onCreated?: () => void;
+  onUpdated?: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export function OperationFormDialog({
+  children,
+  operation,
+  onCreated,
+  onUpdated,
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+}: OperationFormDialogProps) {
+  const isEditMode = !!operation;
+  const [internalOpen, setInternalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = controlledOnOpenChange ?? setInternalOpen;
+
+  // Reset error when dialog opens
+  useEffect(() => {
+    if (open) setError(null);
+  }, [open]);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -34,30 +62,46 @@ export function OperationFormDialog({ children, onCreated }: OperationFormDialog
 
     startTransition(async () => {
       try {
-        const response = await fetch("/api/operations", {
-          method: "POST",
+        const url = isEditMode
+          ? `/api/operations/${operation.id}`
+          : "/api/operations";
+        const method = isEditMode ? "PUT" : "POST";
+
+        const response = await fetch(url, {
+          method,
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name, freelancerCutPercentage }),
         });
 
         if (!response.ok) {
           const data = await response.json();
-          setError(data.detail ?? data.error ?? "Erro ao criar operação");
+          const errorMessage = data.detail ?? data.error ?? "Erro ao salvar operação";
+          setError(errorMessage);
+          toast.error("Erro ao salvar", { description: errorMessage });
           return;
         }
 
         setOpen(false);
-        onCreated?.();
+        if (isEditMode) {
+          toast.success("Operação atualizada", { description: "As alterações foram salvas com sucesso." });
+          onUpdated?.();
+        } else {
+          toast.success("Operação criada", { description: "A nova operação foi criada com sucesso." });
+          onCreated?.();
+        }
       } catch {
-        setError("Erro ao criar operação. Tente novamente.");
+        const errorMessage = "Erro ao salvar operação. Tente novamente.";
+        setError(errorMessage);
+        toast.error("Erro inesperado", { description: errorMessage });
       }
     });
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children ?? (
+      {children && <DialogTrigger asChild>{children}</DialogTrigger>}
+      {!children && !isEditMode && (
+        <DialogTrigger asChild>
           <button
             type="button"
             className="bg-[#FFBB00] hover:bg-yellow-400 text-black font-bold px-6 py-2.5 rounded-full text-sm flex items-center gap-2 transition-all shadow-lg shadow-[#FFBB00]/20 hover:-translate-y-0.5"
@@ -65,11 +109,13 @@ export function OperationFormDialog({ children, onCreated }: OperationFormDialog
             <Plus className="h-4 w-4 font-bold" />
             Nova Operação
           </button>
-        )}
-      </DialogTrigger>
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Nova Operação</DialogTitle>
+          <DialogTitle>
+            {isEditMode ? "Editar Operação" : "Nova Operação"}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -78,6 +124,7 @@ export function OperationFormDialog({ children, onCreated }: OperationFormDialog
               id="name"
               name="name"
               placeholder="Nome da operação"
+              defaultValue={operation?.name ?? ""}
               required
             />
           </div>
@@ -93,6 +140,7 @@ export function OperationFormDialog({ children, onCreated }: OperationFormDialog
               min="0"
               max="100"
               placeholder="0.00"
+              defaultValue={operation?.freelancerCutPercentage ?? ""}
               required
             />
           </div>
@@ -102,7 +150,13 @@ export function OperationFormDialog({ children, onCreated }: OperationFormDialog
             disabled={isPending}
             className="w-full bg-[#FFBB00] hover:bg-[#FFBB00]/90 text-black font-bold"
           >
-            {isPending ? "Criando..." : "Criar Operação"}
+            {isPending
+              ? isEditMode
+                ? "Salvando..."
+                : "Criando..."
+              : isEditMode
+                ? "Salvar Alterações"
+                : "Criar Operação"}
           </Button>
         </form>
       </DialogContent>

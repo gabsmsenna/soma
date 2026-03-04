@@ -36,7 +36,7 @@ import { Switch } from "@/components/ui/switch";
 const mainNavItems = [
   {
     title: "Dashboard",
-    url: "/",
+    url: "/dashboard",
     icon: LayoutDashboard,
   },
   {
