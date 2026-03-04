@@ -54,6 +54,7 @@ export async function cleanTestDatabase(): Promise<void> {
   const prisma = getTestPrismaClient();
 
   // Delete in order: child tables first, then parent tables
+  await prisma.monthlyGoal.deleteMany();
   await prisma.creative.deleteMany();
   await prisma.project.deleteMany();
   await prisma.operation.deleteMany();
