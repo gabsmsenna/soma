@@ -64,7 +64,7 @@ describe("CreativeService.findAllByUserId", () => {
       totalPages: 1,
     });
     expect(mockPrisma.creative.findMany).toHaveBeenCalledWith({
-      where: { operation: { userId } },
+      where: { operation: { userId }, isActive: true },
       include: { operation: true },
       skip: 0,
       take: 12,
@@ -82,6 +82,7 @@ describe("CreativeService.findAllByUserId", () => {
       where: {
         operation: { userId },
         name: { contains: "banner", mode: "insensitive" },
+        isActive: true,
       },
       include: { operation: true },
       skip: 0,

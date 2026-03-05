@@ -2,6 +2,7 @@ import { Plus } from "lucide-react";
 import type { CreativeViewModel } from "../_types";
 import { CreativeCard } from "./creative-card";
 import { CreativeFormDialog } from "./creative-form-dialog";
+import { CreativeFilterButton } from "./creative-filter-button";
 
 interface CreativesGridProps {
   creatives: CreativeViewModel[];
@@ -18,6 +19,10 @@ export function CreativesGrid({ creatives, total }: CreativesGridProps) {
             ({total} totais)
           </span>
         </h3>
+
+        <div className="flex items-center gap-3">
+          <CreativeFilterButton />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

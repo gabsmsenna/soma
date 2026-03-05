@@ -32,6 +32,7 @@ model Operation {
   id                      String     @id @default(uuid())
   name                    String
   freelancerCutPercentage Decimal    @db.Decimal(5, 2) @default(0)
+  active                  Boolean    @default(true)
   userId                  String
   user                    User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   creatives               Creative[]

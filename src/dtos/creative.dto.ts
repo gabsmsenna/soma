@@ -24,6 +24,9 @@ export const updateCreativeSchema = z.object({
 export const paginationSchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(10),
+  search: z.string().optional(),
+  status: z.enum(["active", "inactive", "all"]).default("active"),
+  operation: z.string().optional(),
 });
 
 export type CreateCreativeDto = z.infer<typeof createCreativeSchema>;

@@ -88,11 +88,65 @@ export async function getSummary(userId: string): Promise<SummaryResponse> {
 
 // ─── Commissions Chart ───
 
+function getWeekRange(): { start: Date; end: Date } {
+  const now = new Date();
+  const day = now.getDay(); // 0=Sun … 6=Sat
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diffToMonday);
+  const end = new Date(start);
+  end.setDate(start.getDate() + 7); // Monday of next week (exclusive)
+  return { start, end };
+}
+
+function formatDateISO(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function generateDaySlots(start: Date, end: Date): string[] {
+  const slots: string[] = [];
+  const cursor = new Date(start);
+  while (cursor < end) {
+    slots.push(formatDateISO(cursor));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return slots;
+}
+
+function generateMonthSlots(count: number): string[] {
+  const now = new Date();
+  const slots: string[] = [];
+  for (let i = count - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    slots.push(formatDateISO(d));
+  }
+  return slots;
+}
+
 export async function getCommissionsChart(
   userId: string,
   period: "weekly" | "monthly",
 ): Promise<CommissionsChartResponse> {
-  const truncUnit = period === "weekly" ? "week" : "month";
+  const isWeekly = period === "weekly";
+  const truncUnit = isWeekly ? "day" : "month";
+
+  let rangeStart: Date;
+  let rangeEnd: Date;
+  let allSlots: string[];
+
+  if (isWeekly) {
+    const { start, end } = getWeekRange();
+    rangeStart = start;
+    rangeEnd = end;
+    allSlots = generateDaySlots(start, end);
+  } else {
+    const now = new Date();
+    rangeStart = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+    rangeEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    allSlots = generateMonthSlots(12);
+  }
 
   const rows = await prisma.$queryRaw<
     Array<{
@@ -109,16 +163,23 @@ export async function getCommissionsChart(
       FROM creatives c
       JOIN operations o ON c."operationId" = o.id
       WHERE o."userId" = ${userId}
+        AND c."createdAt" >= ${rangeStart}
+        AND c."createdAt" < ${rangeEnd}
       GROUP BY DATE_TRUNC(${Prisma.raw(`'${truncUnit}'`)}, c."createdAt")
       ORDER BY DATE_TRUNC(${Prisma.raw(`'${truncUnit}'`)}, c."createdAt") ASC
     `,
   );
 
-  const data: CommissionsDataPoint[] = rows.map((r) => ({
-    label: r.period_label,
-    totalProfit: Number(r.total_profit),
-    myProfit: Number(r.my_profit),
-  }));
+  const rowMap = new Map(rows.map((r) => [r.period_label, r]));
+
+  const data: CommissionsDataPoint[] = allSlots.map((slot) => {
+    const r = rowMap.get(slot);
+    return {
+      label: slot,
+      totalProfit: r ? Number(r.total_profit) : 0,
+      myProfit: r ? Number(r.my_profit) : 0,
+    };
+  });
 
   return { period, data };
 }

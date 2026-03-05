@@ -24,7 +24,9 @@ function formatBRL(value: number): string {
 function formatLabel(dateStr: string, period: "weekly" | "monthly"): string {
   const date = new Date(dateStr + "T00:00:00");
   if (period === "weekly") {
-    return date.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" });
+    const weekday = date.toLocaleDateString("pt-BR", { weekday: "short" });
+    const day = date.toLocaleDateString("pt-BR", { day: "2-digit" });
+    return `${weekday} ${day}`;
   }
   return date.toLocaleDateString("pt-BR", { month: "short", year: "2-digit" });
 }
@@ -68,22 +70,20 @@ export function CommissionChart() {
             <button
               type="button"
               onClick={() => setViewMode("semanal")}
-              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
-                viewMode === "semanal"
-                  ? "bg-[#FFBB00] text-black"
-                  : "bg-muted text-muted-foreground"
-              }`}
+              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${viewMode === "semanal"
+                ? "bg-[#FFBB00] text-black"
+                : "bg-muted text-muted-foreground"
+                }`}
             >
               Semanal
             </button>
             <button
               type="button"
               onClick={() => setViewMode("mensal")}
-              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
-                viewMode === "mensal"
-                  ? "bg-[#FFBB00] text-black"
-                  : "bg-muted text-muted-foreground"
-              }`}
+              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${viewMode === "mensal"
+                ? "bg-[#FFBB00] text-black"
+                : "bg-muted text-muted-foreground"
+                }`}
             >
               Mensal
             </button>

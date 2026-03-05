@@ -2,12 +2,13 @@ import type {
   CreateOperationDto,
   UpdateOperationDto,
 } from "@/dtos/operation.dto";
+import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { problems } from "@/lib/problem-registry";
 
 export async function getAll(userId: string) {
   return prisma.operation.findMany({
-    where: { userId },
+    where: { userId, active: true },
     include: { creatives: true },
   });
 }
@@ -16,16 +17,30 @@ export async function getAllPaginated(
   userId: string,
   page: number,
   limit: number,
+  search?: string,
+  status: string = "active",
 ) {
+  const where: Prisma.OperationWhereInput = {
+    userId,
+    ...(status === "active"
+      ? { active: true }
+      : status === "inactive"
+        ? { active: false }
+        : {}),
+    ...(search
+      ? { name: { contains: search, mode: "insensitive" as const } }
+      : {}),
+  };
+
   const [data, total] = await Promise.all([
     prisma.operation.findMany({
-      where: { userId },
+      where,
       include: { creatives: true },
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { createdAt: "desc" },
     }),
-    prisma.operation.count({ where: { userId } }),
+    prisma.operation.count({ where }),
   ]);
 
   return {
@@ -54,7 +69,7 @@ export async function updateOperation(
   data: UpdateOperationDto,
 ) {
   const operation = await prisma.operation.findFirst({
-    where: { id, userId },
+    where: { id, userId, active: true },
   });
   if (!operation) {
     throw problems.resourceNotFound("Operação não encontrada");
@@ -67,13 +82,14 @@ export async function updateOperation(
 
 export async function deleteOperation(id: string, userId: string) {
   const operation = await prisma.operation.findFirst({
-    where: { id, userId },
+    where: { id, userId, active: true },
   });
   if (!operation) {
     throw problems.resourceNotFound("Operação não encontrada");
   }
-  return prisma.operation.delete({
+  return prisma.operation.update({
     where: { id },
+    data: { active: false },
   });
 }
 

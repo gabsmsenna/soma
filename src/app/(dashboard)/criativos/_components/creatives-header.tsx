@@ -6,7 +6,6 @@ import { useCallback, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { CreativeFormDialog } from "./creative-form-dialog";
 
 export function CreativesHeader() {
   const router = useRouter();
@@ -42,9 +41,6 @@ export function CreativesHeader() {
             onChange={(e) => handleSearch(e.target.value)}
           />
         </div>
-      </div>
-      <div className="flex items-center gap-4">
-        <CreativeFormDialog mode="create" />
       </div>
     </header>
   );
