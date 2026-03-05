@@ -2,7 +2,7 @@
 
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,6 +13,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { CreativeViewModel } from "../_types";
 import { createCreative, updateCreative } from "../actions";
 
@@ -30,6 +37,11 @@ interface EditMode {
 
 type CreativeFormDialogProps = CreateMode | EditMode;
 
+interface Operation {
+  id: string;
+  name: string;
+}
+
 export function CreativeFormDialog({
   mode = "create",
   creative,
@@ -38,17 +50,61 @@ export function CreativeFormDialog({
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [operations, setOperations] = useState<Operation[]>([]);
+  const [isLoadingOperations, setIsLoadingOperations] = useState(false);
+  const [operationId, setOperationId] = useState("");
   const router = useRouter();
 
   const isEdit = mode === "edit" && creative !== undefined;
 
+  useEffect(() => {
+    if (!open) {
+      setError(null);
+      setOperationId("");
+    }
+
+    if (open && !isEdit) {
+      const fetchOperations = async () => {
+        setIsLoadingOperations(true);
+        setError(null);
+        try {
+          const response = await fetch("/api/operations?status=active");
+          if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            const message =
+              data.detail || data.error || "Falha ao buscar operações ativas.";
+            throw new Error(message);
+          }
+          const result: { data: Operation[] } = await response.json();
+          setOperations(result.data);
+        } catch (err) {
+          const errorMessage =
+            err instanceof Error
+              ? err.message
+              : "Ocorreu um erro desconhecido.";
+          setError(errorMessage);
+          console.error(err);
+        } finally {
+          setIsLoadingOperations(false);
+        }
+      };
+
+      fetchOperations();
+    }
+  }, [open, isEdit]);
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+
+    if (!isEdit && !operationId) {
+      setError("Por favor, selecione uma operação.");
+      return;
+    }
+
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
     const totalProfit = Number(formData.get("totalProfit"));
-    const operationId = formData.get("operationId") as string;
 
     startTransition(async () => {
       const result = isEdit
@@ -106,13 +162,30 @@ export function CreativeFormDialog({
           </div>
           {!isEdit && (
             <div className="space-y-2">
-              <Label htmlFor="operationId">ID da Operação</Label>
-              <Input
-                id="operationId"
+              <Label htmlFor="operationId">Operação</Label>
+              <Select
                 name="operationId"
-                placeholder="ID da operação"
-                required
-              />
+                onValueChange={setOperationId}
+                value={operationId}
+                disabled={isLoadingOperations}
+              >
+                <SelectTrigger id="operationId" className="w-full">
+                  <SelectValue
+                    placeholder={
+                      isLoadingOperations
+                        ? "Carregando..."
+                        : "Selecione uma operação"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {operations.map((op) => (
+                    <SelectItem key={op.id} value={op.id}>
+                      {op.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           )}
           {error && <p className="text-sm text-red-500">{error}</p>}

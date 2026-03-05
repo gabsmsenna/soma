@@ -2,7 +2,8 @@
 
 import { Loader2, Plus } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState, useTransition } from "react";
+import { toast } from "sonner";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import { OperationCard } from "./_components/operation-card";
 import { OperationFormDialog } from "./_components/operation-form-dialog";
@@ -10,6 +11,7 @@ import { OperationsHeader } from "./_components/operation-header";
 import { OperationsPagination } from "./_components/operations-pagination";
 import { useOperations } from "./_hooks/use-operation";
 import type { Operation } from "./_types/types";
+import { deleteOperation } from "./actions";
 
 function OperacoesContent() {
   const router = useRouter();
@@ -27,9 +29,13 @@ function OperacoesContent() {
   const [operationToDelete, setOperationToDelete] = useState<Operation | null>(
     null,
   );
+  const [isDeleting, startDeleteTransition] = useTransition();
 
-  const { operations, pagination, loading, deleteOperation, refresh } =
-    useOperations(pageParam, searchParam, statusParam);
+  const { operations, pagination, loading, refresh } = useOperations(
+    pageParam,
+    searchParam,
+    statusParam,
+  );
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -52,10 +58,21 @@ function OperacoesContent() {
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = () => {
     if (!operationToDelete) return;
-    const success = await deleteOperation(operationToDelete.id);
-    if (success) setOperationToDelete(null);
+    startDeleteTransition(async () => {
+      const result = await deleteOperation(operationToDelete.id);
+      if (result.success) {
+        toast.success("Operação excluída com sucesso.");
+        setOperationToDelete(null);
+        router.refresh();
+        refresh();
+      } else {
+        toast.error("Erro ao excluir", {
+          description: result.error.detail,
+        });
+      }
+    });
   };
 
   return (

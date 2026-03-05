@@ -8,7 +8,8 @@ import { getServerSession } from "@/lib/session";
 import * as CreativeService from "@/services/creative.service";
 import { verifyOperationOwnership } from "@/services/operation.service";
 import { toCreativeViewModel } from "./_mappers";
-import type { ActionResult, CreativeViewModel } from "./_types";
+import type { ActionResult } from "@/types/action-result";
+import type { CreativeViewModel } from "./_types";
 
 const createCreativeSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),

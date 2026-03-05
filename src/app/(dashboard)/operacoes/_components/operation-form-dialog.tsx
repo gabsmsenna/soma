@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { createOperation, updateOperation } from "../actions";
 
 interface Operation {
   id: string;
@@ -39,6 +41,7 @@ export function OperationFormDialog({
   onOpenChange: controlledOnOpenChange,
 }: OperationFormDialogProps) {
   const isEditMode = !!operation;
+  const router = useRouter();
   const [internalOpen, setInternalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -62,27 +65,23 @@ export function OperationFormDialog({
 
     startTransition(async () => {
       try {
-        const url = isEditMode
-          ? `/api/operations/${operation.id}`
-          : "/api/operations";
-        const method = isEditMode ? "PUT" : "POST";
+        const result = isEditMode
+          ? await updateOperation(operation.id, {
+              name,
+              freelancerCutPercentage,
+            })
+          : await createOperation({ name, freelancerCutPercentage });
 
-        const response = await fetch(url, {
-          method,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, freelancerCutPercentage }),
-        });
-
-        if (!response.ok) {
-          const data = await response.json();
-          const errorMessage =
-            data.detail ?? data.error ?? "Erro ao salvar operação";
-          setError(errorMessage);
-          toast.error("Erro ao salvar", { description: errorMessage });
+        if (!result.success) {
+          setError(result.error.detail);
+          toast.error("Erro ao salvar", {
+            description: result.error.detail,
+          });
           return;
         }
 
         setOpen(false);
+        router.refresh();
         if (isEditMode) {
           toast.success("Operação atualizada", {
             description: "As alterações foram salvas com sucesso.",
