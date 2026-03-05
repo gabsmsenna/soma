@@ -1,7 +1,7 @@
 "use client";
 
-import { Loader2, Rocket, Target } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Loader2, Pencil, Rocket, Target, X } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { GoalResponse } from "@/dtos/dashboard.dto";
 
@@ -17,22 +17,28 @@ export function MonthlyGoal() {
   const [loading, setLoading] = useState(true);
   const [goalInput, setGoalInput] = useState("");
   const [saving, setSaving] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
-  const fetchGoal = () => {
+  const fetchGoal = useCallback(() => {
     setLoading(true);
     fetch("/api/dashboard/goals")
       .then((res) => res.json())
       .then((json: GoalResponse) => setData(json))
       .catch(console.error)
       .finally(() => setLoading(false));
-  };
+  }, []);
 
   useEffect(() => {
     fetchGoal();
-  }, []);
+  }, [fetchGoal]);
 
   const handleSetGoal = async () => {
-    const amount = Number(goalInput.replace(/[^\d.,]/g, "").replace(",", "."));
+    const amount = Number(
+      goalInput
+        .replace(/[^\d.,]/g, "")
+        .replace(/\./g, "")
+        .replace(",", "."),
+    );
     if (!amount || amount <= 0) return;
 
     setSaving(true);
@@ -44,6 +50,7 @@ export function MonthlyGoal() {
       });
       if (res.ok) {
         setGoalInput("");
+        setIsEditing(false);
         fetchGoal();
       }
     } catch (error) {
@@ -56,7 +63,7 @@ export function MonthlyGoal() {
   if (loading) {
     return (
       <Card className="col-span-12 backdrop-blur-sm">
-        <CardContent className="p-8 flex items-center justify-center h-[240px]">
+        <CardContent className="p-8 flex items-center justify-center h-60">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </CardContent>
       </Card>
@@ -64,15 +71,28 @@ export function MonthlyGoal() {
   }
 
   // No goal set — show goal creation form
-  if (data && data.goal === null) {
+  if (data && (data.goal === null || isEditing)) {
     return (
       <Card className="col-span-12 backdrop-blur-sm relative overflow-hidden group">
         <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-orange-500/20 transition-all duration-500" />
         <CardContent className="p-8 flex flex-col h-full justify-between relative z-10">
           <div>
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-2 h-6 bg-orange-500 rounded-full" />
-              <h4 className="font-bold text-lg">Meta de Lucro Mensal</h4>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-6 bg-orange-500 rounded-full" />
+                <h4 className="font-bold text-lg">
+                  {isEditing ? "Editar Meta" : "Meta de Lucro Mensal"}
+                </h4>
+              </div>
+              {isEditing && (
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              )}
             </div>
             <p className="text-sm text-muted-foreground mb-6">
               Defina sua meta mensal de lucro para acompanhar seu progresso.
@@ -94,14 +114,14 @@ export function MonthlyGoal() {
                 type="button"
                 onClick={handleSetGoal}
                 disabled={saving || !goalInput}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-[#FFBB00] text-black font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
+                className="px-6 py-3 rounded-xl bg-linear-to-r from-orange-500 to-[#FFBB00] text-black font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
               >
                 {saving ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <Target className="h-4 w-4" />
                 )}
-                Definir Meta
+                {isEditing ? "Atualizar Meta" : "Definir Meta"}
               </button>
             </div>
           </div>
@@ -119,9 +139,21 @@ export function MonthlyGoal() {
       <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-orange-500/20 transition-all duration-500" />
       <CardContent className="p-8 flex flex-col h-full justify-between relative z-10">
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-2 h-6 bg-orange-500 rounded-full" />
-            <h4 className="font-bold text-lg">Meta de Lucro Mensal</h4>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-6 bg-orange-500 rounded-full" />
+              <h4 className="font-bold text-lg">Meta de Lucro Mensal</h4>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setGoalInput(formatBRL(data.goal ?? 0));
+                setIsEditing(true);
+              }}
+              className="text-muted-foreground hover:text-orange-500 transition-colors p-2 rounded-full hover:bg-orange-500/10"
+            >
+              <Pencil className="h-4 w-4" />
+            </button>
           </div>
           <p className="text-sm text-muted-foreground mb-8">
             {data.remaining > 0
@@ -144,7 +176,7 @@ export function MonthlyGoal() {
             </div>
             <div className="h-4 w-full bg-muted rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-orange-500 to-[#FFBB00] rounded-full shadow-[0_0_20px_rgba(255,108,0,0.3)] transition-all duration-1000"
+                className="h-full bg-linear-to-r from-orange-500 to-[#FFBB00] rounded-full shadow-[0_0_20px_rgba(255,108,0,0.3)] transition-all duration-1000"
                 style={{ width: `${progressWidth}%` }}
               />
             </div>
