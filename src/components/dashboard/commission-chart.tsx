@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -70,20 +70,22 @@ export function CommissionChart() {
             <button
               type="button"
               onClick={() => setViewMode("semanal")}
-              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${viewMode === "semanal"
-                ? "bg-[#FFBB00] text-black"
-                : "bg-muted text-muted-foreground"
-                }`}
+              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
+                viewMode === "semanal"
+                  ? "bg-[#FFBB00] text-black"
+                  : "bg-muted text-muted-foreground"
+              }`}
             >
               Semanal
             </button>
             <button
               type="button"
               onClick={() => setViewMode("mensal")}
-              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${viewMode === "mensal"
-                ? "bg-[#FFBB00] text-black"
-                : "bg-muted text-muted-foreground"
-                }`}
+              className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
+                viewMode === "mensal"
+                  ? "bg-[#FFBB00] text-black"
+                  : "bg-muted text-muted-foreground"
+              }`}
             >
               Mensal
             </button>

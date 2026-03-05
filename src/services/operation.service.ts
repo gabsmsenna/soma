@@ -1,8 +1,8 @@
+import type { Prisma } from "@prisma/client";
 import type {
   CreateOperationDto,
   UpdateOperationDto,
 } from "@/dtos/operation.dto";
-import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { problems } from "@/lib/problem-registry";
 

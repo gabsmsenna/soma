@@ -1,9 +1,9 @@
-import bcrypt from "bcryptjs";
 import { Prisma } from "@prisma/client";
+import bcrypt from "bcryptjs";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { GET } from "@/app/api/dashboard/ranking/route";
-import { generateAuthToken } from "@/lib/generate-auth-token";
 import type { RankingResponse } from "@/dtos/dashboard.dto";
+import { generateAuthToken } from "@/lib/generate-auth-token";
 import {
   createMockRequest,
   parseJsonResponse,

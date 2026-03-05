@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
 import type { RankingEntry, RankingResponse } from "@/dtos/dashboard.dto";

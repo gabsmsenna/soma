@@ -75,7 +75,8 @@ export function OperationFormDialog({
 
         if (!response.ok) {
           const data = await response.json();
-          const errorMessage = data.detail ?? data.error ?? "Erro ao salvar operação";
+          const errorMessage =
+            data.detail ?? data.error ?? "Erro ao salvar operação";
           setError(errorMessage);
           toast.error("Erro ao salvar", { description: errorMessage });
           return;
@@ -83,10 +84,14 @@ export function OperationFormDialog({
 
         setOpen(false);
         if (isEditMode) {
-          toast.success("Operação atualizada", { description: "As alterações foram salvas com sucesso." });
+          toast.success("Operação atualizada", {
+            description: "As alterações foram salvas com sucesso.",
+          });
           onUpdated?.();
         } else {
-          toast.success("Operação criada", { description: "A nova operação foi criada com sucesso." });
+          toast.success("Operação criada", {
+            description: "A nova operação foi criada com sucesso.",
+          });
           onCreated?.();
         }
       } catch {

@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { problems } from "@/lib/problem-registry";
 
@@ -85,14 +85,18 @@ export async function findAllByUserId(
   limit: number,
   search?: string,
   status: string = "active",
-  operation: string = "all"
+  operation: string = "all",
 ) {
   const where: Prisma.CreativeWhereInput = {
     operation: { userId },
     ...(search
       ? { name: { contains: search, mode: "insensitive" as const } }
       : {}),
-    ...(status === "active" ? { isActive: true } : status === "inactive" ? { isActive: false } : {}),
+    ...(status === "active"
+      ? { isActive: true }
+      : status === "inactive"
+        ? { isActive: false }
+        : {}),
     ...(operation !== "all" && operation ? { operationId: operation } : {}),
   };
 

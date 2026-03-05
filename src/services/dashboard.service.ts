@@ -1,13 +1,13 @@
 import { Prisma } from "@prisma/client";
-import prisma from "@/lib/prisma";
 import type {
-  SummaryResponse,
-  MetricCard,
   CommissionsChartResponse,
   CommissionsDataPoint,
-  RankingEntry,
   GoalResponse,
+  MetricCard,
+  RankingEntry,
+  SummaryResponse,
 } from "@/dtos/dashboard.dto";
+import prisma from "@/lib/prisma";
 
 // ─── Helpers ───
 
@@ -92,7 +92,11 @@ function getWeekRange(): { start: Date; end: Date } {
   const now = new Date();
   const day = now.getDay(); // 0=Sun … 6=Sat
   const diffToMonday = day === 0 ? -6 : 1 - day;
-  const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diffToMonday);
+  const start = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate() + diffToMonday,
+  );
   const end = new Date(start);
   end.setDate(start.getDate() + 7); // Monday of next week (exclusive)
   return { start, end };

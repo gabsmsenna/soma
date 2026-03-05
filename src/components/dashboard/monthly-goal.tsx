@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Loader2, Rocket, Target } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { GoalResponse } from "@/dtos/dashboard.dto";
 
