@@ -1,4 +1,4 @@
-# AGENTS.md - Agentic Coding Guidelines
+# CLAUDE.md - Agentic Coding Guidelines
 
 This document provides guidelines for agentic coding agents operating in this repository.
 
@@ -72,6 +72,14 @@ pnpm vitest run -t "test name" src/services/auth.service.test.ts
 ```
 
 ## Code Style Guidelines
+
+### Data Fetching and Mutation Pattern (Server Actions vs. API Routes)
+
+In this codebase, **use Server Actions strictly and exclusively for data mutation** (create, update, or delete operations such as `POST`, `PUT`, `PATCH`, and `DELETE`). It is strictly forbidden to use Server Actions for data fetching. Because Server Actions operate as `POST` requests under the hood, using them for read operations bypasses the framework's natural caching and memoization mechanisms, degrading both performance and architectural semantics.
+
+For **data fetching**, adhere to the following hierarchy:
+1. Always prefer fetching data directly within **Server Components** using standard asynchronous functions.
+2. When fetching must occur from the client side, build and utilize dedicated **API Routes (Route Handlers)** optimized for `GET` methods, properly leveraging the native `fetch` API or data-fetching libraries (like SWR or React Query).
 
 ### Formatting (Biome)
 
@@ -198,6 +206,7 @@ All errors return `Content-Type: application/problem+json`:
 * Follow Prisma naming: singular model names, PascalCase
 
 ### UI Components
+Keep components as Server Components by default. Only add "use client" directive at the very top of the file when using React hooks (useState, useEffect), event listeners (onClick), or browser-only APIs
 
 #### shadcn/ui
 
