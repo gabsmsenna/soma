@@ -13,9 +13,9 @@
 - [x] Add `registerProfitPayment` server action to criativos/actions.ts
 
 ## Task 3: Update "Marcar Pago" UI with confirmation dialog
-- [ ] Create `mark-paid-confirmation-dialog.tsx` component showing current commission value
-- [ ] Update `creative-action-buttons.tsx` to use the new dialog, show button when freelancerCut > 0
-- [ ] Add toast success/error feedback using sonner
+- [x] Create `mark-paid-confirmation-dialog.tsx` component showing current commission value
+- [x] Update `creative-action-buttons.tsx` to use the new dialog, show button when freelancerCut > 0
+- [x] Add toast success/error feedback using sonner
 
 ## Task 4: Create /relatorio-lucros page
 - [ ] Add `findProfitPaymentsGroupedByOperation` service function with date range filter

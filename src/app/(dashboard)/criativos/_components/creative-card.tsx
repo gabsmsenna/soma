@@ -60,7 +60,8 @@ export function CreativeCard({ creative }: CreativeCardProps) {
 
       <CreativeActionButtons
         creativeId={creative.id}
-        isPaid={creative.isPaid}
+        creativeName={creative.name}
+        freelancerCut={creative.freelancerCut}
         totalProfit={creative.totalProfit}
       />
 

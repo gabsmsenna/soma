@@ -1,42 +1,36 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import { markAsPaid } from "../actions";
+import { useState } from "react";
+import { MarkPaidConfirmationDialog } from "./mark-paid-confirmation-dialog";
 import { RegisterProfitDialog } from "./register-profit-dialog";
 
 interface CreativeActionButtonsProps {
   creativeId: string;
-  isPaid: boolean;
+  creativeName: string;
+  freelancerCut: string;
   totalProfit: string;
 }
 
 export function CreativeActionButtons({
   creativeId,
-  isPaid,
+  creativeName,
+  freelancerCut,
   totalProfit,
 }: CreativeActionButtonsProps) {
-  const [isPending, startTransition] = useTransition();
   const [profitDialogOpen, setProfitDialogOpen] = useState(false);
-  const router = useRouter();
+  const [markPaidOpen, setMarkPaidOpen] = useState(false);
 
-  function handleMarkAsPaid() {
-    startTransition(async () => {
-      await markAsPaid(creativeId);
-      router.refresh();
-    });
-  }
+  const hasCommission = Number(freelancerCut) > 0;
 
   return (
     <div className="space-y-2">
-      {!isPaid && (
+      {hasCommission && (
         <button
           type="button"
-          onClick={handleMarkAsPaid}
-          disabled={isPending}
-          className="w-full flex items-center justify-center gap-2 bg-green-700/10 hover:bg-green-700 text-green-700 hover:text-white font-bold py-2 rounded-xl transition-all border border-green-700/20 dark:bg-green-500/10 dark:text-green-500 dark:hover:bg-green-500 dark:hover:text-black dark:border-green-500/20 text-xs uppercase tracking-wider disabled:opacity-50"
+          onClick={() => setMarkPaidOpen(true)}
+          className="w-full flex items-center justify-center gap-2 bg-green-700/10 hover:bg-green-700 text-green-700 hover:text-white font-bold py-2 rounded-xl transition-all border border-green-700/20 dark:bg-green-500/10 dark:text-green-500 dark:hover:bg-green-500 dark:hover:text-black dark:border-green-500/20 text-xs uppercase tracking-wider"
         >
-          {isPending ? "..." : "Marcar Pago"}
+          Marcar Pago
         </button>
       )}
       <button
@@ -51,6 +45,13 @@ export function CreativeActionButtons({
         currentProfit={totalProfit}
         open={profitDialogOpen}
         onOpenChange={setProfitDialogOpen}
+      />
+      <MarkPaidConfirmationDialog
+        creativeId={creativeId}
+        creativeName={creativeName}
+        freelancerCut={freelancerCut}
+        open={markPaidOpen}
+        onOpenChange={setMarkPaidOpen}
       />
     </div>
   );
