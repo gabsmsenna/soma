@@ -24,4 +24,4 @@
 - [x] Create accordion component for operation groups with creative drill-down
 
 ## Task 5: Add Relatório de Lucros to sidebar
-- [ ] Add "Relatório de Lucros" nav item with DollarSign icon pointing to /relatorio-lucros
+- [x] Add "Relatório de Lucros" nav item with DollarSign icon pointing to /relatorio-lucros

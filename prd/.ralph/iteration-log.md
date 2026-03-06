@@ -33,3 +33,9 @@ Summary of what was done:
 - Status: validation passed
 - Changes: yes
 - Summary: You've hit your limit · resets 1pm (America/Sao_Paulo)
+## Iteration 1
+- Status: validation passed
+- Changes: yes
+- Summary: Task 4 is complete. Here's what was done:
+
+- **`findProfitPaymentsGroupedByOperation`** — already ex
