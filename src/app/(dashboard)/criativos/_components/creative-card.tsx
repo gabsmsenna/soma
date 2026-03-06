@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import type { CreativeViewModel } from "../_types";
 import { CreativeActionButtons } from "./creative-action-buttons";
+import { CreativeActiveToggle } from "./creative-active-toggle";
 
 interface CreativeCardProps {
   creative: CreativeViewModel;
@@ -17,22 +18,11 @@ export function CreativeCard({ creative }: CreativeCardProps) {
         <div className="h-10 w-10 bg-[#FFBB00]/20 text-[#FFBB00] rounded-lg flex items-center justify-center">
           <span className="text-lg">🎨</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-muted-foreground uppercase">
-            {creative.isActive ? "Ativo" : "Inativo"}
-          </span>
-          <div
-            className={`w-10 h-5 ${
-              creative.isActive ? "bg-[#FFBB00]" : "bg-muted"
-            } rounded-full relative shadow-inner`}
-          >
-            <div
-              className={`absolute top-1 w-3 h-3 bg-white rounded-full ${
-                creative.isActive ? "right-1" : "left-1"
-              }`}
-            />
-          </div>
-        </div>
+        <CreativeActiveToggle
+          creativeId={creative.id}
+          isActive={creative.isActive}
+          creativeName={creative.name}
+        />
       </div>
 
       <h3 className="text-lg font-bold mb-1 group-hover:text-[#FFBB00] transition-colors">
@@ -71,7 +61,6 @@ export function CreativeCard({ creative }: CreativeCardProps) {
       <CreativeActionButtons
         creativeId={creative.id}
         isPaid={creative.isPaid}
-        creativeName={creative.name}
       />
 
       <div className="mt-auto pt-4 border-t flex items-center justify-between">

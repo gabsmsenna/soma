@@ -178,7 +178,7 @@ export function CreativeFormDialog({
                     }
                   />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="popper" className="max-h-60">
                   {operations.map((op) => (
                     <SelectItem key={op.id} value={op.id}>
                       {op.name}

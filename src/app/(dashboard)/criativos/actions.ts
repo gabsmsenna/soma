@@ -7,8 +7,8 @@ import { AppError } from "@/lib/app-error";
 import { getServerSession } from "@/lib/session";
 import * as CreativeService from "@/services/creative.service";
 import { verifyOperationOwnership } from "@/services/operation.service";
-import { toCreativeViewModel } from "./_mappers";
 import type { ActionResult } from "@/types/action-result";
+import { toCreativeViewModel } from "./_mappers";
 import type { CreativeViewModel } from "./_types";
 
 const createCreativeSchema = z.object({
@@ -178,6 +178,43 @@ export async function deleteCreative(id: string): Promise<ActionResult<void>> {
     await CreativeService.deleteCreative(id);
     revalidatePath("/criativos");
     return { success: true, data: undefined };
+  } catch (error) {
+    return errorResult(error);
+  }
+}
+
+export async function deactivateCreative(
+  id: string,
+): Promise<ActionResult<CreativeViewModel>> {
+  try {
+    const session = await getServerSession();
+    if (!session) {
+      return {
+        success: false,
+        error: {
+          title: "Não autorizado",
+          detail: "Autenticação necessária",
+          status: 401,
+        },
+      };
+    }
+
+    const existing = await CreativeService.findById(id);
+    if (existing.operation.userId !== session.userId) {
+      return {
+        success: false,
+        error: {
+          title: "Recurso não encontrado",
+          detail: "Criativo não encontrado",
+          status: 404,
+        },
+      };
+    }
+
+    await CreativeService.update(id, { isActive: false });
+    const updated = await CreativeService.findById(id);
+    revalidatePath("/criativos");
+    return { success: true, data: toCreativeViewModel(updated) };
   } catch (error) {
     return errorResult(error);
   }

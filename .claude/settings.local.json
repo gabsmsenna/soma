@@ -5,7 +5,8 @@
       "Bash(ls:*)",
       "Bash(find:*)",
       "Bash(pnpm run:*)",
-      "Bash(npx biome:*)"
+      "Bash(npx biome:*)",
+      "Bash(pnpm vitest run src/app/\\\\\\(dashboard\\\\\\)/criativos/actions.test.ts)"
     ]
   }
 }

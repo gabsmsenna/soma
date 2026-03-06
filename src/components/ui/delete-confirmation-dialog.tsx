@@ -12,6 +12,7 @@ interface DeleteConfirmationDialogProps {
   title?: string;
   description?: string;
   itemName?: string;
+  confirmLabel?: string;
 }
 
 export function DeleteConfirmationDialog({
@@ -21,6 +22,7 @@ export function DeleteConfirmationDialog({
   title = "Excluir",
   description,
   itemName,
+  confirmLabel = "Excluir",
 }: DeleteConfirmationDialogProps) {
   const [isPending, startTransition] = useTransition();
 
@@ -36,7 +38,6 @@ export function DeleteConfirmationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTitle>{title}</DialogTitle>
       <DialogContent className="sm:max-w-xs rounded-3xl p-6 text-center shadow-lg border-0 sm:rounded-[32px] overflow-hidden flex flex-col items-center">
         {/* Icon */}
         <div className="w-16 h-16 rounded-3xl bg-red-100 dark:bg-red-500/10 flex items-center justify-center mb-4 transition-transform hover:scale-105">
@@ -46,8 +47,9 @@ export function DeleteConfirmationDialog({
           />
         </div>
 
-        {/* Text */}
-        <h2 className="text-xl font-bold text-foreground mb-2">{title}</h2>
+        <DialogTitle className="text-xl font-bold text-foreground mb-2">
+          {title}
+        </DialogTitle>
         <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
           {desc}
         </p>
@@ -69,7 +71,7 @@ export function DeleteConfirmationDialog({
             onClick={handleConfirm}
             disabled={isPending}
           >
-            {isPending ? "Excluindo..." : "Excluir"}
+            {isPending ? `${confirmLabel}...` : confirmLabel}
           </Button>
         </div>
       </DialogContent>
