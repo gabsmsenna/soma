@@ -18,10 +18,10 @@
 - [x] Add toast success/error feedback using sonner
 
 ## Task 4: Create /relatorio-lucros page
-- [ ] Add `findProfitPaymentsGroupedByOperation` service function with date range filter
-- [ ] Create `/app/(dashboard)/relatorio-lucros/page.tsx` as Server Component with URL search params for date
-- [ ] Create client component for date range filter (max 30 days, shows validation error)
-- [ ] Create accordion component for operation groups with creative drill-down
+- [x] Add `findProfitPaymentsGroupedByOperation` service function with date range filter
+- [x] Create `/app/(dashboard)/relatorio-lucros/page.tsx` as Server Component with URL search params for date
+- [x] Create client component for date range filter (max 30 days, shows validation error)
+- [x] Create accordion component for operation groups with creative drill-down
 
 ## Task 5: Add Relatório de Lucros to sidebar
 - [ ] Add "Relatório de Lucros" nav item with DollarSign icon pointing to /relatorio-lucros
