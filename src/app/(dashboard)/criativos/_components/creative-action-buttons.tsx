@@ -30,7 +30,7 @@ export function CreativeActionButtons({
           type="button"
           onClick={handleMarkAsPaid}
           disabled={isPending}
-          className="w-full flex items-center justify-center gap-2 bg-green-500/10 hover:bg-green-500 text-green-500 hover:text-black font-bold py-2 rounded-xl transition-all border border-green-500/20 text-xs uppercase tracking-wider disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-2 bg-green-700/10 hover:bg-green-700 text-green-700 hover:text-white font-bold py-2 rounded-xl transition-all border border-green-700/20 dark:bg-green-500/10 dark:text-green-500 dark:hover:bg-green-500 dark:hover:text-black dark:border-green-500/20 text-xs uppercase tracking-wider disabled:opacity-50"
         >
           {isPending ? "..." : "Marcar Pago"}
         </button>
