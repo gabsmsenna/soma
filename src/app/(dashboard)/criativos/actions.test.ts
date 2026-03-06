@@ -17,6 +17,7 @@ vi.mock("@/services/creative.service", () => ({
   findById: vi.fn(),
   update: vi.fn(),
   deleteCreative: vi.fn(),
+  registerProfit: vi.fn(),
 }));
 
 // Mock operation service
@@ -53,7 +54,7 @@ describe("criativos/actions", () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
   });
 
   describe("createCreative", () => {
@@ -232,6 +233,87 @@ describe("criativos/actions", () => {
 
       const { deactivateCreative } = await import("./actions");
       const result = await deactivateCreative(creativeId);
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.status).toBe(404);
+      }
+    });
+  });
+
+  describe("registerProfit", () => {
+    it("returns updated creative with increased totalProfit", async () => {
+      const { getServerSession } = await import("@/lib/session");
+      const CreativeService = await import("@/services/creative.service");
+
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+      vi.mocked(CreativeService.findById).mockResolvedValue(
+        mockCreativeFromDB as any,
+      );
+
+      const updatedCreative = {
+        ...mockCreativeFromDB,
+        totalProfit: new Prisma.Decimal(1500),
+        freelancerCut: new Prisma.Decimal(150),
+      };
+      vi.mocked(CreativeService.registerProfit).mockResolvedValue(
+        updatedCreative as any,
+      );
+      vi.mocked(CreativeService.findById)
+        .mockResolvedValueOnce(mockCreativeFromDB as any)
+        .mockResolvedValueOnce(updatedCreative as any);
+
+      const { registerProfit } = await import("./actions");
+      const result = await registerProfit(creativeId, { amount: 500 });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.totalProfit).toBe("1500");
+      }
+    });
+
+    it("returns 401 when not authenticated", async () => {
+      const { getServerSession } = await import("@/lib/session");
+      vi.mocked(getServerSession).mockResolvedValue(null);
+
+      const { registerProfit } = await import("./actions");
+      const result = await registerProfit(creativeId, { amount: 500 });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.status).toBe(401);
+      }
+    });
+
+    it("returns 400 for invalid amount (negative)", async () => {
+      const { getServerSession } = await import("@/lib/session");
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+
+      const { registerProfit } = await import("./actions");
+      const result = await registerProfit(creativeId, { amount: -100 });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.status).toBe(400);
+      }
+    });
+
+    it("returns 404 when creative belongs to different user", async () => {
+      const { getServerSession } = await import("@/lib/session");
+      const CreativeService = await import("@/services/creative.service");
+
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+
+      const otherUserCreative = {
+        ...mockCreativeFromDB,
+        operation: { ...mockCreativeFromDB.operation, userId: "other-user" },
+      };
+      vi.mocked(CreativeService.findById).mockResolvedValue(
+        otherUserCreative as any,
+      );
+
+      const { registerProfit } = await import("./actions");
+      const result = await registerProfit(creativeId, { amount: 500 });
 
       expect(result.success).toBe(false);
       if (!result.success) {

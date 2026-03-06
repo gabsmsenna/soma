@@ -79,6 +79,41 @@ export async function deleteCreative(id: string): Promise<void> {
   await prisma.creative.delete({ where: { id } });
 }
 
+export async function registerProfit(id: string, amount: Prisma.Decimal) {
+  return prisma.$transaction(async (tx) => {
+    const creative = await tx.creative.findUnique({
+      where: { id },
+      include: { operation: true },
+    });
+
+    if (!creative) throw problems.resourceNotFound("Criativo não encontrado");
+
+    const previousTotal = creative.totalProfit;
+    const newTotal = previousTotal.add(amount);
+    const newFreelancerCut = newTotal
+      .mul(creative.operation.freelancerCutPercentage)
+      .div(100);
+
+    await tx.profitEntry.create({
+      data: {
+        amount,
+        previousTotal,
+        newTotal,
+        creativeId: id,
+      },
+    });
+
+    return tx.creative.update({
+      where: { id },
+      data: {
+        totalProfit: newTotal,
+        freelancerCut: newFreelancerCut,
+      },
+      include: { operation: true },
+    });
+  });
+}
+
 export async function findAllByUserId(
   userId: string,
   page: number,

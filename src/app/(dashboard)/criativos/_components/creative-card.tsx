@@ -61,6 +61,7 @@ export function CreativeCard({ creative }: CreativeCardProps) {
       <CreativeActionButtons
         creativeId={creative.id}
         isPaid={creative.isPaid}
+        totalProfit={creative.totalProfit}
       />
 
       <div className="mt-auto pt-4 border-t flex items-center justify-between">

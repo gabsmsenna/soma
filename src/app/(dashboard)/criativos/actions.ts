@@ -220,6 +220,63 @@ export async function deactivateCreative(
   }
 }
 
+const registerProfitSchema = z.object({
+  amount: z.number().positive("Valor deve ser positivo"),
+});
+
+export async function registerProfit(
+  id: string,
+  input: { amount: number },
+): Promise<ActionResult<CreativeViewModel>> {
+  try {
+    const session = await getServerSession();
+    if (!session) {
+      return {
+        success: false,
+        error: {
+          title: "Não autorizado",
+          detail: "Autenticação necessária",
+          status: 401,
+        },
+      };
+    }
+
+    const parsed = registerProfitSchema.safeParse(input);
+    if (!parsed.success) {
+      return {
+        success: false,
+        error: {
+          title: "Dados inválidos",
+          detail: parsed.error.issues[0]?.message ?? "Dados inválidos",
+          status: 400,
+        },
+      };
+    }
+
+    const existing = await CreativeService.findById(id);
+    if (existing.operation.userId !== session.userId) {
+      return {
+        success: false,
+        error: {
+          title: "Recurso não encontrado",
+          detail: "Criativo não encontrado",
+          status: 404,
+        },
+      };
+    }
+
+    const updated = await CreativeService.registerProfit(
+      id,
+      new Prisma.Decimal(parsed.data.amount),
+    );
+
+    revalidatePath("/criativos");
+    return { success: true, data: toCreativeViewModel(updated) };
+  } catch (error) {
+    return errorResult(error);
+  }
+}
+
 export async function markAsPaid(
   id: string,
 ): Promise<ActionResult<CreativeViewModel>> {

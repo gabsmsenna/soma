@@ -1,19 +1,23 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { markAsPaid } from "../actions";
+import { RegisterProfitDialog } from "./register-profit-dialog";
 
 interface CreativeActionButtonsProps {
   creativeId: string;
   isPaid: boolean;
+  totalProfit: string;
 }
 
 export function CreativeActionButtons({
   creativeId,
   isPaid,
+  totalProfit,
 }: CreativeActionButtonsProps) {
   const [isPending, startTransition] = useTransition();
+  const [profitDialogOpen, setProfitDialogOpen] = useState(false);
   const router = useRouter();
 
   function handleMarkAsPaid() {
@@ -37,10 +41,17 @@ export function CreativeActionButtons({
       )}
       <button
         type="button"
+        onClick={() => setProfitDialogOpen(true)}
         className="w-full flex items-center justify-center gap-2 bg-[#FFBB00]/20 hover:bg-[#FFBB00] text-[#997000] dark:bg-[#FFBB00]/10 dark:text-[#FFBB00] hover:text-black font-bold py-2 rounded-xl transition-all border border-[#FFBB00]/20 text-xs uppercase tracking-wider"
       >
         Registrar Lucro
       </button>
+      <RegisterProfitDialog
+        creativeId={creativeId}
+        currentProfit={totalProfit}
+        open={profitDialogOpen}
+        onOpenChange={setProfitDialogOpen}
+      />
     </div>
   );
 }
