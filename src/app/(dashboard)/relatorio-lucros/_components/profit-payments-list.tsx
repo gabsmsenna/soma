@@ -74,17 +74,18 @@ export function ProfitPaymentsList({ groups }: ProfitPaymentsListProps) {
 
           <AccordionContent>
             <div className="border-t pt-3 space-y-2">
-              <div className="grid grid-cols-3 gap-4 px-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              <div className="grid grid-cols-4 gap-4 px-2 pb-1 text-xs font-medium text-muted-foreground uppercase tracking-wide">
                 <span>Criativo</span>
                 <span className="text-right hidden sm:block">
-                  Lucro do criativo
+                  Lucro do Criativo
                 </span>
-                <span className="text-right">Comissão paga</span>
+                <span className="text-right">Comissão Paga</span>
+                <span className="text-right">Data do Pagamento</span>
               </div>
               {group.creatives.map((creative) => (
                 <div
                   key={`${creative.creativeId}-${creative.dataPagamento}`}
-                  className="grid grid-cols-3 gap-4 rounded-md bg-muted/40 px-2 py-2.5 text-sm"
+                  className="grid grid-cols-4 gap-4 rounded-md bg-muted/40 px-2 py-2.5 text-sm"
                 >
                   <span className="font-medium truncate">
                     {creative.creativeName}
@@ -94,6 +95,9 @@ export function ProfitPaymentsList({ groups }: ProfitPaymentsListProps) {
                   </span>
                   <span className="text-right font-semibold">
                     {formatCurrency(creative.comissaoFreelancer)}
+                  </span>
+                  <span className="text-right text-muted-foreground">
+                    {new Date(creative.dataPagamento).toLocaleDateString("pt-BR")}
                   </span>
                 </div>
               ))}
