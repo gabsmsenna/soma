@@ -5,7 +5,6 @@ import {
   type createMockPrismaClient,
   mockPrismaCount,
   mockPrismaCreate,
-  mockPrismaDelete,
   mockPrismaFindFirst,
   mockPrismaFindMany,
   mockPrismaFindUnique,
@@ -59,7 +58,7 @@ describe("OperationService", () => {
 
       expect(result).toEqual(mockOperations);
       expect(mockPrisma.operation.findMany).toHaveBeenCalledWith({
-        where: { userId },
+        where: { userId, active: true },
         include: { creatives: true },
       });
     });
@@ -100,14 +99,14 @@ describe("OperationService", () => {
         },
       });
       expect(mockPrisma.operation.findMany).toHaveBeenCalledWith({
-        where: { userId },
+        where: { userId, active: true },
         include: { creatives: true },
         skip: 0,
         take: limit,
         orderBy: { createdAt: "desc" },
       });
       expect(mockPrisma.operation.count).toHaveBeenCalledWith({
-        where: { userId },
+        where: { userId, active: true },
       });
     });
 
@@ -179,7 +178,7 @@ describe("OperationService", () => {
 
       expect(result).toEqual(mockUpdatedOperation);
       expect(mockPrisma.operation.findFirst).toHaveBeenCalledWith({
-        where: { id: operationId, userId },
+        where: { id: operationId, userId, active: true },
       });
       expect(mockPrisma.operation.update).toHaveBeenCalledWith({
         where: { id: operationId },
@@ -211,7 +210,7 @@ describe("OperationService", () => {
   });
 
   describe("deleteOperation", () => {
-    it("deve deletar uma operação existente", async () => {
+    it("deve desativar uma operação existente (soft delete)", async () => {
       const mockOperation = {
         id: operationId,
         name: "Operação para Deletar",
@@ -219,21 +218,26 @@ describe("OperationService", () => {
         createdAt: new Date(),
         updatedAt: new Date(),
       };
+      const mockDeactivatedOperation = {
+        ...mockOperation,
+        active: false,
+      };
 
       mockPrisma.operation.findFirst = mockPrismaFindFirst(mockOperation);
-      mockPrisma.operation.delete = mockPrismaDelete(mockOperation);
+      mockPrisma.operation.update = mockPrismaUpdate(mockDeactivatedOperation);
 
       const result = await OperationService.deleteOperation(
         operationId,
         userId,
       );
 
-      expect(result).toEqual(mockOperation);
+      expect(result).toEqual(mockDeactivatedOperation);
       expect(mockPrisma.operation.findFirst).toHaveBeenCalledWith({
-        where: { id: operationId, userId },
+        where: { id: operationId, userId, active: true },
       });
-      expect(mockPrisma.operation.delete).toHaveBeenCalledWith({
+      expect(mockPrisma.operation.update).toHaveBeenCalledWith({
         where: { id: operationId },
+        data: { active: false },
       });
     });
 
@@ -244,7 +248,7 @@ describe("OperationService", () => {
         OperationService.deleteOperation(operationId, userId),
       ).rejects.toThrow(problems.resourceNotFound("Operação não encontrada"));
 
-      expect(mockPrisma.operation.delete).not.toHaveBeenCalled();
+      expect(mockPrisma.operation.update).not.toHaveBeenCalled();
     });
 
     it("deve lançar erro quando operação pertence a outro usuário", async () => {

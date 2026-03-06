@@ -66,7 +66,15 @@ describe("CreativeService", () => {
       };
 
       mockPrisma.operation.findUnique = mockPrismaFindUnique(mockOperation);
+
+      // $transaction executes the callback passing the mock prisma as tx
+      (mockPrisma.$transaction as any).mockImplementation(
+        async (cb: (tx: any) => Promise<any>) => cb(mockPrisma),
+      );
       mockPrisma.creative.create = mockPrismaCreate(mockCreatedCreative);
+      (mockPrisma as any).profitLog = {
+        create: vi.fn().mockResolvedValue({}),
+      };
 
       const result = await CreativeService.create(createData);
 

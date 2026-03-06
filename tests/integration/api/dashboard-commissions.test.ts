@@ -88,11 +88,17 @@ describe("Dashboard Commissions API (GET /api/dashboard/commissions)", () => {
     const body = await parseJsonResponse<CommissionsChartResponse>(response);
 
     expect(body.period).toBe("monthly");
-    expect(body.data.length).toBe(2);
-    expect(body.data[0].totalProfit).toBe(1000);
-    expect(body.data[0].myProfit).toBe(100);
-    expect(body.data[1].totalProfit).toBe(2000);
-    expect(body.data[1].myProfit).toBe(200);
+    expect(body.data.length).toBe(12);
+
+    const janData = body.data.find((d) => d.label === "2026-01-01");
+    const febData = body.data.find((d) => d.label === "2026-02-01");
+
+    expect(janData).toBeDefined();
+    expect(janData?.totalProfit).toBe(1000);
+    expect(janData?.myProfit).toBe(100);
+    expect(febData).toBeDefined();
+    expect(febData?.totalProfit).toBe(2000);
+    expect(febData?.myProfit).toBe(200);
   });
 
   it("deve agrupar dados por semana corretamente", async () => {

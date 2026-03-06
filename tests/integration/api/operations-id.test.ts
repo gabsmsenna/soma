@@ -195,7 +195,7 @@ describe("Operations API Endpoints (/api/operations/[operationId])", () => {
   });
 
   describe("DELETE /api/operations/[operationId]", () => {
-    it("deve excluir uma operação existente do usuário", async () => {
+    it("deve desativar uma operação existente do usuário (soft delete)", async () => {
       const request = createMockRequest(
         `http://localhost/api/operations/${testOperation.id}`,
         {
@@ -215,7 +215,8 @@ describe("Operations API Endpoints (/api/operations/[operationId])", () => {
       const inDb = await prisma.operation.findUnique({
         where: { id: testOperation.id },
       });
-      expect(inDb).toBeNull();
+      expect(inDb).not.toBeNull();
+      expect(inDb?.active).toBe(false);
     });
 
     it("deve retornar 404 ao tentar excluir operação de outro usuário", async () => {
