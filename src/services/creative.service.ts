@@ -17,13 +17,26 @@ export async function create(data: {
     .mul(operation.freelancerCutPercentage)
     .div(100);
 
-  return prisma.creative.create({
-    data: {
-      name: data.name,
-      totalProfit: data.totalProfit,
-      freelancerCut,
-      operationId: data.operationId,
-    },
+  return prisma.$transaction(async (tx) => {
+    const creative = await tx.creative.create({
+      data: {
+        name: data.name,
+        totalProfit: data.totalProfit,
+        freelancerCut,
+        operationId: data.operationId,
+      },
+    });
+
+    if (Number(data.totalProfit) > 0) {
+      await tx.profitLog.create({
+        data: {
+          amount: data.totalProfit,
+          creativeId: creative.id,
+        },
+      });
+    }
+
+    return creative;
   });
 }
 
