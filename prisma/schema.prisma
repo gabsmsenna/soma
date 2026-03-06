@@ -23,7 +23,6 @@ model User {
   updatedAt       DateTime         @updatedAt
   operations      Operation[]
   monthlyGoals    MonthlyGoal[]
-  profitPayments  ProfitPayment[]
 
   @@map("users")
 }
@@ -55,39 +54,34 @@ model Creative {
   operationId     String
   operation       Operation       @relation(fields: [operationId], references: [id], onDelete: Cascade)
   profitEntries   ProfitEntry[]
-  profitPayments  ProfitPayment[]
+  profitLogs      ProfitLog[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
   @@map("creatives")
 }
 
-// 5. Histórico de entradas de lucro por criativo
+// 5. Registros de pagamento (quando o freelancer clica "Marcar Pago")
 model ProfitEntry {
-  id            String   @id @default(uuid())
-  amount        Decimal  @db.Decimal(10, 2)
-  previousTotal Decimal  @db.Decimal(10, 2)
-  newTotal      Decimal  @db.Decimal(10, 2)
-  creativeId    String
-  creative      Creative @relation(fields: [creativeId], references: [id], onDelete: Cascade)
-  createdAt     DateTime @default(now())
+  id                 String   @id @default(cuid())
+  lucreTotalCriativo Float
+  comissaoFreelancer Float
+  creativeId         String
+  creative           Creative @relation(fields: [creativeId], references: [id], onDelete: Cascade)
+  dataPagamento      DateTime @default(now())
 
   @@map("profit_entries")
 }
 
-// 6. Histórico de pagamentos de comissão do freelancer
-model ProfitPayment {
-  id                  String   @id @default(cuid())
-  userId              String
-  creativeId          String
-  totalComissaoPaga   Float
-  lucreTotalCriativo  Float
-  dataPagamento       DateTime @default(now())
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  creative            Creative @relation(fields: [creativeId], references: [id], onDelete: Cascade)
+// 6. Histórico de entradas de lucro por criativo
+model ProfitLog {
+  id         String   @id @default(cuid())
+  amount     Decimal  @db.Decimal(10, 2)
+  creativeId String
+  creative   Creative @relation(fields: [creativeId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
 
-  @@index([userId, dataPagamento])
-  @@map("profit_payments")
+  @@map("profit_logs")
 }
 
 // 4. Meta mensal de lucro do freelancer

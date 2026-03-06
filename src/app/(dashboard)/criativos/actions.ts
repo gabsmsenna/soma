@@ -305,7 +305,7 @@ export async function registerProfitPayment(
       };
     }
 
-    await CreativeService.registerProfitPayment(id, session.userId);
+    await CreativeService.registerProfitPayment(id);
     revalidatePath("/criativos");
     return { success: true, data: undefined };
   } catch (error) {

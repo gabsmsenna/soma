@@ -356,10 +356,9 @@ describe("criativos/actions", () => {
   describe("registerProfitPayment", () => {
     const mockPayment = {
       id: "payment-1",
-      userId,
       creativeId,
-      totalComissaoPaga: 100,
       lucreTotalCriativo: 1000,
+      comissaoFreelancer: 100,
       dataPagamento: new Date("2024-01-01"),
     };
 

@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { problems } from "@/lib/problem-registry";
 
@@ -88,17 +88,14 @@ export async function registerProfit(id: string, amount: Prisma.Decimal) {
 
     if (!creative) throw problems.resourceNotFound("Criativo não encontrado");
 
-    const previousTotal = creative.totalProfit;
-    const newTotal = previousTotal.add(amount);
+    const newTotal = creative.totalProfit.add(amount);
     const newFreelancerCut = newTotal
       .mul(creative.operation.freelancerCutPercentage)
       .div(100);
 
-    await tx.profitEntry.create({
+    await tx.profitLog.create({
       data: {
         amount,
-        previousTotal,
-        newTotal,
         creativeId: id,
       },
     });
@@ -114,10 +111,7 @@ export async function registerProfit(id: string, amount: Prisma.Decimal) {
   });
 }
 
-export async function registerProfitPayment(
-  creativeId: string,
-  userId: string,
-) {
+export async function registerProfitPayment(creativeId: string) {
   return prisma.$transaction(async (tx) => {
     const creative = await tx.creative.findUnique({
       where: { id: creativeId },
@@ -126,19 +120,21 @@ export async function registerProfitPayment(
 
     if (!creative) throw problems.resourceNotFound("Criativo não encontrado");
 
-    const payment = await tx.profitPayment.create({
+    const payment = await tx.profitEntry.create({
       data: {
-        userId,
-        creativeId,
-        totalComissaoPaga: creative.freelancerCut.toNumber(),
         lucreTotalCriativo: creative.totalProfit.toNumber(),
+        comissaoFreelancer: creative.freelancerCut.toNumber(),
+        creativeId,
         dataPagamento: new Date(),
       },
     });
 
     await tx.creative.update({
       where: { id: creativeId },
-      data: { freelancerCut: new Prisma.Decimal(0) },
+      data: {
+        totalProfit: new Prisma.Decimal(0),
+        freelancerCut: new Prisma.Decimal(0),
+      },
     });
 
     return payment;
@@ -150,10 +146,10 @@ export async function findProfitPaymentsGroupedByOperation(
   startDate: Date,
   endDate: Date,
 ) {
-  const payments = await prisma.profitPayment.findMany({
+  const entries = await prisma.profitEntry.findMany({
     where: {
-      userId,
       dataPagamento: { gte: startDate, lte: endDate },
+      creative: { operation: { userId } },
     },
     include: {
       creative: { include: { operation: true } },
@@ -172,15 +168,15 @@ export async function findProfitPaymentsGroupedByOperation(
         creativeId: string;
         creativeName: string;
         lucreTotalCriativo: number;
-        totalComissaoPaga: number;
+        comissaoFreelancer: number;
         dataPagamento: Date;
       }[];
     }
   >();
 
-  for (const payment of payments) {
-    const opId = payment.creative.operation.id;
-    const opName = payment.creative.operation.name;
+  for (const entry of entries) {
+    const opId = entry.creative.operation.id;
+    const opName = entry.creative.operation.name;
 
     if (!grouped.has(opId)) {
       grouped.set(opId, {
@@ -193,14 +189,14 @@ export async function findProfitPaymentsGroupedByOperation(
     }
 
     const group = grouped.get(opId)!;
-    group.totalLucro += payment.lucreTotalCriativo;
-    group.totalComissao += payment.totalComissaoPaga;
+    group.totalLucro += entry.lucreTotalCriativo;
+    group.totalComissao += entry.comissaoFreelancer;
     group.creatives.push({
-      creativeId: payment.creativeId,
-      creativeName: payment.creative.name,
-      lucreTotalCriativo: payment.lucreTotalCriativo,
-      totalComissaoPaga: payment.totalComissaoPaga,
-      dataPagamento: payment.dataPagamento,
+      creativeId: entry.creativeId,
+      creativeName: entry.creative.name,
+      lucreTotalCriativo: entry.lucreTotalCriativo,
+      comissaoFreelancer: entry.comissaoFreelancer,
+      dataPagamento: entry.dataPagamento,
     });
   }
 
