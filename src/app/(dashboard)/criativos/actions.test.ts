@@ -18,6 +18,7 @@ vi.mock("@/services/creative.service", () => ({
   update: vi.fn(),
   deleteCreative: vi.fn(),
   registerProfit: vi.fn(),
+  registerProfitPayment: vi.fn(),
 }));
 
 // Mock operation service
@@ -348,6 +349,71 @@ describe("criativos/actions", () => {
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.isPaid).toBe(true);
+      }
+    });
+  });
+
+  describe("registerProfitPayment", () => {
+    const mockPayment = {
+      id: "payment-1",
+      userId,
+      creativeId,
+      totalComissaoPaga: 100,
+      lucreTotalCriativo: 1000,
+      dataPagamento: new Date("2024-01-01"),
+    };
+
+    it("returns success after registering payment for owned creative", async () => {
+      const { getServerSession } = await import("@/lib/session");
+      const CreativeService = await import("@/services/creative.service");
+
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+      vi.mocked(CreativeService.findById).mockResolvedValue(
+        mockCreativeFromDB as any,
+      );
+      vi.mocked(CreativeService.registerProfitPayment).mockResolvedValue(
+        mockPayment as any,
+      );
+
+      const { registerProfitPayment } = await import("./actions");
+      const result = await registerProfitPayment(creativeId);
+
+      expect(result.success).toBe(true);
+    });
+
+    it("returns 401 when not authenticated", async () => {
+      const { getServerSession } = await import("@/lib/session");
+      vi.mocked(getServerSession).mockResolvedValue(null);
+
+      const { registerProfitPayment } = await import("./actions");
+      const result = await registerProfitPayment(creativeId);
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.status).toBe(401);
+      }
+    });
+
+    it("returns 404 when creative belongs to different user", async () => {
+      const { getServerSession } = await import("@/lib/session");
+      const CreativeService = await import("@/services/creative.service");
+
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+
+      const otherUserCreative = {
+        ...mockCreativeFromDB,
+        operation: { ...mockCreativeFromDB.operation, userId: "other-user" },
+      };
+      vi.mocked(CreativeService.findById).mockResolvedValue(
+        otherUserCreative as any,
+      );
+
+      const { registerProfitPayment } = await import("./actions");
+      const result = await registerProfitPayment(creativeId);
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.status).toBe(404);
       }
     });
   });

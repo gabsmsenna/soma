@@ -14,15 +14,16 @@ datasource db {
 
 // 1. O Freelancer (Único dono e utilizador do sistema)
 model User {
-  id           String        @id @default(uuid())
-  name         String
-  email        String        @unique
-  password     String
-  cpf          String        @unique
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  operations   Operation[]
-  monthlyGoals MonthlyGoal[]
+  id              String           @id @default(uuid())
+  name            String
+  email           String           @unique
+  password        String
+  cpf             String           @unique
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  operations      Operation[]
+  monthlyGoals    MonthlyGoal[]
+  profitPayments  ProfitPayment[]
 
   @@map("users")
 }
@@ -44,18 +45,19 @@ model Operation {
 
 // 3. Criativos / Anúncios (dentro de uma operação)
 model Creative {
-  id            String    @id @default(uuid())
-  name          String
-  totalProfit   Decimal   @db.Decimal(10, 2)
-  freelancerCut Decimal   @db.Decimal(10, 2)
-  isActive      Boolean   @default(true)
-  isPaid        Boolean   @default(false)
-  paidAt        DateTime?
-  operationId   String
-  operation     Operation @relation(fields: [operationId], references: [id], onDelete: Cascade)
-  profitEntries ProfitEntry[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id              String          @id @default(uuid())
+  name            String
+  totalProfit     Decimal         @db.Decimal(10, 2)
+  freelancerCut   Decimal         @db.Decimal(10, 2)
+  isActive        Boolean         @default(true)
+  isPaid          Boolean         @default(false)
+  paidAt          DateTime?
+  operationId     String
+  operation       Operation       @relation(fields: [operationId], references: [id], onDelete: Cascade)
+  profitEntries   ProfitEntry[]
+  profitPayments  ProfitPayment[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 
   @@map("creatives")
 }
@@ -71,6 +73,21 @@ model ProfitEntry {
   createdAt     DateTime @default(now())
 
   @@map("profit_entries")
+}
+
+// 6. Histórico de pagamentos de comissão do freelancer
+model ProfitPayment {
+  id                  String   @id @default(cuid())
+  userId              String
+  creativeId          String
+  totalComissaoPaga   Float
+  lucreTotalCriativo  Float
+  dataPagamento       DateTime @default(now())
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  creative            Creative @relation(fields: [creativeId], references: [id], onDelete: Cascade)
+
+  @@index([userId, dataPagamento])
+  @@map("profit_payments")
 }
 
 // 4. Meta mensal de lucro do freelancer

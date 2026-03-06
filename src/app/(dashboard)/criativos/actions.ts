@@ -277,6 +277,42 @@ export async function registerProfit(
   }
 }
 
+export async function registerProfitPayment(
+  id: string,
+): Promise<ActionResult<void>> {
+  try {
+    const session = await getServerSession();
+    if (!session) {
+      return {
+        success: false,
+        error: {
+          title: "Não autorizado",
+          detail: "Autenticação necessária",
+          status: 401,
+        },
+      };
+    }
+
+    const existing = await CreativeService.findById(id);
+    if (existing.operation.userId !== session.userId) {
+      return {
+        success: false,
+        error: {
+          title: "Recurso não encontrado",
+          detail: "Criativo não encontrado",
+          status: 404,
+        },
+      };
+    }
+
+    await CreativeService.registerProfitPayment(id, session.userId);
+    revalidatePath("/criativos");
+    return { success: true, data: undefined };
+  } catch (error) {
+    return errorResult(error);
+  }
+}
+
 export async function markAsPaid(
   id: string,
 ): Promise<ActionResult<CreativeViewModel>> {

@@ -114,6 +114,99 @@ export async function registerProfit(id: string, amount: Prisma.Decimal) {
   });
 }
 
+export async function registerProfitPayment(
+  creativeId: string,
+  userId: string,
+) {
+  return prisma.$transaction(async (tx) => {
+    const creative = await tx.creative.findUnique({
+      where: { id: creativeId },
+      include: { operation: true },
+    });
+
+    if (!creative) throw problems.resourceNotFound("Criativo não encontrado");
+
+    const payment = await tx.profitPayment.create({
+      data: {
+        userId,
+        creativeId,
+        totalComissaoPaga: creative.freelancerCut.toNumber(),
+        lucreTotalCriativo: creative.totalProfit.toNumber(),
+        dataPagamento: new Date(),
+      },
+    });
+
+    await tx.creative.update({
+      where: { id: creativeId },
+      data: { freelancerCut: new Prisma.Decimal(0) },
+    });
+
+    return payment;
+  });
+}
+
+export async function findProfitPaymentsGroupedByOperation(
+  userId: string,
+  startDate: Date,
+  endDate: Date,
+) {
+  const payments = await prisma.profitPayment.findMany({
+    where: {
+      userId,
+      dataPagamento: { gte: startDate, lte: endDate },
+    },
+    include: {
+      creative: { include: { operation: true } },
+    },
+    orderBy: { dataPagamento: "desc" },
+  });
+
+  const grouped = new Map<
+    string,
+    {
+      operationId: string;
+      operationName: string;
+      totalLucro: number;
+      totalComissao: number;
+      creatives: {
+        creativeId: string;
+        creativeName: string;
+        lucreTotalCriativo: number;
+        totalComissaoPaga: number;
+        dataPagamento: Date;
+      }[];
+    }
+  >();
+
+  for (const payment of payments) {
+    const opId = payment.creative.operation.id;
+    const opName = payment.creative.operation.name;
+
+    if (!grouped.has(opId)) {
+      grouped.set(opId, {
+        operationId: opId,
+        operationName: opName,
+        totalLucro: 0,
+        totalComissao: 0,
+        creatives: [],
+      });
+    }
+
+    const group = grouped.get(opId)!;
+    group.totalLucro += payment.lucreTotalCriativo;
+    group.totalComissao += payment.totalComissaoPaga;
+    group.creatives.push({
+      creativeId: payment.creativeId,
+      creativeName: payment.creative.name,
+      lucreTotalCriativo: payment.lucreTotalCriativo,
+      totalComissaoPaga: payment.totalComissaoPaga,
+      dataPagamento: payment.dataPagamento,
+    });
+  }
+
+  return Array.from(grouped.values());
+}
+
 export async function findAllByUserId(
   userId: string,
   page: number,
