@@ -20,7 +20,7 @@ export async function register(data: RegisterDto) {
     data: { name, email, cpf, password: hashedPassword },
   });
 
-  const token = await generateAuthToken(user.id, user.email);
+  const token = await generateAuthToken(user.id, user.email, user.name);
   const { password: _, ...userWithoutPassword } = user;
 
   return { user: userWithoutPassword, token };
@@ -41,7 +41,7 @@ export async function login({ email, password }: LoginDto) {
     throw problems.invalidCredentials();
   }
 
-  const token = await generateAuthToken(user.id, user.email);
+  const token = await generateAuthToken(user.id, user.email, user.name);
 
   const { password: _, ...userWithoutPassword } = user;
 
@@ -53,7 +53,7 @@ export async function login({ email, password }: LoginDto) {
 
 export async function verifyToken(
   token: string,
-): Promise<{ userId: string; email: string }> {
+): Promise<{ userId: string; email: string; name: string }> {
   const secretKey = process.env.JWT_SECRET;
   if (!secretKey) {
     throw new Error("JWT_SECRET not defined");
@@ -61,7 +61,11 @@ export async function verifyToken(
   const secret = new TextEncoder().encode(secretKey);
   try {
     const { payload } = await jwtVerify(token, secret);
-    return { userId: payload.sub as string, email: payload.email as string };
+    return {
+      userId: payload.sub as string,
+      email: payload.email as string,
+      name: (payload.name as string) ?? "",
+    };
   } catch (error) {
     console.error("Token verification failed:", error);
     throw problems.invalidToken();

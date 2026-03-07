@@ -41,7 +41,7 @@ describe("Dashboard Goals API (/api/dashboard/goals)", () => {
       },
     });
 
-    validToken = await generateAuthToken(testUser.id, testUser.email);
+    validToken = await generateAuthToken(testUser.id, testUser.email, testUser.name);
   });
 
   describe("POST /api/dashboard/goals", () => {

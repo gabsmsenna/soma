@@ -24,12 +24,17 @@ describe("getServerSession", () => {
     vi.mocked(verifyToken).mockResolvedValue({
       userId: "user-123",
       email: "test@example.com",
+      name: "Test User",
     });
 
     const { getServerSession } = await import("@/lib/session");
     const session = await getServerSession();
 
-    expect(session).toEqual({ userId: "user-123", email: "test@example.com" });
+    expect(session).toEqual({
+      userId: "user-123",
+      email: "test@example.com",
+      name: "Test User",
+    });
     expect(verifyToken).toHaveBeenCalledWith("valid.jwt.token");
   });
 

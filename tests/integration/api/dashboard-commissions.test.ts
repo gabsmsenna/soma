@@ -41,7 +41,7 @@ describe("Dashboard Commissions API (GET /api/dashboard/commissions)", () => {
       },
     });
 
-    validToken = await generateAuthToken(testUser.id, testUser.email);
+    validToken = await generateAuthToken(testUser.id, testUser.email, testUser.name);
   });
 
   it("deve agrupar dados por mês corretamente", async () => {

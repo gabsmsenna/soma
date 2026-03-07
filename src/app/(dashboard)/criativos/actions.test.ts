@@ -31,7 +31,7 @@ describe("criativos/actions", () => {
   const operationId = "op-1";
   const creativeId = "creative-789";
 
-  const mockSession = { userId, email: "test@test.com" };
+  const mockSession = { userId, email: "test@test.com", name: "Test User" };
 
   const mockCreativeFromDB = {
     id: creativeId,

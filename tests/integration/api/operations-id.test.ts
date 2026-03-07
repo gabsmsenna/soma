@@ -51,8 +51,8 @@ describe("Operations API Endpoints (/api/operations/[operationId])", () => {
       },
     });
 
-    validToken = await generateAuthToken(testUser.id, testUser.email);
-    otherToken = await generateAuthToken(otherUser.id, otherUser.email);
+    validToken = await generateAuthToken(testUser.id, testUser.email, testUser.name);
+    otherToken = await generateAuthToken(otherUser.id, otherUser.email, otherUser.name);
 
     testOperation = await prisma.operation.create({
       data: {

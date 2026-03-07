@@ -40,7 +40,7 @@ describe("Operations API Endpoints (/api/operations)", () => {
       },
     });
 
-    validToken = await generateAuthToken(testUser.id, testUser.email);
+    validToken = await generateAuthToken(testUser.id, testUser.email, testUser.name);
   });
 
   describe("POST /api/operations", () => {

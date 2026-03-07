@@ -3,6 +3,7 @@ import { SignJWT } from "jose";
 export async function generateAuthToken(
   userId: string,
   email: string,
+  name: string,
 ): Promise<string> {
   const secretKey = process.env.JWT_SECRET;
 
@@ -13,7 +14,7 @@ export async function generateAuthToken(
   const secret = new TextEncoder().encode(secretKey);
   const alg = "HS256";
 
-  return await new SignJWT({ sub: userId, email })
+  return await new SignJWT({ sub: userId, email, name })
     .setProtectedHeader({ alg })
     .setIssuedAt()
     .setExpirationTime("1d")

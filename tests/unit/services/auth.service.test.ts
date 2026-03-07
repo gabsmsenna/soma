@@ -93,6 +93,7 @@ describe("AuthService", () => {
       expect(mockGenerateAuthToken).toHaveBeenCalledWith(
         "user-123",
         registerData.email,
+        registerData.name,
       );
 
       expect(result).toEqual({
@@ -160,6 +161,7 @@ describe("AuthService", () => {
       expect(mockGenerateAuthToken).toHaveBeenCalledWith(
         mockUser.id,
         mockUser.email,
+        mockUser.name,
       );
       expect(result).toEqual({
         user: {
@@ -198,18 +200,20 @@ describe("AuthService", () => {
     it("deve validar um token válido e retornar userId e email", async () => {
       const userId = "user-123";
       const email = "test@example.com";
+      const name = "Test User";
 
       mockGenerateAuthToken.mockRestore(); // Restore the original implementation locally
 
       const { generateAuthToken: realGenerate } = await import(
         "@/lib/generate-auth-token"
       );
-      const token = await realGenerate(userId, email);
+      const token = await realGenerate(userId, email, name);
       const result = await verifyToken(token);
 
       expect(result).toEqual({
         userId,
         email,
+        name,
       });
     });
 
@@ -220,7 +224,7 @@ describe("AuthService", () => {
         "@/lib/generate-auth-token"
       );
       const token = await vi.stubEnv("JWT_SECRET", JWT_SECRET); // Set temporarily to generate
-      const tokenString = await realGenerate("user-123", "test@example.com");
+      const tokenString = await realGenerate("user-123", "test@example.com", "Test User");
       vi.unstubAllEnvs(); // Remove again for verification test
       delete process.env.JWT_SECRET;
 
@@ -242,6 +246,7 @@ describe("AuthService", () => {
       mockGenerateAuthToken.mockRestore(); // Restore the original implementation locally
       const userId = "user-123";
       const email = "expired@example.com";
+      const name = "Expired User";
 
       vi.useFakeTimers();
       const now = new Date();
@@ -250,7 +255,7 @@ describe("AuthService", () => {
       const { generateAuthToken: realGenerate } = await import(
         "@/lib/generate-auth-token"
       );
-      const token = await realGenerate(userId, email);
+      const token = await realGenerate(userId, email, name);
 
       // Advance time by 25 hours (beyond the 1 day expiration)
       vi.setSystemTime(new Date(now.getTime() + 25 * 60 * 60 * 1000));

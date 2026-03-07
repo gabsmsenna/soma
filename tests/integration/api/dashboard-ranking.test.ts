@@ -41,7 +41,7 @@ describe("Dashboard Ranking API (GET /api/dashboard/ranking)", () => {
       },
     });
 
-    validToken = await generateAuthToken(testUser.id, testUser.email);
+    validToken = await generateAuthToken(testUser.id, testUser.email, testUser.name);
   });
 
   it("deve retornar top 5 operações ordenadas por lucro DESC", async () => {

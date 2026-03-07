@@ -14,7 +14,7 @@ import {
   Zap,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
@@ -77,12 +77,27 @@ const settingsNavItems = [
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [user, setUser] = useState<{ name: string; email: string } | null>(
+    null,
+  );
 
   useEffect(() => {
     setMounted(true);
+    fetch("/api/auth/session")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) setUser(data.user);
+      })
+      .catch(() => {});
   }, []);
+
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/login");
+  }
 
   const isDark = theme === "dark";
 
@@ -206,17 +221,29 @@ export function AppSidebar() {
         <div className="flex items-center gap-3 rounded-xl border bg-card p-3">
           <Avatar className="h-10 w-10 border-2 border-[#FFBB00]">
             <AvatarFallback className="bg-muted text-sm font-semibold">
-              AR
+              {user?.name
+                ? user.name
+                    .split(" ")
+                    .slice(0, 2)
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()
+                : "?"}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 overflow-hidden">
-            <p className="truncate text-sm font-semibold">Alex Rivera</p>
-            <p className="text-[10px] text-muted-foreground">Freelancer Pro</p>
+            <p className="truncate text-sm font-semibold">
+              {user?.name ?? "..."}
+            </p>
+            <p className="truncate text-[10px] text-muted-foreground">
+              {user?.email ?? "..."}
+            </p>
           </div>
           <button
             type="button"
             className="text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Sair"
+            onClick={handleLogout}
           >
             <LogOut className="h-4 w-4" />
           </button>
