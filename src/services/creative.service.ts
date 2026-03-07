@@ -118,6 +118,7 @@ export async function registerProfit(id: string, amount: Prisma.Decimal) {
       data: {
         totalProfit: newTotal,
         freelancerCut: newFreelancerCut,
+        isPaid : false,
       },
       include: { operation: true },
     });
@@ -147,6 +148,7 @@ export async function registerProfitPayment(creativeId: string) {
       data: {
         totalProfit: new Prisma.Decimal(0),
         freelancerCut: new Prisma.Decimal(0),
+        isPaid: true,
       },
     });
 
