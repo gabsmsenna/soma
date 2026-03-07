@@ -97,7 +97,9 @@ export function ProfitPaymentsList({ groups }: ProfitPaymentsListProps) {
                     {formatCurrency(creative.comissaoFreelancer)}
                   </span>
                   <span className="text-right text-muted-foreground">
-                    {new Date(creative.dataPagamento).toLocaleDateString("pt-BR")}
+                    {new Date(creative.dataPagamento).toLocaleDateString(
+                      "pt-BR",
+                    )}
                   </span>
                 </div>
               ))}

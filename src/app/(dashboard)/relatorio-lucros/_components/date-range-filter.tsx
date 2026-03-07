@@ -99,9 +99,7 @@ export function DateRangeFilter() {
         )}
       </div>
 
-      {error && (
-        <p className="text-sm text-destructive sm:self-end">{error}</p>
-      )}
+      {error && <p className="text-sm text-destructive sm:self-end">{error}</p>}
     </form>
   );
 }

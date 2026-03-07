@@ -27,7 +27,9 @@ export default async function RelatorioLucrosPage({
   defaultStart.setDate(defaultStart.getDate() - 30);
 
   const startDate = startDateParam ? new Date(startDateParam) : defaultStart;
-  const endDate = endDateParam ? new Date(`${endDateParam}T23:59:59`) : defaultEnd;
+  const endDate = endDateParam
+    ? new Date(`${endDateParam}T23:59:59`)
+    : defaultEnd;
 
   const groups = await findProfitPaymentsGroupedByOperation(
     session.userId,
