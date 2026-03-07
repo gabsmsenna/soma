@@ -7,9 +7,14 @@ import { CreativeFormDialog } from "./creative-form-dialog";
 interface CreativesGridProps {
   creatives: CreativeViewModel[];
   total: number;
+  operations: { id: string; name: string }[];
 }
 
-export function CreativesGrid({ creatives, total }: CreativesGridProps) {
+export function CreativesGrid({
+  creatives,
+  total,
+  operations,
+}: CreativesGridProps) {
   return (
     <>
       <div className="flex justify-between items-center">
@@ -21,7 +26,7 @@ export function CreativesGrid({ creatives, total }: CreativesGridProps) {
         </h3>
 
         <div className="flex items-center gap-3">
-          <CreativeFilterButton />
+          <CreativeFilterButton operations={operations} />
         </div>
       </div>
 

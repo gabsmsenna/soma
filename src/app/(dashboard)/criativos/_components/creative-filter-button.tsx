@@ -5,7 +5,13 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CreativeFilterDialog } from "./creative-filter-dialog";
 
-export function CreativeFilterButton() {
+interface CreativeFilterButtonProps {
+  operations: { id: string; name: string }[];
+}
+
+export function CreativeFilterButton({
+  operations,
+}: CreativeFilterButtonProps) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   return (
@@ -22,6 +28,7 @@ export function CreativeFilterButton() {
       <CreativeFilterDialog
         open={isFilterOpen}
         onOpenChange={setIsFilterOpen}
+        operations={operations}
       />
     </>
   );

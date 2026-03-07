@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "@/lib/session";
 import { findAllByUserId } from "@/services/creative.service";
+import { getAll } from "@/services/operation.service";
 import { CreativesFooter } from "./_components/creatives-footer";
 import { CreativesGrid } from "./_components/creatives-grid";
 import { CreativesHeader } from "./_components/creatives-header";
@@ -16,6 +17,7 @@ interface CriativosPageProps {
     search?: string;
     status?: string;
     operation?: string;
+    paymentStatus?: string;
   }>;
 }
 
@@ -25,17 +27,27 @@ export default async function CriativosPage({
   const session = await getServerSession();
   if (!session) redirect("/login");
 
-  const { page: pageParam, search, status, operation } = await searchParams;
-  const page = Math.max(1, Number(pageParam ?? 1));
-
-  const { data, pagination } = await findAllByUserId(
-    session.userId,
-    page,
-    PAGE_LIMIT,
+  const {
+    page: pageParam,
     search,
     status,
     operation,
-  );
+    paymentStatus,
+  } = await searchParams;
+  const page = Math.max(1, Number(pageParam ?? 1));
+
+  const [{ data, pagination }, operations] = await Promise.all([
+    findAllByUserId(
+      session.userId,
+      page,
+      PAGE_LIMIT,
+      search,
+      status,
+      operation,
+      paymentStatus,
+    ),
+    getAll(session.userId),
+  ]);
 
   const creatives = data.map(toCreativeViewModel);
   const metrics = computeMetrics(creatives);
@@ -57,7 +69,11 @@ export default async function CriativosPage({
 
         <CreativesMetrics metrics={metrics} />
 
-        <CreativesGrid creatives={creatives} total={pagination.total} />
+        <CreativesGrid
+          creatives={creatives}
+          total={pagination.total}
+          operations={operations}
+        />
 
         <CreativesPagination pagination={pagination} />
       </div>

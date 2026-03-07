@@ -1,6 +1,6 @@
 "use client";
 
-import { ListFilter, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -26,11 +26,13 @@ import { cn } from "@/lib/utils";
 interface CreativeFilterDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  operations: { id: string; name: string }[];
 }
 
 export function CreativeFilterDialog({
   open,
   onOpenChange,
+  operations,
 }: CreativeFilterDialogProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -38,6 +40,9 @@ export function CreativeFilterDialog({
   const [search, setSearch] = useState("");
   const [operation, setOperation] = useState("all");
   const [status, setStatus] = useState<"active" | "inactive" | "all">("active");
+  const [paymentStatus, setPaymentStatus] = useState<"all" | "paid" | "unpaid">(
+    "all",
+  );
 
   // Sync state with url params when dialog opens
   useEffect(() => {
@@ -53,6 +58,16 @@ export function CreativeFilterDialog({
         setStatus(statusParam as "active" | "inactive" | "all");
       } else {
         setStatus("active");
+      }
+      const paymentParam = searchParams.get("paymentStatus");
+      if (
+        paymentParam === "paid" ||
+        paymentParam === "unpaid" ||
+        paymentParam === "all"
+      ) {
+        setPaymentStatus(paymentParam);
+      } else {
+        setPaymentStatus("all");
       }
     }
   }, [open, searchParams]);
@@ -77,6 +92,12 @@ export function CreativeFilterDialog({
       params.delete("status");
     }
 
+    if (paymentStatus && paymentStatus !== "all") {
+      params.set("paymentStatus", paymentStatus);
+    } else {
+      params.delete("paymentStatus");
+    }
+
     // Reset to page 1 on filter
     params.set("page", "1");
 
@@ -88,6 +109,7 @@ export function CreativeFilterDialog({
     setSearch("");
     setOperation("all");
     setStatus("active");
+    setPaymentStatus("all");
   };
 
   return (
@@ -132,9 +154,11 @@ export function CreativeFilterDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todas as Operações</SelectItem>
-                  {/* TODO: Add real operations here if needed, for now mocked */}
-                  <SelectItem value="op1">Operação Alpha</SelectItem>
-                  <SelectItem value="op2">Operação Beta</SelectItem>
+                  {operations.map((op) => (
+                    <SelectItem key={op.id} value={op.id}>
+                      {op.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -167,6 +191,50 @@ export function CreativeFilterDialog({
                   )}
                 >
                   Inativos
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium dark:text-zinc-100">
+                Pagamento
+              </Label>
+              <div className="flex p-1 bg-zinc-100 dark:bg-zinc-900 rounded-full border border-zinc-200 dark:border-zinc-800">
+                <button
+                  type="button"
+                  onClick={() => setPaymentStatus("all")}
+                  className={cn(
+                    "flex-1 py-1.5 text-sm font-medium rounded-full transition-all",
+                    paymentStatus === "all"
+                      ? "bg-[#FFB800] text-black shadow-sm"
+                      : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200",
+                  )}
+                >
+                  Todos
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentStatus("paid")}
+                  className={cn(
+                    "flex-1 py-1.5 text-sm font-medium rounded-full transition-all",
+                    paymentStatus === "paid"
+                      ? "bg-[#FFB800] text-black shadow-sm"
+                      : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200",
+                  )}
+                >
+                  Pagos
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentStatus("unpaid")}
+                  className={cn(
+                    "flex-1 py-1.5 text-sm font-medium rounded-full transition-all",
+                    paymentStatus === "unpaid"
+                      ? "bg-[#FFB800] text-black shadow-sm"
+                      : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200",
+                  )}
+                >
+                  Pendentes
                 </button>
               </div>
             </div>

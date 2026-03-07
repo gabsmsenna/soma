@@ -118,7 +118,7 @@ export async function registerProfit(id: string, amount: Prisma.Decimal) {
       data: {
         totalProfit: newTotal,
         freelancerCut: newFreelancerCut,
-        isPaid : false,
+        isPaid: false,
       },
       include: { operation: true },
     });
@@ -225,6 +225,7 @@ export async function findAllByUserId(
   search?: string,
   status: string = "active",
   operation: string = "all",
+  paymentStatus: string = "all",
 ) {
   const where: Prisma.CreativeWhereInput = {
     operation: { userId },
@@ -237,6 +238,11 @@ export async function findAllByUserId(
         ? { isActive: false }
         : {}),
     ...(operation !== "all" && operation ? { operationId: operation } : {}),
+    ...(paymentStatus === "paid"
+      ? { isPaid: true }
+      : paymentStatus === "unpaid"
+        ? { isPaid: false }
+        : {}),
   };
 
   const [data, total] = await Promise.all([
