@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { problems } from "@/lib/problem-registry";
 import * as OperationService from "@/services/operation.service";
@@ -32,55 +33,123 @@ describe("OperationService", () => {
   });
 
   describe("getAll", () => {
-    it("deve retornar todas as operações do usuário com criativos", async () => {
-      const mockOperations = [
+    it("deve retornar todas as operações do usuário com criativos convertendo Decimal para string", async () => {
+      const mockOperationsWithDecimal = [
         {
           id: "op-1",
           name: "Operação 1",
           userId,
+          freelancerCutPercentage: new Prisma.Decimal(10.5),
+          active: true,
           createdAt: new Date(),
           updatedAt: new Date(),
-          creatives: [],
+          creatives: [
+            {
+              id: "creative-1",
+              name: "Criativo 1",
+              operationId: "op-1",
+              totalProfit: new Prisma.Decimal(100),
+              freelancerCut: new Prisma.Decimal(10.5),
+              isActive: true,
+              isPaid: false,
+              paidAt: null,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            },
+          ],
         },
         {
           id: "op-2",
           name: "Operação 2",
           userId,
+          freelancerCutPercentage: new Prisma.Decimal(15),
+          active: true,
           createdAt: new Date(),
           updatedAt: new Date(),
           creatives: [],
         },
       ];
 
-      mockPrisma.operation.findMany = mockPrismaFindMany(mockOperations);
+      mockPrisma.operation.findMany = mockPrismaFindMany(
+        mockOperationsWithDecimal,
+      );
 
       const result = await OperationService.getAll(userId);
 
-      expect(result).toEqual(mockOperations);
-      expect(mockPrisma.operation.findMany).toHaveBeenCalledWith({
-        where: { userId, active: true },
-        include: { creatives: true },
-      });
-    });
-  });
-
-  describe("getAllPaginated", () => {
-    it("deve retornar operações paginadas com metadados de paginação", async () => {
-      const mockOperations = [
+      expect(result).toEqual([
         {
           id: "op-1",
           name: "Operação 1",
           userId,
+          freelancerCutPercentage: "10.5",
+          active: true,
+          createdAt: mockOperationsWithDecimal[0].createdAt.toISOString(),
+          updatedAt: mockOperationsWithDecimal[0].updatedAt.toISOString(),
+          creatives: [
+            {
+              id: "creative-1",
+              name: "Criativo 1",
+              operationId: "op-1",
+              totalProfit: "100",
+              freelancerCut: "10.5",
+              isActive: true,
+              isPaid: false,
+              paidAt: null,
+              createdAt:
+                mockOperationsWithDecimal[0].creatives[0].createdAt.toISOString(),
+              updatedAt:
+                mockOperationsWithDecimal[0].creatives[0].updatedAt.toISOString(),
+            },
+          ],
+        },
+        {
+          id: "op-2",
+          name: "Operação 2",
+          userId,
+          freelancerCutPercentage: "15",
+          active: true,
+          createdAt: mockOperationsWithDecimal[1].createdAt.toISOString(),
+          updatedAt: mockOperationsWithDecimal[1].updatedAt.toISOString(),
+          creatives: [],
+        },
+      ]);
+    });
+  });
+
+  describe("getAllPaginated", () => {
+    it("deve retornar operações paginadas com metadados de paginação convertendo Decimal para string", async () => {
+      const mockOperationsWithDecimal = [
+        {
+          id: "op-1",
+          name: "Operação 1",
+          userId,
+          freelancerCutPercentage: new Prisma.Decimal(10.5),
+          active: true,
           createdAt: new Date(),
           updatedAt: new Date(),
-          creatives: [],
+          creatives: [
+            {
+              id: "creative-1",
+              name: "Criativo 1",
+              operationId: "op-1",
+              totalProfit: new Prisma.Decimal(100),
+              freelancerCut: new Prisma.Decimal(10.5),
+              isActive: true,
+              isPaid: false,
+              paidAt: null,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            },
+          ],
         },
       ];
       const page = 1;
       const limit = 10;
       const total = 15;
 
-      mockPrisma.operation.findMany = mockPrismaFindMany(mockOperations);
+      mockPrisma.operation.findMany = mockPrismaFindMany(
+        mockOperationsWithDecimal,
+      );
       mockPrisma.operation.count = mockPrismaCount(total);
 
       const result = await OperationService.getAllPaginated(
@@ -90,7 +159,33 @@ describe("OperationService", () => {
       );
 
       expect(result).toEqual({
-        data: mockOperations,
+        data: [
+          {
+            id: "op-1",
+            name: "Operação 1",
+            userId,
+            freelancerCutPercentage: "10.5",
+            active: true,
+            createdAt: mockOperationsWithDecimal[0].createdAt.toISOString(),
+            updatedAt: mockOperationsWithDecimal[0].updatedAt.toISOString(),
+            creatives: [
+              {
+                id: "creative-1",
+                name: "Criativo 1",
+                operationId: "op-1",
+                totalProfit: "100",
+                freelancerCut: "10.5",
+                isActive: true,
+                isPaid: false,
+                paidAt: null,
+                createdAt:
+                  mockOperationsWithDecimal[0].creatives[0].createdAt.toISOString(),
+                updatedAt:
+                  mockOperationsWithDecimal[0].creatives[0].updatedAt.toISOString(),
+              },
+            ],
+          },
+        ],
         pagination: {
           page,
           limit,

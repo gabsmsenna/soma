@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import type { Creative, Operation, Prisma } from "@prisma/client";
 import type {
   CreateOperationDto,
   UpdateOperationDto,
@@ -6,11 +6,40 @@ import type {
 import prisma from "@/lib/prisma";
 import { problems } from "@/lib/problem-registry";
 
+type OperationWithRelations = Operation & {
+  creatives: Creative[];
+};
+
+function serializeOperation(operation: OperationWithRelations) {
+  return {
+    id: operation.id,
+    name: operation.name,
+    freelancerCutPercentage: operation.freelancerCutPercentage.toString(),
+    active: operation.active,
+    userId: operation.userId,
+    createdAt: operation.createdAt.toISOString(),
+    updatedAt: operation.updatedAt.toISOString(),
+    creatives: operation.creatives.map((c) => ({
+      id: c.id,
+      name: c.name,
+      totalProfit: c.totalProfit.toString(),
+      freelancerCut: c.freelancerCut.toString(),
+      isActive: c.isActive,
+      isPaid: c.isPaid,
+      paidAt: c.paidAt ? c.paidAt.toISOString() : null,
+      operationId: c.operationId,
+      createdAt: c.createdAt.toISOString(),
+      updatedAt: c.updatedAt.toISOString(),
+    })),
+  };
+}
+
 export async function getAll(userId: string) {
-  return prisma.operation.findMany({
+  const operations = await prisma.operation.findMany({
     where: { userId, active: true },
     include: { creatives: true },
   });
+  return operations.map(serializeOperation);
 }
 
 export async function getAllPaginated(
@@ -44,7 +73,7 @@ export async function getAllPaginated(
   ]);
 
   return {
-    data,
+    data: data.map(serializeOperation),
     pagination: {
       page,
       limit,

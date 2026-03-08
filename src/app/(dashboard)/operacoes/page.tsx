@@ -58,20 +58,23 @@ function OperacoesContent() {
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = async () => {
     if (!operationToDelete) return;
-    startDeleteTransition(async () => {
-      const result = await deleteOperation(operationToDelete.id);
-      if (result.success) {
-        toast.success("Operação excluída com sucesso.");
-        setOperationToDelete(null);
-        router.refresh();
-        refresh();
-      } else {
-        toast.error("Erro ao excluir", {
-          description: result.error.detail,
-        });
-      }
+    await new Promise<void>((resolve) => {
+      startDeleteTransition(async () => {
+        const result = await deleteOperation(operationToDelete.id);
+        if (result.success) {
+          toast.success("Operação excluída com sucesso.");
+          setOperationToDelete(null);
+          router.refresh();
+          refresh();
+        } else {
+          toast.error("Erro ao excluir", {
+            description: result.error.detail,
+          });
+        }
+        resolve();
+      });
     });
   };
 
