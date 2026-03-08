@@ -41,7 +41,11 @@ describe("Dashboard Summary API (GET /api/dashboard/summary)", () => {
       },
     });
 
-    validToken = await generateAuthToken(testUser.id, testUser.email, testUser.name);
+    validToken = await generateAuthToken(
+      testUser.id,
+      testUser.email,
+      testUser.name,
+    );
   });
 
   it("deve retornar métricas com trend up quando mês atual > mês anterior", async () => {

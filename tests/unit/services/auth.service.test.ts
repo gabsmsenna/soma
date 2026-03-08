@@ -224,7 +224,11 @@ describe("AuthService", () => {
         "@/lib/generate-auth-token"
       );
       const token = await vi.stubEnv("JWT_SECRET", JWT_SECRET); // Set temporarily to generate
-      const tokenString = await realGenerate("user-123", "test@example.com", "Test User");
+      const tokenString = await realGenerate(
+        "user-123",
+        "test@example.com",
+        "Test User",
+      );
       vi.unstubAllEnvs(); // Remove again for verification test
       delete process.env.JWT_SECRET;
 
