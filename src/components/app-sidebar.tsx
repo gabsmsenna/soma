@@ -19,6 +19,13 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Sidebar,
   SidebarContent,
@@ -83,6 +90,7 @@ export function AppSidebar() {
   const [user, setUser] = useState<{ name: string; email: string } | null>(
     null,
   );
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -91,7 +99,7 @@ export function AppSidebar() {
       .then((data) => {
         if (data.user) setUser(data.user);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   async function handleLogout() {
@@ -223,11 +231,11 @@ export function AppSidebar() {
             <AvatarFallback className="bg-muted text-sm font-semibold">
               {user?.name
                 ? user.name
-                    .split(" ")
-                    .slice(0, 2)
-                    .map((n) => n[0])
-                    .join("")
-                    .toUpperCase()
+                  .split(" ")
+                  .slice(0, 2)
+                  .map((n) => n[0])
+                  .join("")
+                  .toUpperCase()
                 : "?"}
             </AvatarFallback>
           </Avatar>
@@ -239,14 +247,50 @@ export function AppSidebar() {
               {user?.email ?? "..."}
             </p>
           </div>
-          <button
-            type="button"
-            className="text-muted-foreground hover:text-foreground transition-colors"
-            aria-label="Sair"
-            onClick={handleLogout}
-          >
-            <LogOut className="h-4 w-4" />
-          </button>
+          <Dialog open={isLogoutOpen} onOpenChange={setIsLogoutOpen}>
+            <DialogTrigger asChild>
+              <button
+                type="button"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+                aria-label="Sair"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </DialogTrigger>
+            <DialogContent
+              className="sm:max-w-xs rounded-3xl p-6 text-center shadow-lg border-0 sm:rounded-[32px] overflow-hidden flex flex-col items-center"
+              showCloseButton={false}
+            >
+              <div className="w-16 h-16 rounded-3xl bg-red-100 dark:bg-red-500/10 flex items-center justify-center mb-4 transition-transform hover:scale-105">
+                <LogOut
+                  className="h-7 w-7 text-red-600 dark:text-red-500"
+                  strokeWidth={2.5}
+                />
+              </div>
+              <DialogTitle className="text-xl font-bold text-foreground mb-2">
+                Sair do sistema
+              </DialogTitle>
+              <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                Tem certeza que deseja sair da sua conta? Você precisará fazer
+                login novamente para acessar.
+              </p>
+              <div className="flex w-full gap-3">
+                <Button
+                  variant="secondary"
+                  className="flex-1 rounded-2xl h-12 font-bold bg-muted hover:bg-muted/80 text-foreground transition-all"
+                  onClick={() => setIsLogoutOpen(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  className="flex-1 rounded-2xl h-12 font-bold bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-600/20 transition-all border-0 focus-visible:ring-red-500"
+                  onClick={handleLogout}
+                >
+                  Sair
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </SidebarFooter>
     </Sidebar>
