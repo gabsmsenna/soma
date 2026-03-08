@@ -23,8 +23,6 @@ export function toCreativeViewModel(
     totalProfitFormatted: formatBRL(c.totalProfit.toString()),
     freelancerCutFormatted: formatBRL(c.freelancerCut.toString()),
     isActive: c.isActive,
-    isPaid: c.isPaid,
-    paidAt: c.paidAt ? c.paidAt.toISOString() : null,
     operationId: c.operationId,
     operationName: c.operation.name,
     createdAt: c.createdAt.toISOString(),
@@ -42,7 +40,7 @@ export function computeMetrics(
     0,
   );
 
-  const pendingCreatives = creatives.filter((c) => !c.isPaid);
+  const pendingCreatives = creatives.filter((c) => Number(c.totalProfit) > 0);
   const pendingPayment = pendingCreatives.reduce(
     (sum, c) => sum + Number(c.freelancerCut),
     0,

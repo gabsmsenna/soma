@@ -48,12 +48,12 @@ export function CreativeCard({ creative }: CreativeCardProps) {
           <Badge
             variant="outline"
             className={`text-xs font-bold ${
-              creative.isPaid
+              Number(creative.totalProfit) === 0
                 ? "bg-green-500/10 text-green-500 border-green-500/20"
                 : "bg-[#FFBB00]/10 text-[#FFBB00] border-[#FFBB00]/20"
             }`}
           >
-            {creative.isPaid ? "SIM" : "PENDENTE"}
+            {Number(creative.totalProfit) === 0 ? "SIM" : "PENDENTE"}
           </Badge>
         </div>
       </div>

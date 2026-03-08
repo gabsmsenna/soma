@@ -20,7 +20,6 @@ const createCreativeSchema = z.object({
 const updateCreativeSchema = z.object({
   name: z.string().min(1).optional(),
   totalProfit: z.number().positive().optional(),
-  isPaid: z.boolean().optional(),
 });
 
 function errorResult(error: unknown): ActionResult<never> {
@@ -92,7 +91,7 @@ export async function createCreative(input: {
 
 export async function updateCreative(
   id: string,
-  input: { name?: string; totalProfit?: number; isPaid?: boolean },
+  input: { name?: string; totalProfit?: number },
 ): Promise<ActionResult<CreativeViewModel>> {
   try {
     const session = await getServerSession();
@@ -133,9 +132,6 @@ export async function updateCreative(
 
     await CreativeService.update(id, {
       ...(parsed.data.name !== undefined ? { name: parsed.data.name } : {}),
-      ...(parsed.data.isPaid !== undefined
-        ? { isPaid: parsed.data.isPaid }
-        : {}),
       ...(parsed.data.totalProfit !== undefined
         ? { totalProfit: new Prisma.Decimal(parsed.data.totalProfit) }
         : {}),
@@ -341,7 +337,7 @@ export async function markAsPaid(
       };
     }
 
-    await CreativeService.update(id, { isPaid: true, paidAt: new Date() });
+    await CreativeService.registerProfitPayment(id);
     const updated = await CreativeService.findById(id);
     revalidatePath("/criativos");
     return { success: true, data: toCreativeViewModel(updated) };

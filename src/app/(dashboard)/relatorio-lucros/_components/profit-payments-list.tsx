@@ -10,9 +10,9 @@ import {
 interface CreativeEntry {
   creativeId: string;
   creativeName: string;
-  lucreTotalCriativo: number;
-  comissaoFreelancer: number;
-  dataPagamento: Date;
+  totalProfit: number;
+  commission: number;
+  paidAt: Date;
 }
 
 interface OperationGroup {
@@ -84,22 +84,20 @@ export function ProfitPaymentsList({ groups }: ProfitPaymentsListProps) {
               </div>
               {group.creatives.map((creative) => (
                 <div
-                  key={`${creative.creativeId}-${creative.dataPagamento}`}
+                  key={`${creative.creativeId}-${creative.paidAt}`}
                   className="grid grid-cols-4 gap-4 rounded-md bg-muted/40 px-2 py-2.5 text-sm"
                 >
                   <span className="font-medium truncate">
                     {creative.creativeName}
                   </span>
                   <span className="text-right hidden sm:block text-muted-foreground">
-                    {formatCurrency(creative.lucreTotalCriativo)}
+                    {formatCurrency(creative.totalProfit)}
                   </span>
                   <span className="text-right font-semibold">
-                    {formatCurrency(creative.comissaoFreelancer)}
+                    {formatCurrency(creative.commission)}
                   </span>
                   <span className="text-right text-muted-foreground">
-                    {new Date(creative.dataPagamento).toLocaleDateString(
-                      "pt-BR",
-                    )}
+                    {new Date(creative.paidAt).toLocaleDateString("pt-BR")}
                   </span>
                 </div>
               ))}

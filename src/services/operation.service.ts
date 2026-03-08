@@ -25,8 +25,6 @@ function serializeOperation(operation: OperationWithRelations) {
       totalProfit: c.totalProfit.toString(),
       freelancerCut: c.freelancerCut.toString(),
       isActive: c.isActive,
-      isPaid: c.isPaid,
-      paidAt: c.paidAt ? c.paidAt.toISOString() : null,
       operationId: c.operationId,
       createdAt: c.createdAt.toISOString(),
       updatedAt: c.updatedAt.toISOString(),

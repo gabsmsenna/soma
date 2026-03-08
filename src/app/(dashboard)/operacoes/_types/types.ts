@@ -4,8 +4,6 @@ export interface Creative {
   totalProfit: string;
   freelancerCut: string;
   isActive: boolean;
-  isPaid: boolean;
-  paidAt: string | null;
   operationId: string;
   createdAt: string;
   updatedAt: string;

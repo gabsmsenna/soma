@@ -40,8 +40,6 @@ describe("criativos/actions", () => {
     totalProfit: new Prisma.Decimal(1000),
     freelancerCut: new Prisma.Decimal(100),
     isActive: true,
-    isPaid: false,
-    paidAt: null,
     createdAt: new Date("2024-01-01"),
     updatedAt: new Date("2024-01-01"),
     operation: {
@@ -335,10 +333,12 @@ describe("criativos/actions", () => {
 
       const paidCreative = {
         ...mockCreativeFromDB,
-        isPaid: true,
-        paidAt: new Date("2024-01-02"),
+        totalProfit: new Prisma.Decimal(0),
+        freelancerCut: new Prisma.Decimal(0),
       };
-      vi.mocked(CreativeService.update).mockResolvedValue(paidCreative as any);
+      vi.mocked(CreativeService.registerProfitPayment).mockResolvedValue(
+        {} as any,
+      );
       vi.mocked(CreativeService.findById)
         .mockResolvedValueOnce(mockCreativeFromDB as any)
         .mockResolvedValueOnce(paidCreative as any);
@@ -348,7 +348,7 @@ describe("criativos/actions", () => {
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.isPaid).toBe(true);
+        expect(Number(result.data.totalProfit)).toBe(0);
       }
     });
   });
@@ -357,9 +357,9 @@ describe("criativos/actions", () => {
     const mockPayment = {
       id: "payment-1",
       creativeId,
-      lucreTotalCriativo: 1000,
-      comissaoFreelancer: 100,
-      dataPagamento: new Date("2024-01-01"),
+      totalProfit: 1000,
+      commission: 100,
+      paidAt: new Date("2024-01-01"),
     };
 
     it("returns success after registering payment for owned creative", async () => {

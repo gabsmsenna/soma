@@ -17,8 +17,6 @@ export const updateCreativeSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório").optional(),
   totalProfit: decimalTransform,
   freelancerCut: decimalTransform,
-  isPaid: z.boolean().optional(),
-  paidAt: z.date().optional(),
 });
 
 export const paginationSchema = z.object({

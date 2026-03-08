@@ -31,6 +31,7 @@ export async function create(data: {
       await tx.profitLog.create({
         data: {
           amount: data.totalProfit,
+          previousAmount: new Prisma.Decimal(0),
           creativeId: creative.id,
         },
       });
@@ -109,6 +110,7 @@ export async function registerProfit(id: string, amount: Prisma.Decimal) {
     await tx.profitLog.create({
       data: {
         amount,
+        previousAmount: creative.totalProfit,
         creativeId: id,
       },
     });
@@ -118,7 +120,6 @@ export async function registerProfit(id: string, amount: Prisma.Decimal) {
       data: {
         totalProfit: newTotal,
         freelancerCut: newFreelancerCut,
-        isPaid: false,
       },
       include: { operation: true },
     });
@@ -136,10 +137,10 @@ export async function registerProfitPayment(creativeId: string) {
 
     const payment = await tx.profitEntry.create({
       data: {
-        lucreTotalCriativo: creative.totalProfit.toNumber(),
-        comissaoFreelancer: creative.freelancerCut.toNumber(),
+        totalProfit: creative.totalProfit.toNumber(),
+        commission: creative.freelancerCut.toNumber(),
         creativeId,
-        dataPagamento: new Date(),
+        paidAt: new Date(),
       },
     });
 
@@ -148,7 +149,6 @@ export async function registerProfitPayment(creativeId: string) {
       data: {
         totalProfit: new Prisma.Decimal(0),
         freelancerCut: new Prisma.Decimal(0),
-        isPaid: true,
       },
     });
 
@@ -163,13 +163,13 @@ export async function findProfitPaymentsGroupedByOperation(
 ) {
   const entries = await prisma.profitEntry.findMany({
     where: {
-      dataPagamento: { gte: startDate, lte: endDate },
+      paidAt: { gte: startDate, lte: endDate },
       creative: { operation: { userId } },
     },
     include: {
       creative: { include: { operation: true } },
     },
-    orderBy: { dataPagamento: "desc" },
+    orderBy: { paidAt: "desc" },
   });
 
   const grouped = new Map<
@@ -182,9 +182,9 @@ export async function findProfitPaymentsGroupedByOperation(
       creatives: {
         creativeId: string;
         creativeName: string;
-        lucreTotalCriativo: number;
-        comissaoFreelancer: number;
-        dataPagamento: Date;
+        totalProfit: number;
+        commission: number;
+        paidAt: Date;
       }[];
     }
   >();
@@ -204,14 +204,14 @@ export async function findProfitPaymentsGroupedByOperation(
     }
 
     const group = grouped.get(opId)!;
-    group.totalLucro += entry.lucreTotalCriativo;
-    group.totalComissao += entry.comissaoFreelancer;
+    group.totalLucro += entry.totalProfit;
+    group.totalComissao += entry.commission;
     group.creatives.push({
       creativeId: entry.creativeId,
       creativeName: entry.creative.name,
-      lucreTotalCriativo: entry.lucreTotalCriativo,
-      comissaoFreelancer: entry.comissaoFreelancer,
-      dataPagamento: entry.dataPagamento,
+      totalProfit: entry.totalProfit,
+      commission: entry.commission,
+      paidAt: entry.paidAt,
     });
   }
 
@@ -239,9 +239,9 @@ export async function findAllByUserId(
         : {}),
     ...(operation !== "all" && operation ? { operationId: operation } : {}),
     ...(paymentStatus === "paid"
-      ? { isPaid: true }
+      ? { totalProfit: { equals: new Prisma.Decimal(0) } }
       : paymentStatus === "unpaid"
-        ? { isPaid: false }
+        ? { totalProfit: { gt: new Prisma.Decimal(0) } }
         : {}),
   };
 

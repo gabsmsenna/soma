@@ -49,8 +49,6 @@ model Creative {
   totalProfit     Decimal         @db.Decimal(10, 2)
   freelancerCut   Decimal         @db.Decimal(10, 2)
   isActive        Boolean         @default(true)
-  isPaid          Boolean         @default(false)
-  paidAt          DateTime?
   operationId     String
   operation       Operation       @relation(fields: [operationId], references: [id], onDelete: Cascade)
   profitEntries   ProfitEntry[]
@@ -63,23 +61,24 @@ model Creative {
 
 // 5. Registros de pagamento (quando o freelancer clica "Marcar Pago")
 model ProfitEntry {
-  id                 String   @id @default(cuid())
-  lucreTotalCriativo Float
-  comissaoFreelancer Float
-  creativeId         String
-  creative           Creative @relation(fields: [creativeId], references: [id], onDelete: Cascade)
-  dataPagamento      DateTime @default(now())
+  id          String   @id @default(cuid())
+  totalProfit Float
+  commission  Float
+  creativeId  String
+  creative    Creative @relation(fields: [creativeId], references: [id], onDelete: Cascade)
+  paidAt      DateTime @default(now())
 
   @@map("profit_entries")
 }
 
 // 6. Histórico de entradas de lucro por criativo
 model ProfitLog {
-  id         String   @id @default(cuid())
-  amount     Decimal  @db.Decimal(10, 2)
-  creativeId String
-  creative   Creative @relation(fields: [creativeId], references: [id], onDelete: Cascade)
-  createdAt  DateTime @default(now())
+  id             String   @id @default(uuid())
+  amount         Decimal  @db.Decimal(10, 2)
+  previousAmount Decimal  @db.Decimal(10, 2)
+  creativeId     String
+  creative       Creative @relation(fields: [creativeId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
 
   @@map("profit_logs")
 }
