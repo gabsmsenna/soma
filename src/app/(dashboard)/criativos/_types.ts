@@ -6,6 +6,8 @@ export interface CreativeViewModel {
   totalProfit: string;
   freelancerCut: string;
   isActive: boolean;
+  isPaid: boolean;
+  paidAt: string | null;
   operationId: string;
   operationName: string;
   createdAt: string;

@@ -120,6 +120,8 @@ export async function registerProfit(id: string, amount: Prisma.Decimal) {
       data: {
         totalProfit: newTotal,
         freelancerCut: newFreelancerCut,
+        isPaid: false,
+        paidAt: null,
       },
       include: { operation: true },
     });
@@ -147,8 +149,9 @@ export async function registerProfitPayment(creativeId: string) {
     await tx.creative.update({
       where: { id: creativeId },
       data: {
-        totalProfit: new Prisma.Decimal(0),
         freelancerCut: new Prisma.Decimal(0),
+        isPaid: true,
+        paidAt: new Date(),
       },
     });
 
@@ -239,9 +242,9 @@ export async function findAllByUserId(
         : {}),
     ...(operation !== "all" && operation ? { operationId: operation } : {}),
     ...(paymentStatus === "paid"
-      ? { totalProfit: { equals: new Prisma.Decimal(0) } }
+      ? { isPaid: true }
       : paymentStatus === "unpaid"
-        ? { totalProfit: { gt: new Prisma.Decimal(0) } }
+        ? { isPaid: false }
         : {}),
   };
 

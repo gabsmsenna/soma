@@ -1,19 +1,5 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(pnpm vitest:*)",
-      "Bash(ls:*)",
-      "Bash(find:*)",
-      "Bash(pnpm run:*)",
-      "Bash(npx biome:*)",
-      "Bash(pnpm vitest run src/app/\\\\\\(dashboard\\\\\\)/criativos/actions.test.ts)",
-      "Bash(npx prisma db push --accept-data-loss)",
-      "Bash(pnpm biome format --write src/services/creative.service.ts src/app/\\\\\\(dashboard\\\\\\)/criativos/actions.ts src/app/\\\\\\(dashboard\\\\\\)/criativos/actions.test.ts src/app/\\\\\\(dashboard\\\\\\)/relatorio-lucros/_components/profit-payments-list.tsx)",
-      "Bash(dotenv -e .env.test -- pnpm run db:push)",
-      "Bash(DATABASE_URL=\"postgresql://postgres:senha_super_segura_2026@localhost:5432/db_soma_test?schema=public&sslmode=disable\" pnpm run db:push)",
-      "Bash(DIRECT_URL=\"postgresql://postgres:senha_super_segura_2026@localhost:5432/db_soma_test?schema=public&sslmode=disable\" pnpm run db:push)",
-      "Bash(grep:*)",
-      "Bash(pnpm biome:*)"
-    ]
+  "enabledPlugins": {
+    "claude-mem@thedotmack": false
   }
 }

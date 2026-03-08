@@ -49,6 +49,8 @@ model Creative {
   totalProfit     Decimal         @db.Decimal(10, 2)
   freelancerCut   Decimal         @db.Decimal(10, 2)
   isActive        Boolean         @default(true)
+  isPaid          Boolean         @default(false)
+  paidAt          DateTime?
   operationId     String
   operation       Operation       @relation(fields: [operationId], references: [id], onDelete: Cascade)
   profitEntries   ProfitEntry[]

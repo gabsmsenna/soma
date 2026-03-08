@@ -29,7 +29,7 @@ function OperacoesContent() {
   const [operationToDelete, setOperationToDelete] = useState<Operation | null>(
     null,
   );
-  const [isDeleting, startDeleteTransition] = useTransition();
+  const [_isDeleting, startDeleteTransition] = useTransition();
 
   const { operations, pagination, loading, refresh } = useOperations(
     pageParam,
