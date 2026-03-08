@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { getServerSession } from "@/lib/session";
-import { findProfitPaymentsGroupedByOperation } from "@/services/creative.service";
+import { getProfitReport } from "@/services/profit-report.service";
 import { DateRangeFilter } from "./_components/date-range-filter";
-import { ProfitPaymentsList } from "./_components/profit-payments-list";
+import { KpiCards } from "./_components/kpi-cards";
+import { OperationsList } from "./_components/operations-list";
 
 interface RelatorioLucrosPageProps {
   searchParams: Promise<{
@@ -31,64 +32,32 @@ export default async function RelatorioLucrosPage({
     ? new Date(`${endDateParam}T23:59:59`)
     : defaultEnd;
 
-  const groups = await findProfitPaymentsGroupedByOperation(
-    session.userId,
-    startDate,
-    endDate,
-  );
-
-  const totalComissao = groups.reduce((sum, g) => sum + g.totalComissao, 0);
-  const totalLucro = groups.reduce((sum, g) => sum + g.totalLucro, 0);
+  const report = await getProfitReport(session.userId, startDate, endDate);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
-        <div>
-          <h2 className="text-3xl font-extrabold mb-2">Relatório de Lucros</h2>
-          <p className="text-muted-foreground">
-            Histórico de pagamentos de comissão agrupado por operação.
-          </p>
-        </div>
-
-        <Suspense>
-          <DateRangeFilter />
-        </Suspense>
-
-        {groups.length > 0 && (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="rounded-xl border bg-card p-4">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                Operações
-              </p>
-              <p className="text-2xl font-bold">{groups.length}</p>
-            </div>
-            <div className="rounded-xl border bg-card p-4">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                Lucro total
-              </p>
-              <p className="text-2xl font-bold">
-                {totalLucro.toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                })}
-              </p>
-            </div>
-            <div className="rounded-xl border bg-card p-4 col-span-2 sm:col-span-1">
-              <p className="text-xs text-muted-foreground uppercase tracking-wide mb-1">
-                Comissão total
-              </p>
-              <p className="text-2xl font-bold text-[#FFBB00]">
-                {totalComissao.toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                })}
+    <div className="flex flex-col min-h-screen bg-[#181610] text-slate-100">
+      <main className="flex-1 p-8 overflow-y-auto">
+        <div className="max-w-[1200px] mx-auto flex flex-col gap-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-3xl font-bold text-white tracking-tight">
+                Relatório de Lucros
+              </h2>
+              <p className="text-slate-400 mt-1">
+                Histórico de pagamentos de comissão agrupado por operação
               </p>
             </div>
           </div>
-        )}
 
-        <ProfitPaymentsList groups={groups} />
-      </div>
+          <Suspense>
+            <DateRangeFilter />
+          </Suspense>
+
+          <KpiCards kpis={report.kpis} />
+
+          <OperationsList operations={report.operations} />
+        </div>
+      </main>
     </div>
   );
 }

@@ -55,10 +55,13 @@ export function DateRangeFilter() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col sm:flex-row sm:items-end gap-4"
+      className="flex flex-col sm:flex-row sm:items-end gap-4 bg-[#231e0f]/60 backdrop-blur-md border border-[#ffbb00]/10 rounded-2xl p-4"
     >
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="startDate" className="text-xs font-medium">
+        <Label
+          htmlFor="startDate"
+          className="text-xs font-medium text-slate-400"
+        >
           Data inicial
         </Label>
         <Input
@@ -66,12 +69,12 @@ export function DateRangeFilter() {
           type="date"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
-          className="w-44"
+          className="w-44 bg-white/5 border-white/10 text-white"
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="endDate" className="text-xs font-medium">
+        <Label htmlFor="endDate" className="text-xs font-medium text-slate-400">
           Data final
         </Label>
         <Input
@@ -79,12 +82,17 @@ export function DateRangeFilter() {
           type="date"
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
-          className="w-44"
+          className="w-44 bg-white/5 border-white/10 text-white"
         />
       </div>
 
       <div className="flex gap-2">
-        <Button type="submit" disabled={!!error} size="sm">
+        <Button
+          type="submit"
+          disabled={!!error}
+          size="sm"
+          className="bg-[#ffbb00] text-black hover:bg-[#ffbb00]/80 font-bold"
+        >
           Filtrar
         </Button>
         {(startDate || endDate) && (
@@ -93,13 +101,14 @@ export function DateRangeFilter() {
             variant="outline"
             size="sm"
             onClick={handleClear}
+            className="border-white/10 text-slate-300 hover:bg-white/5 hover:text-white"
           >
             Limpar
           </Button>
         )}
       </div>
 
-      {error && <p className="text-sm text-destructive sm:self-end">{error}</p>}
+      {error && <p className="text-sm text-red-400 sm:self-end">{error}</p>}
     </form>
   );
 }
