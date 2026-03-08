@@ -22,26 +22,25 @@ export function KpiCards({ kpis }: KpiCardsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Lucro Total */}
-      <div className="bg-[#231e0f]/60 backdrop-blur-md border border-[#ffbb00]/10 p-5 rounded-2xl flex flex-col justify-between h-[160px] relative overflow-hidden group hover:border-[#ffbb00]/30 transition-all">
+      <div className="bg-card backdrop-blur-md border p-5 rounded-2xl flex flex-col justify-between h-[160px] relative overflow-hidden group hover:border-[#ffbb00]/50 transition-all shadow-sm">
         <div className="absolute -right-6 -top-6 w-24 h-24 bg-[#ffbb00]/10 rounded-full blur-2xl group-hover:bg-[#ffbb00]/20 transition-all" />
         <div>
-          <p className="text-slate-400 text-sm font-medium mb-1">
+          <p className="text-muted-foreground text-sm font-medium mb-1">
             Lucro Total (Operações)
           </p>
-          <h3 className="text-3xl font-bold text-white">
+          <h3 className="text-3xl font-bold text-foreground">
             {totalFormatted.main}
-            <span className="text-lg text-slate-500 font-normal">
+            <span className="text-lg text-muted-foreground/80 font-normal">
               {totalFormatted.cents}
             </span>
           </h3>
         </div>
         <div className="flex items-end justify-between">
           <div
-            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${
-              isPositiveChange
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${isPositiveChange
                 ? "text-emerald-400 bg-emerald-400/10"
                 : "text-red-400 bg-red-400/10"
-            }`}
+              }`}
           >
             {isPositiveChange ? (
               <TrendingUp className="h-3.5 w-3.5" />
@@ -91,26 +90,25 @@ export function KpiCards({ kpis }: KpiCardsProps) {
       </div>
 
       {/* Meu Lucro */}
-      <div className="bg-[#231e0f]/60 backdrop-blur-md border border-[#ffbb00]/10 p-5 rounded-2xl flex flex-col justify-between h-[160px] relative overflow-hidden group hover:border-[#ffbb00]/30 transition-all">
+      <div className="bg-card backdrop-blur-md border p-5 rounded-2xl flex flex-col justify-between h-[160px] relative overflow-hidden group hover:border-[#ffbb00]/50 transition-all shadow-sm">
         <div className="absolute -right-6 -top-6 w-24 h-24 bg-[#ffbb00]/10 rounded-full blur-2xl group-hover:bg-[#ffbb00]/20 transition-all" />
         <div>
-          <p className="text-slate-400 text-sm font-medium mb-1">
+          <p className="text-muted-foreground text-sm font-medium mb-1">
             Meu Lucro (Comissão)
           </p>
-          <h3 className="text-3xl font-bold text-white">
+          <h3 className="text-3xl font-bold text-foreground">
             {myFormatted.main}
-            <span className="text-lg text-slate-500 font-normal">
+            <span className="text-lg text-muted-foreground/80 font-normal">
               {myFormatted.cents}
             </span>
           </h3>
         </div>
         <div className="flex items-end justify-between">
           <div
-            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${
-              isPositiveChange
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${isPositiveChange
                 ? "text-emerald-400 bg-emerald-400/10"
                 : "text-red-400 bg-red-400/10"
-            }`}
+              }`}
           >
             {isPositiveChange ? (
               <TrendingUp className="h-3.5 w-3.5" />
@@ -160,15 +158,15 @@ export function KpiCards({ kpis }: KpiCardsProps) {
       </div>
 
       {/* Criativo + Lucrativo */}
-      <div className="bg-[#231e0f]/60 backdrop-blur-md border border-[#ffbb00]/10 p-5 rounded-2xl flex flex-col justify-between h-[160px] relative overflow-hidden group hover:border-[#ffbb00]/30 transition-all">
+      <div className="bg-card backdrop-blur-md border p-5 rounded-2xl flex flex-col justify-between h-[160px] relative overflow-hidden group hover:border-[#ffbb00]/50 transition-all shadow-sm">
         <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all" />
         <div>
-          <p className="text-slate-400 text-sm font-medium mb-1">
+          <p className="text-muted-foreground text-sm font-medium mb-1">
             Criativo + Lucrativo
           </p>
           {kpis.topCreative ? (
             <>
-              <h3 className="text-2xl font-bold text-white truncate">
+              <h3 className="text-2xl font-bold text-foreground truncate">
                 {kpis.topCreative.name}
               </h3>
               <p className="text-emerald-400 text-sm font-medium mt-1">
@@ -176,12 +174,12 @@ export function KpiCards({ kpis }: KpiCardsProps) {
               </p>
             </>
           ) : (
-            <h3 className="text-lg font-bold text-slate-500">Sem dados</h3>
+            <h3 className="text-lg font-bold text-muted-foreground/80">Sem dados</h3>
           )}
         </div>
         <div className="flex items-end justify-between">
           {kpis.topCreative && (
-            <div className="flex items-center gap-1 text-slate-400 text-xs">
+            <div className="flex items-center gap-1 text-muted-foreground text-xs">
               {kpis.topCreative.operationName}
             </div>
           )}
@@ -207,15 +205,15 @@ export function KpiCards({ kpis }: KpiCardsProps) {
       </div>
 
       {/* Criativo - Lucrativo */}
-      <div className="bg-[#231e0f]/60 backdrop-blur-md border border-[#ffbb00]/10 p-5 rounded-2xl flex flex-col justify-between h-[160px] relative overflow-hidden group hover:border-[#ffbb00]/30 transition-all">
+      <div className="bg-card backdrop-blur-md border p-5 rounded-2xl flex flex-col justify-between h-[160px] relative overflow-hidden group hover:border-[#ffbb00]/50 transition-all shadow-sm">
         <div className="absolute -right-6 -top-6 w-24 h-24 bg-red-500/10 rounded-full blur-2xl group-hover:bg-red-500/20 transition-all" />
         <div>
-          <p className="text-slate-400 text-sm font-medium mb-1">
+          <p className="text-muted-foreground text-sm font-medium mb-1">
             Criativo - Lucrativo
           </p>
           {kpis.bottomCreative ? (
             <>
-              <h3 className="text-2xl font-bold text-white truncate">
+              <h3 className="text-2xl font-bold text-foreground truncate">
                 {kpis.bottomCreative.name}
               </h3>
               <p className="text-red-400 text-sm font-medium mt-1">
@@ -223,12 +221,12 @@ export function KpiCards({ kpis }: KpiCardsProps) {
               </p>
             </>
           ) : (
-            <h3 className="text-lg font-bold text-slate-500">Sem dados</h3>
+            <h3 className="text-lg font-bold text-muted-foreground/80">Sem dados</h3>
           )}
         </div>
         <div className="flex items-end justify-between">
           {kpis.bottomCreative && (
-            <div className="flex items-center gap-1 text-slate-400 text-xs">
+            <div className="flex items-center gap-1 text-muted-foreground text-xs">
               {kpis.bottomCreative.operationName}
             </div>
           )}

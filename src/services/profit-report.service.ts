@@ -40,6 +40,14 @@ export async function getProfitReport(
         totalProfit: { gt: 0 },
         isActive: true,
         operation: { userId },
+        profitLogs: {
+          some: {
+            createdAt: {
+              gte: startDate,
+              lte: endDate,
+            },
+          },
+        },
       },
       include: { operation: true },
     }),

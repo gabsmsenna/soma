@@ -8,17 +8,17 @@ const config: Record<
   ascensao: {
     label: "Ascensão",
     icon: TrendingUp,
-    className: "bg-emerald-500/10 text-emerald-400",
+    className: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
   },
   queda: {
     label: "Queda",
     icon: TrendingDown,
-    className: "bg-red-500/10 text-red-400",
+    className: "bg-red-500/10 text-red-600 dark:text-red-400",
   },
   estavel: {
     label: "Estável",
     icon: Minus,
-    className: "bg-slate-500/10 text-slate-400",
+    className: "bg-muted text-muted-foreground",
   },
 };
 

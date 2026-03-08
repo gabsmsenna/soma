@@ -18,7 +18,7 @@ export function OperationCard({ group }: OperationCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="bg-[#231e0f]/60 backdrop-blur-md border border-[#ffbb00]/10 rounded-2xl p-6 overflow-hidden hover:border-[#ffbb00]/30 transition-all">
+    <div className="bg-card backdrop-blur-md border rounded-2xl p-6 overflow-hidden hover:border-[#ffbb00]/50 transition-all shadow-sm">
       <div
         className="flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer"
         onClick={() => setExpanded(!expanded)}
@@ -33,10 +33,10 @@ export function OperationCard({ group }: OperationCardProps) {
             <Rocket className="text-[#ffbb00] h-6 w-6" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-white">
+            <h3 className="text-xl font-bold text-foreground">
               {group.operationName}
             </h3>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-muted-foreground">
               {group.creatives.length} criativo
               {group.creatives.length !== 1 ? "s" : ""}
             </p>
@@ -44,15 +44,15 @@ export function OperationCard({ group }: OperationCardProps) {
         </div>
         <div className="flex flex-wrap items-center gap-8">
           <div className="text-right">
-            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
               Lucro Total Op.
             </p>
-            <p className="text-xl font-bold text-white">
+            <p className="text-xl font-bold text-foreground">
               {formatCurrency(group.totalProfit)}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">
               Meu Lucro ({group.freelancerCutPercentage}%)
             </p>
             <p
@@ -64,7 +64,7 @@ export function OperationCard({ group }: OperationCardProps) {
           </div>
           <button
             type="button"
-            className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-lg bg-muted/50 hover:bg-accent hover:text-accent-foreground text-muted-foreground transition-colors"
             onClick={(e) => {
               e.stopPropagation();
               setExpanded(!expanded);
@@ -80,15 +80,15 @@ export function OperationCard({ group }: OperationCardProps) {
       </div>
 
       {expanded && (
-        <div className="mt-6 pt-6 border-t border-white/5">
-          <h4 className="text-sm font-bold text-slate-300 mb-4 flex items-center gap-2">
+        <div className="mt-6 pt-6 border-t border-border">
+          <h4 className="text-sm font-bold text-muted-foreground mb-4 flex items-center gap-2">
             <Palette className="h-4 w-4" />
             Desempenho dos Criativos
           </h4>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="text-xs text-slate-500 border-b border-white/5">
+                <tr className="text-xs text-muted-foreground/80 border-b border-border">
                   <th className="py-3 px-4 font-medium uppercase tracking-wider">
                     Criativo
                   </th>
@@ -109,24 +109,24 @@ export function OperationCard({ group }: OperationCardProps) {
                   </th>
                 </tr>
               </thead>
-              <tbody className="text-sm text-slate-300">
+              <tbody className="text-sm text-muted-foreground">
                 {group.creatives.map((creative) => (
                   <tr
                     key={`${creative.creativeId}-${creative.paidAt?.toString() ?? "unpaid"}`}
-                    className="group hover:bg-white/5 transition-colors border-b border-white/5 last:border-0"
+                    className="group hover:bg-muted transition-colors border-b border-border last:border-0"
                   >
                     <td className="py-4 px-4">
-                      <p className="font-bold text-white">
+                      <p className="font-bold text-foreground">
                         {creative.creativeName}
                       </p>
                     </td>
                     <td className="py-4 px-4 text-right font-medium">
                       {formatCurrency(creative.totalProfit)}
                     </td>
-                    <td className="py-4 px-4 text-right font-bold text-white">
+                    <td className="py-4 px-4 text-right font-bold text-foreground">
                       {formatCurrency(creative.commission)}
                     </td>
-                    <td className="py-4 px-4 text-right text-slate-400">
+                    <td className="py-4 px-4 text-right text-muted-foreground">
                       {creative.paidAt
                         ? new Date(creative.paidAt).toLocaleDateString("pt-BR")
                         : "—"}

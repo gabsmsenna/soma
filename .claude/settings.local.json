@@ -1,4 +1,12 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(pnpm vitest:*)",
+      "Bash(pnpm run:*)",
+      "Bash(pnpm biome:*)",
+      "Bash(git:*)"
+    ]
+  },
   "enabledPlugins": {
     "claude-mem@thedotmack": false
   }

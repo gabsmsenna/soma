@@ -3,8 +3,13 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 
 const MAX_DAYS = 30;
 
@@ -12,16 +17,21 @@ export function DateRangeFilter() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [startDate, setStartDate] = useState(
-    searchParams.get("startDate") ?? "",
+  const [startDate, setStartDate] = useState<Date | undefined>(
+    searchParams.get("startDate")
+      ? new Date(searchParams.get("startDate") + "T12:00:00")
+      : undefined,
   );
-  const [endDate, setEndDate] = useState(searchParams.get("endDate") ?? "");
+  const [endDate, setEndDate] = useState<Date | undefined>(
+    searchParams.get("endDate")
+      ? new Date(searchParams.get("endDate") + "T12:00:00")
+      : undefined,
+  );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (startDate && endDate) {
-      const diffMs =
-        new Date(endDate).getTime() - new Date(startDate).getTime();
+      const diffMs = endDate.getTime() - startDate.getTime();
       const diffDays = diffMs / (1000 * 60 * 60 * 24);
       if (diffDays > MAX_DAYS) {
         setError(`O intervalo máximo de busca é de ${MAX_DAYS} dias.`);
@@ -40,14 +50,14 @@ export function DateRangeFilter() {
     if (error) return;
 
     const params = new URLSearchParams();
-    if (startDate) params.set("startDate", startDate);
-    if (endDate) params.set("endDate", endDate);
+    if (startDate) params.set("startDate", format(startDate, "yyyy-MM-dd"));
+    if (endDate) params.set("endDate", format(endDate, "yyyy-MM-dd"));
     router.push(`/relatorio-lucros?${params.toString()}`);
   }
 
   function handleClear() {
-    setStartDate("");
-    setEndDate("");
+    setStartDate(undefined);
+    setEndDate(undefined);
     setError(null);
     router.push("/relatorio-lucros");
   }
@@ -55,35 +65,64 @@ export function DateRangeFilter() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col sm:flex-row sm:items-end gap-4 bg-[#231e0f]/60 backdrop-blur-md border border-[#ffbb00]/10 rounded-2xl p-4"
+      className="flex flex-col sm:flex-row sm:items-end gap-4 bg-card backdrop-blur-md border border-border rounded-2xl p-4"
     >
       <div className="flex flex-col gap-1.5">
-        <Label
-          htmlFor="startDate"
-          className="text-xs font-medium text-slate-400"
-        >
+        <Label className="text-xs font-medium text-muted-foreground">
           Data inicial
         </Label>
-        <Input
-          id="startDate"
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          className="w-44 bg-white/5 border-white/10 text-white"
-        />
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant={"outline"}
+              className={cn(
+                "w-44 justify-start text-left font-normal bg-background border-input text-foreground",
+                !startDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {startDate ? format(startDate, "dd/MM/yyyy") : <span>Selecione...</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={startDate}
+              onSelect={setStartDate}
+              locale={ptBR}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="endDate" className="text-xs font-medium text-slate-400">
+        <Label className="text-xs font-medium text-muted-foreground">
           Data final
         </Label>
-        <Input
-          id="endDate"
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          className="w-44 bg-white/5 border-white/10 text-white"
-        />
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant={"outline"}
+              className={cn(
+                "w-44 justify-start text-left font-normal bg-background border-input text-foreground",
+                !endDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {endDate ? format(endDate, "dd/MM/yyyy") : <span>Selecione...</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={endDate}
+              onSelect={setEndDate}
+              locale={ptBR}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
       </div>
 
       <div className="flex gap-2">
@@ -91,7 +130,7 @@ export function DateRangeFilter() {
           type="submit"
           disabled={!!error}
           size="sm"
-          className="bg-[#ffbb00] text-black hover:bg-[#ffbb00]/80 font-bold"
+          className="bg-[#FFBB00] text-primary-foreground hover:bg-[#FFBB00]/80 font-bold"
         >
           Filtrar
         </Button>
@@ -101,7 +140,7 @@ export function DateRangeFilter() {
             variant="outline"
             size="sm"
             onClick={handleClear}
-            className="border-white/10 text-slate-300 hover:bg-white/5 hover:text-white"
+            className="border-input text-muted-foreground hover:bg-accent hover:text-accent-foreground"
           >
             Limpar
           </Button>
