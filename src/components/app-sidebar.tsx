@@ -58,11 +58,6 @@ const mainNavItems = [
     icon: Palette,
   },
   {
-    title: "Relatórios",
-    url: "/relatorios",
-    icon: BarChart3,
-  },
-  {
     title: "Relatório de Lucros",
     url: "/relatorio-lucros",
     icon: DollarSign,
