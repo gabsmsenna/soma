@@ -81,6 +81,78 @@ For **data fetching**, adhere to the following hierarchy:
 1. Always prefer fetching data directly within **Server Components** using standard asynchronous functions.
 2. When fetching must occur from the client side, build and utilize dedicated **API Routes (Route Handlers)** optimized for `GET` methods, properly leveraging the native `fetch` API or data-fetching libraries (like SWR or React Query).
 
+### Clean Code Principles
+
+These rules were established after identifying recurring violations in this codebase. They are **mandatory**.
+
+#### Date Calculations — use `date-fns`, never raw milliseconds
+
+Always use `date-fns` functions for any date arithmetic. Raw millisecond math (`Date.getTime()`, division by `86400000`) is error-prone and calendar-unaware (DST, leap years).
+
+```typescript
+// FORBIDDEN
+const daysDiff = (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+const prevStart = new Date(startDate.getTime() - daysDiff * 86400000);
+
+// CORRECT
+import { differenceInDays, subDays } from "date-fns";
+const daysDiff = differenceInDays(endDate, startDate);
+const prevStart = subDays(startDate, daysDiff);
+```
+
+#### Aggregation Before Derived Computation
+
+When computing derived values (trends, percentages, comparisons) from a list of entries that may have multiple rows per entity, **always aggregate first** into a `Map`, then compute. Never compare individual raw entries against an aggregated total.
+
+```typescript
+// FORBIDDEN — compares each entry's value against an aggregated previous total
+for (const entry of currentEntries) {
+  const trend = entry.totalProfit > prevTotal ? "ascensao" : "queda"; // WRONG
+}
+
+// CORRECT — aggregate first, then compare aggregated vs aggregated
+const currentTotals = aggregateByCreative(currentEntries, (e) => e.totalProfit);
+const prevTotals = aggregateByCreative(previousEntries, (e) => e.totalProfit);
+for (const [creativeId, currentTotal] of currentTotals) {
+  const trend = computeTrend(currentTotal, prevTotals.get(creativeId));
+}
+```
+
+#### DRY — Extract Shared Logic Into Helpers
+
+When two or more code paths perform the same initialization or lookup pattern, extract it into a named helper function. Do not duplicate the logic inline.
+
+```typescript
+// FORBIDDEN — duplicate group initialization in two places
+// ...in paid loop: if (!map.has(id)) { map.set(id, { operationId, ... }) }
+// ...in unpaid loop: if (!map.has(id)) { map.set(id, { operationId, ... }) }
+
+// CORRECT — single helper used in both places
+function getOrCreateGroup(map, operation) { ... }
+```
+
+#### Data Consolidation — One Output Row Per Entity
+
+When multiple DB rows represent separate events for the same logical entity (e.g., multiple `ProfitEntry` rows for one `Creative`), consolidate them into a **single output row** before returning from a service. Use a `Set` to track seen IDs and pre-aggregated `Map`s for summed values.
+
+```typescript
+// FORBIDDEN — pushes one output row per DB entry, causing duplicates in the UI
+for (const entry of currentEntries) {
+  group.creatives.push({ totalProfit: entry.totalProfit, ... });
+}
+
+// CORRECT — consolidate using Set + pre-aggregated Maps
+const seen = new Set<string>();
+for (const entry of currentEntries) {
+  if (seen.has(entry.creativeId)) continue;
+  seen.add(entry.creativeId);
+  group.creatives.push({
+    totalProfit: aggregatedTotals.get(entry.creativeId) ?? 0,
+    ...
+  });
+}
+```
+
 ### Formatting (Biome)
 
 * **Indent**: 2 spaces (no tabs)
