@@ -1,4 +1,6 @@
+import { differenceInDays, subDays } from "date-fns";
 import type {
+  ProfitReportCreativeEntry,
   ProfitReportKpis,
   ProfitReportOperationGroup,
   ProfitReportResponse,
@@ -11,8 +13,8 @@ export async function getProfitReport(
   startDate: Date,
   endDate: Date,
 ): Promise<ProfitReportResponse> {
-  const periodLength = endDate.getTime() - startDate.getTime();
-  const prevStart = new Date(startDate.getTime() - periodLength);
+  const daysDiff = differenceInDays(endDate, startDate);
+  const prevStart = subDays(startDate, daysDiff);
   const prevEnd = new Date(startDate);
 
   const [currentEntries, previousEntries, unpaidCreatives] = await Promise.all([
@@ -21,9 +23,7 @@ export async function getProfitReport(
         paidAt: { gte: startDate, lte: endDate },
         creative: { operation: { userId } },
       },
-      include: {
-        creative: { include: { operation: true } },
-      },
+      include: { creative: { include: { operation: true } } },
       orderBy: { paidAt: "desc" },
     }),
     prisma.profitEntry.findMany({
@@ -31,9 +31,7 @@ export async function getProfitReport(
         paidAt: { gte: prevStart, lte: prevEnd },
         creative: { operation: { userId } },
       },
-      include: {
-        creative: { include: { operation: true } },
-      },
+      include: { creative: { include: { operation: true } } },
     }),
     prisma.creative.findMany({
       where: {
@@ -41,26 +39,103 @@ export async function getProfitReport(
         isActive: true,
         operation: { userId },
         profitLogs: {
-          some: {
-            createdAt: {
-              gte: startDate,
-              lte: endDate,
-            },
-          },
+          some: { createdAt: { gte: startDate, lte: endDate } },
         },
       },
       include: { operation: true },
     }),
   ]);
 
-  // Build previous period totals per creative for trend calculation
-  const prevTotalsByCreative = new Map<string, number>();
-  for (const entry of previousEntries) {
-    const current = prevTotalsByCreative.get(entry.creativeId) ?? 0;
-    prevTotalsByCreative.set(entry.creativeId, current + entry.totalProfit);
+  const prevTotalsByCreative = aggregateByCreative(
+    previousEntries,
+    (e) => e.totalProfit,
+  );
+  const currentTotalsByCreative = aggregateByCreative(
+    currentEntries,
+    (e) => e.totalProfit,
+  );
+  const currentCommissionsByCreative = aggregateByCreative(
+    currentEntries,
+    (e) => e.commission,
+  );
+
+  const kpis = buildKpis(currentEntries, previousEntries);
+  const operationMap = new Map<string, ProfitReportOperationGroup>();
+
+  // Process paid entries — consolidate per creative
+  const paidCreativeIds = new Set<string>();
+
+  for (const entry of currentEntries) {
+    const creativeId = entry.creativeId;
+    if (paidCreativeIds.has(creativeId)) continue;
+    paidCreativeIds.add(creativeId);
+
+    const op = entry.creative.operation;
+    const group = getOrCreateGroup(operationMap, op);
+
+    const totalProfit = currentTotalsByCreative.get(creativeId) ?? 0;
+    const commission = currentCommissionsByCreative.get(creativeId) ?? 0;
+    const trend = computeTrend(
+      totalProfit,
+      prevTotalsByCreative.get(creativeId),
+    );
+
+    group.totalProfit += totalProfit;
+    group.myProfit += commission;
+    group.creatives.push({
+      creativeId,
+      creativeName: entry.creative.name,
+      totalProfit,
+      commission,
+      paidAt: entry.paidAt,
+      isPaid: true,
+      trend,
+    });
   }
 
-  // KPIs
+  // Add unpaid creatives (skip those already processed as paid)
+  for (const creative of unpaidCreatives) {
+    if (paidCreativeIds.has(creative.id)) continue;
+
+    const group = getOrCreateGroup(operationMap, creative.operation);
+
+    group.creatives.push({
+      creativeId: creative.id,
+      creativeName: creative.name,
+      totalProfit: Number(creative.totalProfit),
+      commission: Number(creative.freelancerCut),
+      paidAt: null,
+      isPaid: false,
+      trend: "estavel",
+    });
+  }
+
+  return { kpis, operations: Array.from(operationMap.values()) };
+}
+
+function aggregateByCreative<T extends { creativeId: string }>(
+  entries: T[],
+  getValue: (entry: T) => number,
+): Map<string, number> {
+  const map = new Map<string, number>();
+  for (const entry of entries) {
+    map.set(
+      entry.creativeId,
+      (map.get(entry.creativeId) ?? 0) + getValue(entry),
+    );
+  }
+  return map;
+}
+
+function buildKpis(
+  currentEntries: {
+    totalProfit: number;
+    commission: number;
+    creativeId: string;
+    creative: { name: string; operation: { name: string } };
+  }[],
+  previousEntries: { totalProfit: number }[],
+): ProfitReportKpis {
   const totalProfit = currentEntries.reduce((s, e) => s + e.totalProfit, 0);
   const myProfit = currentEntries.reduce((s, e) => s + e.commission, 0);
   const prevTotalProfit = previousEntries.reduce(
@@ -77,114 +152,49 @@ export async function getProfitReport(
     percentChange = 100;
   }
 
-  // Aggregate profit per creative for top/bottom
-  const profitByCreative = new Map<
-    string,
-    { name: string; operationName: string; totalProfit: number }
-  >();
-  for (const entry of currentEntries) {
-    const key = entry.creativeId;
-    const existing = profitByCreative.get(key);
-    if (existing) {
-      existing.totalProfit += entry.totalProfit;
-    } else {
-      profitByCreative.set(key, {
+  const profitByCreative = aggregateByCreative(
+    currentEntries,
+    (e) => e.totalProfit,
+  );
+  const creativesList = Array.from(profitByCreative.entries())
+    .map(([creativeId, profit]) => {
+      const entry = currentEntries.find((e) => e.creativeId === creativeId)!;
+      return {
         name: entry.creative.name,
         operationName: entry.creative.operation.name,
-        totalProfit: entry.totalProfit,
-      });
-    }
-  }
+        totalProfit: profit,
+      };
+    })
+    .sort((a, b) => b.totalProfit - a.totalProfit);
 
-  const creativesList = Array.from(profitByCreative.values());
   let topCreative: ProfitReportKpis["topCreative"] = null;
   let bottomCreative: ProfitReportKpis["bottomCreative"] = null;
 
   if (creativesList.length > 0) {
-    creativesList.sort((a, b) => b.totalProfit - a.totalProfit);
     topCreative = creativesList[0];
     bottomCreative = creativesList[creativesList.length - 1];
   }
 
-  const kpis: ProfitReportKpis = {
-    totalProfit,
-    myProfit,
-    percentChange,
-    topCreative,
-    bottomCreative,
-  };
+  return { totalProfit, myProfit, percentChange, topCreative, bottomCreative };
+}
 
-  // Build operation groups
-  const operationMap = new Map<string, ProfitReportOperationGroup>();
-
-  // Add paid entries
-  for (const entry of currentEntries) {
-    const op = entry.creative.operation;
-    let group = operationMap.get(op.id);
-    if (!group) {
-      group = {
-        operationId: op.id,
-        operationName: op.name,
-        freelancerCutPercentage: Number(op.freelancerCutPercentage),
-        totalProfit: 0,
-        myProfit: 0,
-        creatives: [],
-      };
-      operationMap.set(op.id, group);
-    }
-
-    const prevTotal = prevTotalsByCreative.get(entry.creativeId);
-    const trend = computeTrend(entry.totalProfit, prevTotal);
-
-    group.totalProfit += entry.totalProfit;
-    group.myProfit += entry.commission;
-    group.creatives.push({
-      creativeId: entry.creativeId,
-      creativeName: entry.creative.name,
-      totalProfit: entry.totalProfit,
-      commission: entry.commission,
-      paidAt: entry.paidAt,
-      isPaid: true,
-      trend,
-    });
+function getOrCreateGroup(
+  map: Map<string, ProfitReportOperationGroup>,
+  operation: { id: string; name: string; freelancerCutPercentage: unknown },
+): ProfitReportOperationGroup {
+  let group = map.get(operation.id);
+  if (!group) {
+    group = {
+      operationId: operation.id,
+      operationName: operation.name,
+      freelancerCutPercentage: Number(operation.freelancerCutPercentage),
+      totalProfit: 0,
+      myProfit: 0,
+      creatives: [],
+    };
+    map.set(operation.id, group);
   }
-
-  // Add unpaid creatives
-  // Exclude creatives that already appear as paid entries
-  const paidCreativeIds = new Set(currentEntries.map((e) => e.creativeId));
-
-  for (const creative of unpaidCreatives) {
-    if (paidCreativeIds.has(creative.id)) continue;
-
-    const op = creative.operation;
-    let group = operationMap.get(op.id);
-    if (!group) {
-      group = {
-        operationId: op.id,
-        operationName: op.name,
-        freelancerCutPercentage: Number(op.freelancerCutPercentage),
-        totalProfit: 0,
-        myProfit: 0,
-        creatives: [],
-      };
-      operationMap.set(op.id, group);
-    }
-
-    group.creatives.push({
-      creativeId: creative.id,
-      creativeName: creative.name,
-      totalProfit: Number(creative.totalProfit),
-      commission: Number(creative.freelancerCut),
-      paidAt: null,
-      isPaid: false,
-      trend: "estavel",
-    });
-  }
-
-  return {
-    kpis,
-    operations: Array.from(operationMap.values()),
-  };
+  return group;
 }
 
 function computeTrend(
