@@ -50,7 +50,7 @@ export function CreativesPagination({ pagination }: CreativesPaginationProps) {
         type="button"
         onClick={() => goToPage(page - 1)}
         disabled={page <= 1}
-        className="w-10 h-10 flex items-center justify-center rounded-lg bg-muted text-muted-foreground hover:text-foreground disabled:opacity-50"
+        className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-slate-200 shadow-sm text-slate-600 hover:bg-slate-50 dark:bg-muted dark:border-none dark:shadow-none dark:text-muted-foreground dark:hover:bg-muted/80 dark:hover:text-foreground disabled:opacity-50"
       >
         <ChevronLeft className="h-4 w-4" />
       </button>
@@ -65,11 +65,10 @@ export function CreativesPagination({ pagination }: CreativesPaginationProps) {
             key={item.value}
             type="button"
             onClick={() => goToPage(item.value)}
-            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold transition-colors ${
-              item.value === page
+            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold transition-colors ${item.value === page
                 ? "bg-[#FFBB00] text-black shadow-lg shadow-[#FFBB00]/20"
-                : "bg-muted text-muted-foreground hover:text-foreground"
-            }`}
+                : "bg-white border border-slate-200 shadow-sm text-slate-600 hover:bg-slate-50 dark:bg-muted dark:border-none dark:shadow-none dark:text-muted-foreground dark:hover:bg-muted/80 dark:hover:text-foreground"
+              }`}
           >
             {item.value}
           </button>
@@ -80,7 +79,7 @@ export function CreativesPagination({ pagination }: CreativesPaginationProps) {
         type="button"
         onClick={() => goToPage(page + 1)}
         disabled={page >= totalPages}
-        className="w-10 h-10 flex items-center justify-center rounded-lg bg-muted text-muted-foreground hover:text-foreground disabled:opacity-50"
+        className="w-10 h-10 flex items-center justify-center rounded-lg bg-white border border-slate-200 shadow-sm text-slate-600 hover:bg-slate-50 dark:bg-muted dark:border-none dark:shadow-none dark:text-muted-foreground dark:hover:bg-muted/80 dark:hover:text-foreground disabled:opacity-50"
       >
         <ChevronRight className="h-4 w-4" />
       </button>

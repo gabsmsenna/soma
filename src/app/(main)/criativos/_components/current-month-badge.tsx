@@ -17,6 +17,6 @@ export function CurrentMonthBadge() {
   if (!label) return null;
 
   return (
-    <span className="text-sm font-medium text-muted-foreground">{label}</span>
+    <span className="text-sm font-medium text-slate-500 dark:text-muted-foreground">{label}</span>
   );
 }

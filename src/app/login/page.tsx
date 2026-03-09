@@ -3,7 +3,7 @@ import { AuthSidebar } from "@/components/auth/auth-sidebar";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-[#1a1a1a] relative">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[#F8F9FB] dark:bg-[#1a1a1a] text-slate-800 dark:text-foreground relative">
       {/* Background glow */}
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-300 h-200 bg-[#FFBB00]/10 blur-[120px] rounded-full -z-10 pointer-events-none" />
 

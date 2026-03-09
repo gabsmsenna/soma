@@ -6,7 +6,7 @@ import { MonthlyGoal } from "@/app/(main)/dashboard/_components/monthly-goal";
 
 export default function DashboardPage() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-[#F8F9FB] dark:bg-background text-slate-800 dark:text-foreground">
       {/* Header */}
       <Header />
 

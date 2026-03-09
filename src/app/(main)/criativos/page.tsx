@@ -53,7 +53,7 @@ export default async function CriativosPage({
   const metrics = computeMetrics(creatives);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-[#F8F9FB] dark:bg-background text-slate-800 dark:text-foreground">
       <CreativesHeader />
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">

@@ -41,19 +41,19 @@ export function CreativesMetrics({ metrics }: CreativesMetricsProps) {
       {metricItems(metrics).map((m) => (
         <div
           key={m.label}
-          className="bg-[#111111] dark:bg-[#111111] p-6 rounded-3xl border border-white/10 group transition-all duration-300 hover:border-[#FFBB00]/50 relative overflow-hidden text-white"
+          className="bg-white dark:bg-[#111111] shadow-sm dark:shadow-none p-6 rounded-3xl border border-slate-200 dark:border-white/10 group transition-all duration-300 hover:border-[#FFBB00]/50 relative overflow-hidden text-slate-800 dark:text-white"
         >
           <div className="flex justify-between items-start mb-6">
-            <div className="px-3 py-1 bg-white/5 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+            <div className="px-3 py-1 bg-slate-100 dark:bg-white/5 rounded-full text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 text-slate-600 dark:text-gray-300">
               {m.label} <span className={m.badgeColor}>{m.badge}</span>
             </div>
           </div>
           <div className="flex items-center justify-between mb-2">
             <div className="flex flex-col">
-              <span className="text-xs text-gray-400 font-medium mb-1">
+              <span className="text-xs text-slate-500 dark:text-gray-400 font-medium mb-1">
                 {m.subLabel}
               </span>
-              <span className="text-3xl font-bold tracking-tight">
+              <span className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
                 {m.value}
               </span>
             </div>
