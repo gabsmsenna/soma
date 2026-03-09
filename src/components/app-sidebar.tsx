@@ -99,7 +99,7 @@ export function AppSidebar() {
       .then((data) => {
         if (data.user) setUser(data.user);
       })
-      .catch(() => { });
+      .catch(() => {});
   }, []);
 
   async function handleLogout() {
@@ -231,11 +231,11 @@ export function AppSidebar() {
             <AvatarFallback className="bg-muted text-sm font-semibold">
               {user?.name
                 ? user.name
-                  .split(" ")
-                  .slice(0, 2)
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase()
+                    .split(" ")
+                    .slice(0, 2)
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase()
                 : "?"}
             </AvatarFallback>
           </Avatar>

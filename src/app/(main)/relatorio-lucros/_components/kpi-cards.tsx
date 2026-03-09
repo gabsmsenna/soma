@@ -37,10 +37,11 @@ export function KpiCards({ kpis }: KpiCardsProps) {
         </div>
         <div className="flex items-end justify-between">
           <div
-            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${isPositiveChange
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${
+              isPositiveChange
                 ? "text-emerald-400 bg-emerald-400/10"
                 : "text-red-400 bg-red-400/10"
-              }`}
+            }`}
           >
             {isPositiveChange ? (
               <TrendingUp className="h-3.5 w-3.5" />
@@ -105,10 +106,11 @@ export function KpiCards({ kpis }: KpiCardsProps) {
         </div>
         <div className="flex items-end justify-between">
           <div
-            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${isPositiveChange
+            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-bold ${
+              isPositiveChange
                 ? "text-emerald-400 bg-emerald-400/10"
                 : "text-red-400 bg-red-400/10"
-              }`}
+            }`}
           >
             {isPositiveChange ? (
               <TrendingUp className="h-3.5 w-3.5" />
@@ -174,7 +176,9 @@ export function KpiCards({ kpis }: KpiCardsProps) {
               </p>
             </>
           ) : (
-            <h3 className="text-lg font-bold text-muted-foreground/80">Sem dados</h3>
+            <h3 className="text-lg font-bold text-muted-foreground/80">
+              Sem dados
+            </h3>
           )}
         </div>
         <div className="flex items-end justify-between">
@@ -221,7 +225,9 @@ export function KpiCards({ kpis }: KpiCardsProps) {
               </p>
             </>
           ) : (
-            <h3 className="text-lg font-bold text-muted-foreground/80">Sem dados</h3>
+            <h3 className="text-lg font-bold text-muted-foreground/80">
+              Sem dados
+            </h3>
           )}
         </div>
         <div className="flex items-end justify-between">

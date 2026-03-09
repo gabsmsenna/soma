@@ -44,12 +44,14 @@ export function CreativeActiveToggle({
           {isActive ? "Ativo" : "Inativo"}
         </span>
         <div
-          className={`w-10 h-5 ${isActive ? "bg-[#FFBB00]" : "bg-muted"
-            } rounded-full relative shadow-inner`}
+          className={`w-10 h-5 ${
+            isActive ? "bg-[#FFBB00]" : "bg-muted"
+          } rounded-full relative shadow-inner`}
         >
           <div
-            className={`absolute top-1 w-3 h-3 bg-white rounded-full ${isActive ? "right-1" : "left-1"
-              }`}
+            className={`absolute top-1 w-3 h-3 bg-white rounded-full ${
+              isActive ? "right-1" : "left-1"
+            }`}
           />
         </div>
       </button>

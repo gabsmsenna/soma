@@ -1,8 +1,8 @@
-import { CommissionChart } from "@/components/dashboard/commission-chart";
-import { DistributionChart } from "@/components/dashboard/distribution-chart";
-import { Header } from "@/components/dashboard/header";
-import { KpiGrid } from "@/components/dashboard/kpi-grid";
-import { MonthlyGoal } from "@/components/dashboard/monthly-goal";
+import { CommissionChart } from "@/app/(main)/dashboard/_components/commission-chart";
+import { DistributionChart } from "@/app/(main)/dashboard/_components/distribution-chart";
+import { Header } from "@/app/(main)/dashboard/_components/header";
+import { KpiGrid } from "@/app/(main)/dashboard/_components/kpi-grid";
+import { MonthlyGoal } from "@/app/(main)/dashboard/_components/monthly-goal";
 
 export default function DashboardPage() {
   return (

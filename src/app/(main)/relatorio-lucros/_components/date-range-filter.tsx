@@ -7,7 +7,11 @@ import { Label } from "@/components/ui/label";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 
@@ -77,11 +81,15 @@ export function DateRangeFilter() {
               variant={"outline"}
               className={cn(
                 "w-44 justify-start text-left font-normal bg-background border-input text-foreground",
-                !startDate && "text-muted-foreground"
+                !startDate && "text-muted-foreground",
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {startDate ? format(startDate, "dd/MM/yyyy") : <span>Selecione...</span>}
+              {startDate ? (
+                format(startDate, "dd/MM/yyyy")
+              ) : (
+                <span>Selecione...</span>
+              )}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
@@ -106,11 +114,15 @@ export function DateRangeFilter() {
               variant={"outline"}
               className={cn(
                 "w-44 justify-start text-left font-normal bg-background border-input text-foreground",
-                !endDate && "text-muted-foreground"
+                !endDate && "text-muted-foreground",
               )}
             >
               <CalendarIcon className="mr-2 h-4 w-4" />
-              {endDate ? format(endDate, "dd/MM/yyyy") : <span>Selecione...</span>}
+              {endDate ? (
+                format(endDate, "dd/MM/yyyy")
+              ) : (
+                <span>Selecione...</span>
+              )}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
