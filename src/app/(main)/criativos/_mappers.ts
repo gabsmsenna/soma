@@ -1,16 +1,10 @@
 import type { Creative, Operation } from "@prisma/client";
+import { formatBRL } from "@/lib/format";
 import type { CreativeMetrics, CreativeViewModel } from "./_types";
 
 type CreativeWithRelations = Creative & {
   operation: Operation;
 };
-
-function formatBRL(value: number): string {
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(value);
-}
 
 export function toCreativeViewModel(
   c: CreativeWithRelations,

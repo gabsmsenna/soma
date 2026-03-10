@@ -4,29 +4,36 @@ import {
   ArrowDownRight,
   ArrowUpRight,
   Loader2,
+  Minus,
   TrendingUp,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { SummaryResponse } from "@/dtos/dashboard.dto";
-
-function formatBRL(value: number): string {
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
-}
+import { formatBRL } from "@/lib/format";
 
 export function KpiGrid() {
   const [data, setData] = useState<SummaryResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/dashboard/summary")
-      .then((res) => res.json())
-      .then((json: SummaryResponse) => setData(json))
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    async function fetchSummary() {
+      try {
+        const res = await fetch("/api/dashboard/summary");
+        if (!res.ok) {
+          setError("Falha ao carregar indicadores.");
+          return;
+        }
+        const json: SummaryResponse = await res.json();
+        setData(json);
+      } catch {
+        setError("Falha ao carregar indicadores.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchSummary();
   }, []);
 
   if (loading) {
@@ -43,6 +50,16 @@ export function KpiGrid() {
     );
   }
 
+  if (error) {
+    return (
+      <Card className="backdrop-blur-sm">
+        <CardContent className="p-6 text-center text-sm text-muted-foreground">
+          {error}
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (!data) return null;
 
   const kpiCards = [
@@ -52,8 +69,8 @@ export function KpiGrid() {
       change: `${data.totalProfit.percentChange >= 0 ? "+" : ""}${data.totalProfit.percentChange}%`,
       trend: data.totalProfit.trend,
       subtitle: "Volume total em operações de clientes",
-      iconBg: "bg-[#FFBB00]/20",
-      iconColor: "text-[#FFBB00]",
+      iconBg: "bg-brand/20",
+      iconColor: "text-brand",
     },
     {
       label: "Meu Lucro de Comissão",
@@ -68,7 +85,7 @@ export function KpiGrid() {
       label: "Criativos Ativos",
       value: String(data.activeCreatives.value),
       change:
-        data.activeCreatives.percentChange !== 0
+        data.activeCreatives.trend !== "neutral"
           ? `${data.activeCreatives.percentChange >= 0 ? "+" : ""}${data.activeCreatives.percentChange}%`
           : "Ativos",
       trend: data.activeCreatives.trend,
@@ -91,15 +108,20 @@ export function KpiGrid() {
                 className={`text-xs font-bold flex items-center gap-1 ${
                   kpi.trend === "up"
                     ? "text-green-500"
-                    : "text-muted-foreground"
+                    : kpi.trend === "down"
+                      ? "text-red-500"
+                      : "text-muted-foreground"
                 }`}
               >
                 {kpi.change}
                 {kpi.trend === "up" ? (
                   <ArrowUpRight className="h-3 w-3" />
-                ) : kpi.change !== "Ativos" ? (
+                ) : kpi.trend === "down" ? (
                   <ArrowDownRight className="h-3 w-3" />
                 ) : null}
+                {kpi.trend === "neutral" && kpi.change !== "Ativos" && (
+                  <Minus className="h-3 w-3" />
+                )}
               </span>
             </div>
             <p className="text-muted-foreground text-xs font-medium uppercase tracking-wider mb-1">

@@ -22,10 +22,14 @@ export function Header() {
           <Input
             className="pl-10 w-64 rounded-xl"
             placeholder="Buscar operações..."
+            aria-label="Buscar operações (em breve)"
+            disabled
           />
         </div>
         <button
           type="button"
+          aria-label="Notificações (em breve)"
+          disabled
           className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-muted"
         >
           <Bell className="h-5 w-5 text-muted-foreground" />

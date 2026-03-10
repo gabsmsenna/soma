@@ -5,33 +5,39 @@ import { useEffect, useState } from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
 import type { RankingEntry, RankingResponse } from "@/dtos/dashboard.dto";
+import { formatBRL } from "@/lib/format";
 
 const COLORS = ["#FFBB00", "#f97316", "#fcd34d", "#3b82f6", "#a855f7"];
 const COLOR_CLASSES = [
-  "bg-[#FFBB00]",
+  "bg-brand",
   "bg-orange-500",
   "bg-amber-300",
   "bg-blue-500",
   "bg-purple-500",
 ];
 
-function formatBRL(value: number): string {
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
-}
-
 export function DistributionChart() {
   const [ranking, setRanking] = useState<RankingEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/dashboard/ranking")
-      .then((res) => res.json())
-      .then((json: RankingResponse) => setRanking(json.data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    async function fetchRanking() {
+      try {
+        const res = await fetch("/api/dashboard/ranking");
+        if (!res.ok) {
+          setError("Falha ao carregar ranking.");
+          return;
+        }
+        const json: RankingResponse = await res.json();
+        setRanking(json.data);
+      } catch {
+        setError("Falha ao carregar ranking.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchRanking();
   }, []);
 
   const total = ranking.reduce((sum, r) => sum + r.totalProfit, 0);
@@ -53,6 +59,10 @@ export function DistributionChart() {
         {loading ? (
           <div className="flex items-center justify-center h-48">
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : error ? (
+          <div className="flex items-center justify-center h-48">
+            <p className="text-sm text-muted-foreground">{error}</p>
           </div>
         ) : chartData.length === 0 ? (
           <div className="flex items-center justify-center h-48">

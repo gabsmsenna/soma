@@ -1,5 +1,7 @@
 import type { Creative } from "../_types/types";
 
+export { formatBRL } from "@/lib/format";
+
 const ICON_COLORS = [
   "text-indigo-600",
   "text-amber-500",
@@ -13,13 +15,6 @@ const ICON_COLORS = [
 
 export function getIconColor(index: number) {
   return ICON_COLORS[index % ICON_COLORS.length];
-}
-
-export function formatBRL(value: number): string {
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
 }
 
 export function calcTotalProfit(creatives: Creative[]): number {

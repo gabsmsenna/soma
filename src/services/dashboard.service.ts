@@ -1,3 +1,13 @@
+import {
+  addDays,
+  addMonths,
+  eachDayOfInterval,
+  format,
+  startOfMonth,
+  startOfWeek,
+  subDays,
+  subMonths,
+} from "date-fns";
 import { Prisma } from "@prisma/client";
 import type {
   CommissionsChartResponse,
@@ -21,14 +31,16 @@ function calcMetricCard(current: number, previous: number): MetricCard {
   return {
     value: current,
     percentChange,
-    trend: current > 0 && current >= previous ? "up" : "down",
+    trend:
+      current === previous ? "neutral" : current > previous ? "up" : "down",
   };
 }
 
 function getMonthRange(date: Date): { start: Date; end: Date } {
-  const start = new Date(date.getFullYear(), date.getMonth(), 1);
-  const end = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-  return { start, end };
+  return {
+    start: startOfMonth(date),
+    end: startOfMonth(addMonths(date, 1)),
+  };
 }
 
 // ─── Summary Cards ───
@@ -36,9 +48,7 @@ function getMonthRange(date: Date): { start: Date; end: Date } {
 export async function getSummary(userId: string): Promise<SummaryResponse> {
   const now = new Date();
   const current = getMonthRange(now);
-  const prev = getMonthRange(
-    new Date(now.getFullYear(), now.getMonth() - 1, 1),
-  );
+  const prev = getMonthRange(subMonths(now, 1));
 
   const userFilter = { operation: { userId } };
 
@@ -62,12 +72,12 @@ export async function getSummary(userId: string): Promise<SummaryResponse> {
     where: { operation: { userId }, isActive: true },
   });
 
-  // Active creatives count (previous month)
+  // Active creatives count (previous month — created within prev month range)
   const activeCreativesPrev = await prisma.creative.count({
     where: {
       operation: { userId },
       isActive: true,
-      createdAt: { lt: current.start },
+      createdAt: { gte: prev.start, lt: prev.end },
     },
   });
 
@@ -90,41 +100,22 @@ export async function getSummary(userId: string): Promise<SummaryResponse> {
 
 function getWeekRange(): { start: Date; end: Date } {
   const now = new Date();
-  const day = now.getDay(); // 0=Sun … 6=Sat
-  const diffToMonday = day === 0 ? -6 : 1 - day;
-  const start = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() + diffToMonday,
-  );
-  const end = new Date(start);
-  end.setDate(start.getDate() + 7); // Monday of next week (exclusive)
+  const start = startOfWeek(now, { weekStartsOn: 1 });
+  const end = addDays(start, 7);
   return { start, end };
 }
 
-function formatDateISO(d: Date): string {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
 function generateDaySlots(start: Date, end: Date): string[] {
-  const slots: string[] = [];
-  const cursor = new Date(start);
-  while (cursor < end) {
-    slots.push(formatDateISO(cursor));
-    cursor.setDate(cursor.getDate() + 1);
-  }
-  return slots;
+  return eachDayOfInterval({ start, end: subDays(end, 1) }).map((d) =>
+    format(d, "yyyy-MM-dd"),
+  );
 }
 
 function generateMonthSlots(count: number): string[] {
   const now = new Date();
   const slots: string[] = [];
   for (let i = count - 1; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    slots.push(formatDateISO(d));
+    slots.push(format(startOfMonth(subMonths(now, i)), "yyyy-MM-dd"));
   }
   return slots;
 }
@@ -147,8 +138,8 @@ export async function getCommissionsChart(
     allSlots = generateDaySlots(start, end);
   } else {
     const now = new Date();
-    rangeStart = new Date(now.getFullYear(), now.getMonth() - 11, 1);
-    rangeEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    rangeStart = startOfMonth(subMonths(now, 11));
+    rangeEnd = startOfMonth(addMonths(now, 1));
     allSlots = generateMonthSlots(12);
   }
 

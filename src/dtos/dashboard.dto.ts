@@ -21,7 +21,7 @@ export type MonthlyGoalDto = z.infer<typeof monthlyGoalSchema>;
 export interface MetricCard {
   value: number;
   percentChange: number;
-  trend: "up" | "down";
+  trend: "up" | "down" | "neutral";
 }
 
 export interface SummaryResponse {

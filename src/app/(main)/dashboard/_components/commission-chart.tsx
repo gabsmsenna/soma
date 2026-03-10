@@ -13,22 +13,19 @@ import {
 } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
 import type { CommissionsChartResponse } from "@/dtos/dashboard.dto";
-
-function formatBRL(value: number): string {
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
-}
+import { formatBRL } from "@/lib/format";
 
 function formatLabel(dateStr: string, period: "weekly" | "monthly"): string {
-  const date = new Date(dateStr + "T00:00:00");
+  const date = new Date(`${dateStr}T00:00:00`);
   if (period === "weekly") {
     const weekday = date.toLocaleDateString("pt-BR", { weekday: "short" });
     const day = date.toLocaleDateString("pt-BR", { day: "2-digit" });
     return `${weekday} ${day}`;
   }
-  return date.toLocaleDateString("pt-BR", { month: "short", year: "2-digit" });
+  return date.toLocaleDateString("pt-BR", {
+    month: "short",
+    year: "2-digit",
+  });
 }
 
 export function CommissionChart() {
@@ -37,22 +34,34 @@ export function CommissionChart() {
     null,
   );
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
     const period = viewMode === "semanal" ? "weekly" : "monthly";
 
-    fetch(`/api/dashboard/commissions?period=${period}`)
-      .then((res) => res.json())
-      .then((json: CommissionsChartResponse) => setChartData(json))
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    async function fetchCommissions() {
+      try {
+        const res = await fetch(`/api/dashboard/commissions?period=${period}`);
+        if (!res.ok) {
+          setError("Falha ao carregar comissões.");
+          return;
+        }
+        const json: CommissionsChartResponse = await res.json();
+        setChartData(json);
+      } catch {
+        setError("Falha ao carregar comissões.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchCommissions();
   }, [viewMode]);
 
   const data =
     chartData?.data.map((d) => ({
       name: formatLabel(d.label, chartData.period),
-      totalProfit: d.totalProfit,
       myProfit: d.myProfit,
     })) ?? [];
 
@@ -72,7 +81,7 @@ export function CommissionChart() {
               onClick={() => setViewMode("semanal")}
               className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
                 viewMode === "semanal"
-                  ? "bg-[#FFBB00] text-black"
+                  ? "bg-brand text-brand-foreground"
                   : "bg-muted text-muted-foreground"
               }`}
             >
@@ -83,7 +92,7 @@ export function CommissionChart() {
               onClick={() => setViewMode("mensal")}
               className={`px-3 py-1 text-xs font-semibold rounded-lg transition-colors ${
                 viewMode === "mensal"
-                  ? "bg-[#FFBB00] text-black"
+                  ? "bg-brand text-brand-foreground"
                   : "bg-muted text-muted-foreground"
               }`}
             >
@@ -95,6 +104,10 @@ export function CommissionChart() {
           {loading ? (
             <div className="flex items-center justify-center h-full">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+            </div>
+          ) : error ? (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-sm text-muted-foreground">{error}</p>
             </div>
           ) : data.length === 0 ? (
             <div className="flex items-center justify-center h-full">
@@ -145,7 +158,7 @@ export function CommissionChart() {
                     if (active && payload && payload.length) {
                       return (
                         <div className="bg-card px-3 py-1.5 rounded-xl shadow-lg border flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-[#FFBB00]" />
+                          <span className="w-2 h-2 rounded-full bg-brand" />
                           <span className="text-[10px] font-bold">
                             {formatBRL(payload[0].value as number)}
                           </span>

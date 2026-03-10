@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import z from "zod";
 import { commissionsPeriodSchema } from "@/dtos/dashboard.dto";
 import { authenticate } from "@/lib/auth-middleware";
 import { handleError } from "@/lib/error-handler";
+import { problems } from "@/lib/problem-registry";
 import { getCommissionsChart } from "@/services/dashboard.service";
 
 export async function GET(request: Request) {
@@ -15,10 +15,9 @@ export async function GET(request: Request) {
     });
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: "Dados inválidos", details: z.treeifyError(parsed.error) },
-        { status: 400 },
-      );
+      throw problems.validationError("Dados inválidos", {
+        fields: parsed.error.flatten().fieldErrors,
+      });
     }
 
     const result = await getCommissionsChart(userId, parsed.data.period);

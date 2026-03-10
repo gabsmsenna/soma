@@ -4,28 +4,32 @@ import { Loader2, Pencil, Rocket, Target, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { GoalResponse } from "@/dtos/dashboard.dto";
-
-function formatBRL(value: number): string {
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
-}
+import { formatBRL } from "@/lib/format";
 
 export function MonthlyGoal() {
   const [data, setData] = useState<GoalResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [goalInput, setGoalInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  const fetchGoal = useCallback(() => {
+  const fetchGoal = useCallback(async () => {
     setLoading(true);
-    fetch("/api/dashboard/goals")
-      .then((res) => res.json())
-      .then((json: GoalResponse) => setData(json))
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    setError(null);
+    try {
+      const res = await fetch("/api/dashboard/goals");
+      if (!res.ok) {
+        setError("Falha ao carregar meta.");
+        return;
+      }
+      const json: GoalResponse = await res.json();
+      setData(json);
+    } catch {
+      setError("Falha ao carregar meta.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -53,8 +57,8 @@ export function MonthlyGoal() {
         setIsEditing(false);
         fetchGoal();
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     } finally {
       setSaving(false);
     }
@@ -65,6 +69,16 @@ export function MonthlyGoal() {
       <Card className="col-span-12 backdrop-blur-sm">
         <CardContent className="p-8 flex items-center justify-center h-60">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="col-span-12 backdrop-blur-sm">
+        <CardContent className="p-8 text-center text-sm text-muted-foreground">
+          {error}
         </CardContent>
       </Card>
     );
@@ -114,7 +128,7 @@ export function MonthlyGoal() {
                 type="button"
                 onClick={handleSetGoal}
                 disabled={saving || !goalInput}
-                className="px-6 py-3 rounded-xl bg-linear-to-r from-orange-500 to-[#FFBB00] text-black font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
+                className="px-6 py-3 rounded-xl bg-linear-to-r from-orange-500 to-brand text-brand-foreground font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
               >
                 {saving ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -147,7 +161,7 @@ export function MonthlyGoal() {
             <button
               type="button"
               onClick={() => {
-                setGoalInput(formatBRL(data.goal ?? 0));
+                setGoalInput(String(data.goal ?? 0));
                 setIsEditing(true);
               }}
               className="text-muted-foreground hover:text-orange-500 transition-colors p-2 rounded-full hover:bg-orange-500/10"
@@ -158,7 +172,7 @@ export function MonthlyGoal() {
           <p className="text-sm text-muted-foreground mb-8">
             {data.remaining > 0
               ? `Faltam apenas ${formatBRL(data.remaining)} para atingir sua meta pessoal.`
-              : "🎉 Parabéns! Você atingiu sua meta mensal!"}
+              : "Parabéns! Você atingiu sua meta mensal!"}
           </p>
           <div className="mb-6">
             <div className="flex justify-between items-end mb-4">
@@ -176,7 +190,7 @@ export function MonthlyGoal() {
             </div>
             <div className="h-4 w-full bg-muted rounded-full overflow-hidden">
               <div
-                className="h-full bg-linear-to-r from-orange-500 to-[#FFBB00] rounded-full shadow-[0_0_20px_rgba(255,108,0,0.3)] transition-all duration-1000"
+                className="h-full bg-linear-to-r from-orange-500 to-brand rounded-full shadow-[0_0_20px_rgba(255,108,0,0.3)] transition-all duration-1000"
                 style={{ width: `${progressWidth}%` }}
               />
             </div>

@@ -183,11 +183,11 @@ describe("Dashboard Summary API (GET /api/dashboard/summary)", () => {
 
     expect(body.totalProfit.value).toBe(0);
     expect(body.totalProfit.percentChange).toBe(0);
-    expect(body.totalProfit.trend).toBe("down");
+    expect(body.totalProfit.trend).toBe("neutral");
 
     expect(body.myProfit.value).toBe(0);
     expect(body.myProfit.percentChange).toBe(0);
-    expect(body.myProfit.trend).toBe("down");
+    expect(body.myProfit.trend).toBe("neutral");
 
     expect(body.activeCreatives.value).toBe(0);
   });
