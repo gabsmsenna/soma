@@ -41,9 +41,14 @@ export default async function RelatorioLucrosPage({
       <header className="h-20 border-b border-slate-200 dark:border-border flex items-center justify-between px-6 sticky top-0 bg-[#F8F9FB]/80 dark:bg-background/80 backdrop-blur-sm z-10 w-full shrink-0">
         <div className="flex items-center gap-4">
           <SidebarTrigger />
-          <Separator orientation="vertical" className="h-6 bg-slate-200 dark:bg-border" />
+          <Separator
+            orientation="vertical"
+            className="h-6 bg-slate-200 dark:bg-border"
+          />
           <div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-foreground">Relatório de Lucros</h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-foreground">
+              Relatório de Lucros
+            </h1>
             <p className="text-xs text-slate-500 dark:text-muted-foreground mt-1">
               Histórico de pagamentos de comissão agrupado por operação
             </p>

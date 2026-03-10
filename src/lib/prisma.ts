@@ -10,6 +10,7 @@ const prismaClientSingleton = () => {
     max: process.env.NODE_ENV === "test" ? 1 : 10,
   });
 
+  globalThis.prismaPoolGlobal = pool;
   const adapter = new PrismaPg(pool);
 
   return new PrismaClient({ adapter });
@@ -17,6 +18,7 @@ const prismaClientSingleton = () => {
 
 declare global {
   var prismaGlobal: undefined | ReturnType<typeof prismaClientSingleton>;
+  var prismaPoolGlobal: undefined | Pool;
 }
 
 const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();

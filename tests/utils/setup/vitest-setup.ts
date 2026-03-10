@@ -18,4 +18,8 @@ afterAll(async () => {
     await globalThis.prismaGlobal.$disconnect();
     globalThis.prismaGlobal = undefined;
   }
+  if (globalThis.prismaPoolGlobal) {
+    await globalThis.prismaPoolGlobal.end();
+    globalThis.prismaPoolGlobal = undefined;
+  }
 });
