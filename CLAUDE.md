@@ -27,6 +27,34 @@ You **MUST** strictly follow the Test-Driven Development (TDD) methodology for a
 - When writing tests for services or API routes, ensure you are testing the standard RFC 9457 `AppError` exceptions (e.g., expecting a 404 or 401 error).
 - Only provide the implementation code *after* generating the test.
 
+## Code Review, Architecture & Clean Code Guidelines
+
+As an AI assistant and code reviewer, your primary objective is to maintain a pristine, scalable, and highly performant Next.js 16 codebase. You must rigorously evaluate all code against Clean Code standards, SOLID principles, and modern React/Next.js paradigms. 
+
+### 1. Next.js 16 & React Paradigms
+* **Default to Server Components (RSC):** All components must be Server Components by default to optimize performance and SEO. Only use the `"use client"` directive at the very top of the file when interactivity (React hooks like `useState`/`useEffect`, event listeners like `onClick`, or browser-only APIs) is strictly required.
+* **Data Fetching and Mutation Pattern:** * **Mutations:** Use **Server Actions strictly and exclusively for data mutation** (create, update, delete). Keep them entirely decoupled from UI components, placing them in dedicated `actions/` or `services/` directories.
+  * **Fetching:** It is strictly forbidden to use Server Actions for data fetching. Always prefer fetching data directly within Server Components using standard async functions. If client-side fetching is mandatory, build and utilize dedicated **API Routes (Route Handlers)** optimized for `GET` methods.
+* **Package Management:** Always use `pnpm` for any dependency additions, removals, or script executions. Never default to `npm` or `yarn`.
+
+### 2. SOLID Principles Enforcement
+* **Single Responsibility Principle (SRP):** Components, functions, and Server Actions must do exactly one thing. Extract complex business logic into pure TypeScript functions or custom hooks.
+* **Open/Closed Principle (OCP):** Design UI components to be open for extension but closed for modification. Use composition, `children` props, and polymorphic components over adding endless boolean flags.
+* **Liskov Substitution Principle (LSP):** Ensure TypeScript interfaces and types are strictly adhered to. Extended interfaces must not break the base types' expected behavior.
+* **Interface Segregation Principle (ISP):** Avoid "fat" interfaces. Pick or omit fields, or define tightly scoped prop interfaces for each component instead of passing massive data objects.
+* **Dependency Inversion Principle (DIP):** Abstract database access (like Prisma) behind repository or service layers, passing them as dependencies where possible. High-level modules should not depend on direct database calls.
+
+### 3. Mandatory Clean Code Principles
+These rules address recurring violations in this codebase and are **mandatory**:
+
+* **Meaningful Naming:** Use descriptive, intent-revealing names (e.g., `isUserAuthenticated` instead of `auth`).
+* **Error Handling:** Never swallow errors. Use standard try/catch blocks and rely on the project's API Problem Details (RFC 9457) standard via the `AppError` and `problems` registry. Implement Next.js `error.tsx` boundaries for UI degradation.
+* **Date Calculations (Use `date-fns`):** Always use `date-fns` functions for any date arithmetic. Never use raw millisecond math (e.g., `Date.getTime()`, division by `86400000`).
+* **Aggregation Before Derived Computation:** When computing derived values (trends, percentages) from a list of entries, **always aggregate first** into a `Map`, then compute. Never compare individual raw entries against an aggregated total.
+* **Data Consolidation (One Output Row Per Entity):** When multiple DB rows represent separate events for the same logical entity, consolidate them into a **single output row** using a `Set` to track seen IDs and pre-aggregated `Map`s for summed values before returning from a service.
+* **DRY (Extract Shared Logic):** When two or more code paths perform the same initialization or lookup pattern, extract it into a named helper function. Do not duplicate logic inline.
+* **Immutability & Pure Functions:** Favor immutable data structures and pure functions, especially when transforming backend data for the client.
+
 ## Commands
 
 ### Development
@@ -70,20 +98,6 @@ Run a single test by name:
 pnpm vitest run -t "test name" src/services/auth.service.test.ts
 
 ```
-
-## Code Style Guidelines
-
-### Data Fetching and Mutation Pattern (Server Actions vs. API Routes)
-
-In this codebase, **use Server Actions strictly and exclusively for data mutation** (create, update, or delete operations such as `POST`, `PUT`, `PATCH`, and `DELETE`). It is strictly forbidden to use Server Actions for data fetching. Because Server Actions operate as `POST` requests under the hood, using them for read operations bypasses the framework's natural caching and memoization mechanisms, degrading both performance and architectural semantics.
-
-For **data fetching**, adhere to the following hierarchy:
-1. Always prefer fetching data directly within **Server Components** using standard asynchronous functions.
-2. When fetching must occur from the client side, build and utilize dedicated **API Routes (Route Handlers)** optimized for `GET` methods, properly leveraging the native `fetch` API or data-fetching libraries (like SWR or React Query).
-
-### Clean Code Principles
-
-These rules were established after identifying recurring violations in this codebase. They are **mandatory**.
 
 #### Date Calculations — use `date-fns`, never raw milliseconds
 
