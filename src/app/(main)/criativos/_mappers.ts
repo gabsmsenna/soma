@@ -5,11 +5,11 @@ type CreativeWithRelations = Creative & {
   operation: Operation;
 };
 
-function formatBRL(value: string | number): string {
+function formatBRL(value: number): string {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
-  }).format(Number(value));
+  }).format(value);
 }
 
 export function toCreativeViewModel(
@@ -20,8 +20,8 @@ export function toCreativeViewModel(
     name: c.name,
     totalProfit: c.totalProfit.toString(),
     freelancerCut: c.freelancerCut.toString(),
-    totalProfitFormatted: formatBRL(c.totalProfit.toString()),
-    freelancerCutFormatted: formatBRL(c.freelancerCut.toString()),
+    totalProfitFormatted: formatBRL(c.totalProfit.toNumber()),
+    freelancerCutFormatted: formatBRL(c.freelancerCut.toNumber()),
     isActive: c.isActive,
     isPaid: c.isPaid,
     paidAt: c.paidAt?.toISOString() ?? null,
@@ -33,18 +33,20 @@ export function toCreativeViewModel(
 }
 
 export function computeMetrics(
-  creatives: CreativeViewModel[],
+  creatives: CreativeWithRelations[],
 ): CreativeMetrics {
   const totalActive = creatives.filter((c) => c.isActive).length;
 
   const totalProfit = creatives.reduce(
-    (sum, c) => sum + Number(c.totalProfit),
+    (sum, c) => sum + c.totalProfit.toNumber(),
     0,
   );
 
-  const pendingCreatives = creatives.filter((c) => Number(c.totalProfit) > 0);
+  const pendingCreatives = creatives.filter(
+    (c) => c.totalProfit.toNumber() > 0,
+  );
   const pendingPayment = pendingCreatives.reduce(
-    (sum, c) => sum + Number(c.freelancerCut),
+    (sum, c) => sum + c.freelancerCut.toNumber(),
     0,
   );
   const pendingCount = pendingCreatives.length;

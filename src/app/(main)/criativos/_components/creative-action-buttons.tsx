@@ -36,7 +36,7 @@ export function CreativeActionButtons({
       <button
         type="button"
         onClick={() => setProfitDialogOpen(true)}
-        className="w-full flex items-center justify-center gap-2 bg-[#FFBB00]/20 hover:bg-[#FFBB00] text-[#997000] dark:bg-[#FFBB00]/10 dark:text-[#FFBB00] hover:text-black font-bold py-2 rounded-xl transition-all border border-[#FFBB00]/20 text-xs uppercase tracking-wider"
+        className="w-full flex items-center justify-center gap-2 bg-brand/20 hover:bg-brand text-[#997000] dark:bg-brand/10 dark:text-brand hover:text-black font-bold py-2 rounded-xl transition-all border border-brand/20 text-xs uppercase tracking-wider"
       >
         Registrar Lucro
       </button>

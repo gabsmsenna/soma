@@ -13,23 +13,33 @@ export function CreativesFooter({ metrics }: CreativesFooterProps) {
           <p className="text-[10px] uppercase tracking-widest text-slate-500 dark:text-muted-foreground font-bold">
             Total a Receber
           </p>
-          <p className="text-xl font-black text-[#FFBB00]">
+          <p className="text-xl font-black text-brand">
             {metrics.pendingPaymentFormatted}
           </p>
         </div>
-        <Separator orientation="vertical" className="h-10 border-slate-200 dark:border-border" />
+        <Separator
+          orientation="vertical"
+          className="h-10 border-slate-200 dark:border-border"
+        />
         <div>
           <p className="text-[10px] uppercase tracking-widest text-slate-500 dark:text-muted-foreground font-bold">
             Criativos Ativos
           </p>
-          <p className="text-xl font-black text-slate-900 dark:text-white">{metrics.totalActive}</p>
+          <p className="text-xl font-black text-slate-900 dark:text-white">
+            {metrics.totalActive}
+          </p>
         </div>
-        <Separator orientation="vertical" className="h-10 border-slate-200 dark:border-border" />
+        <Separator
+          orientation="vertical"
+          className="h-10 border-slate-200 dark:border-border"
+        />
         <div>
           <p className="text-[10px] uppercase tracking-widest text-slate-500 dark:text-muted-foreground font-bold">
             Lucro Total
           </p>
-          <p className="text-xl font-black text-slate-900 dark:text-white">{metrics.totalProfitFormatted}</p>
+          <p className="text-xl font-black text-slate-900 dark:text-white">
+            {metrics.totalProfitFormatted}
+          </p>
         </div>
       </div>
       <div className="text-xs text-slate-500 dark:text-muted-foreground">

@@ -29,4 +29,7 @@ export interface PaginationMeta {
   totalPages: number;
 }
 
+export type CreativeStatus = "active" | "inactive" | "all";
+export type PaymentStatus = "paid" | "unpaid" | "all";
+
 export type { ActionResult } from "@/types/action-result";

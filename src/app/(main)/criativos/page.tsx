@@ -8,6 +8,7 @@ import { CreativesHeader } from "./_components/creatives-header";
 import { CreativesMetrics } from "./_components/creatives-metrics";
 import { CreativesPagination } from "./_components/creatives-pagination";
 import { computeMetrics, toCreativeViewModel } from "./_mappers";
+import type { CreativeStatus, PaymentStatus } from "./_types";
 
 const PAGE_LIMIT = 12;
 
@@ -15,9 +16,9 @@ interface CriativosPageProps {
   searchParams: Promise<{
     page?: string;
     search?: string;
-    status?: string;
+    status?: CreativeStatus;
     operation?: string;
-    paymentStatus?: string;
+    paymentStatus?: PaymentStatus;
   }>;
 }
 
@@ -50,7 +51,7 @@ export default async function CriativosPage({
   ]);
 
   const creatives = data.map(toCreativeViewModel);
-  const metrics = computeMetrics(creatives);
+  const metrics = computeMetrics(data);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#F8F9FB] dark:bg-background text-slate-800 dark:text-foreground">

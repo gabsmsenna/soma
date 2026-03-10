@@ -69,7 +69,7 @@ export function MarkPaidConfirmationDialog({
             <p className="text-xs uppercase tracking-wider text-muted-foreground font-bold mb-1">
               Valor a registrar
             </p>
-            <p className="text-2xl font-bold text-[#FFBB00]">{formatted}</p>
+            <p className="text-2xl font-bold text-brand">{formatted}</p>
           </div>
           <p className="text-xs text-muted-foreground">
             Ao confirmar, o valor de comissão será salvo no histórico e o saldo

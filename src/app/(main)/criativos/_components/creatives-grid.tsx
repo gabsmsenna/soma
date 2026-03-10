@@ -35,12 +35,14 @@ export function CreativesGrid({
           <CreativeCard key={c.id} creative={c} />
         ))}
 
-        <CreativeFormDialog>
-          <div className="border-2 border-dashed border-slate-300 dark:border-border rounded-2xl p-5 flex flex-col items-center justify-center text-center group hover:border-[#FFBB00]/50 transition-all cursor-pointer bg-white/50 dark:bg-muted/20 h-full min-h-[200px]">
-            <div className="h-16 w-16 bg-[#FFBB00]/10 text-[#FFBB00] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-sm dark:shadow-none">
+        <CreativeFormDialog operations={operations}>
+          <div className="border-2 border-dashed border-slate-300 dark:border-border rounded-2xl p-5 flex flex-col items-center justify-center text-center group hover:border-brand/50 transition-all cursor-pointer bg-white/50 dark:bg-muted/20 h-full min-h-[200px]">
+            <div className="h-16 w-16 bg-brand/10 text-brand rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-sm dark:shadow-none">
               <Plus className="h-8 w-8" />
             </div>
-            <p className="font-bold mb-1 text-slate-800 dark:text-foreground">Novo Criativo</p>
+            <p className="font-bold mb-1 text-slate-800 dark:text-foreground">
+              Novo Criativo
+            </p>
             <p className="text-xs text-slate-500 dark:text-muted-foreground">
               Adicione uma nova arte para começar a monitorar os lucros.
             </p>

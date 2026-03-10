@@ -96,7 +96,7 @@ export function RegisterProfitDialog({
             <Button
               type="submit"
               disabled={isPending}
-              className="flex-1 bg-[#FFBB00] hover:bg-[#FFBB00]/90 text-black font-bold"
+              className="flex-1 bg-brand hover:bg-brand/90 text-black font-bold"
             >
               {isPending ? "Salvando..." : "Confirmar"}
             </Button>

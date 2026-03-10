@@ -2,25 +2,19 @@
 
 import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
-import z from "zod";
+import type { ZodSchema } from "zod";
 import { AppError } from "@/lib/app-error";
 import { getServerSession } from "@/lib/session";
 import * as CreativeService from "@/services/creative.service";
 import { verifyOperationOwnership } from "@/services/operation.service";
 import type { ActionResult } from "@/types/action-result";
+import {
+  createCreativeSchema,
+  registerProfitSchema,
+  updateCreativeSchema,
+} from "./_schemas";
 import { toCreativeViewModel } from "./_mappers";
 import type { CreativeViewModel } from "./_types";
-
-const createCreativeSchema = z.object({
-  name: z.string().min(1, "Nome é obrigatório"),
-  totalProfit: z.number().positive("Lucro deve ser positivo"),
-  operationId: z.string().min(1, "Operação é obrigatória"),
-});
-
-const updateCreativeSchema = z.object({
-  name: z.string().min(1).optional(),
-  totalProfit: z.number().positive().optional(),
-});
 
 function errorResult(error: unknown): ActionResult<never> {
   if (error instanceof AppError) {
@@ -43,42 +37,90 @@ function errorResult(error: unknown): ActionResult<never> {
   };
 }
 
+async function requireSession(): Promise<
+  ActionResult<never> | { userId: string }
+> {
+  const session = await getServerSession();
+  if (!session) {
+    return {
+      success: false,
+      error: {
+        title: "Não autorizado",
+        detail: "Autenticação necessária",
+        status: 401,
+      },
+    };
+  }
+  return session;
+}
+
+function isErrorResult<T>(
+  result: ActionResult<never> | T,
+): result is ActionResult<never> {
+  return (
+    typeof result === "object" &&
+    result !== null &&
+    "success" in result &&
+    (result as ActionResult<never>).success === false
+  );
+}
+
+async function verifyCreativeOwnership(
+  creativeId: string,
+  userId: string,
+): Promise<
+  ActionResult<never> | Awaited<ReturnType<typeof CreativeService.findById>>
+> {
+  const existing = await CreativeService.findById(creativeId);
+  if (existing.operation.userId !== userId) {
+    return {
+      success: false,
+      error: {
+        title: "Recurso não encontrado",
+        detail: "Criativo não encontrado",
+        status: 404,
+      },
+    };
+  }
+  return existing;
+}
+
+function validateInput<T>(
+  schema: ZodSchema<T>,
+  input: unknown,
+): ActionResult<never> | T {
+  const parsed = schema.safeParse(input);
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: {
+        title: "Dados inválidos",
+        detail: parsed.error.issues[0]?.message ?? "Dados inválidos",
+        status: 400,
+      },
+    };
+  }
+  return parsed.data;
+}
+
 export async function createCreative(input: {
   name: string;
   totalProfit: number;
   operationId: string;
 }): Promise<ActionResult<CreativeViewModel>> {
   try {
-    const session = await getServerSession();
-    if (!session) {
-      return {
-        success: false,
-        error: {
-          title: "Não autorizado",
-          detail: "Autenticação necessária",
-          status: 401,
-        },
-      };
-    }
+    const session = await requireSession();
+    if (isErrorResult(session)) return session;
 
-    const parsed = createCreativeSchema.safeParse(input);
-    if (!parsed.success) {
-      return {
-        success: false,
-        error: {
-          title: "Dados inválidos",
-          detail: parsed.error.issues[0]?.message ?? "Dados inválidos",
-          status: 400,
-        },
-      };
-    }
+    const data = validateInput(createCreativeSchema, input);
+    if (isErrorResult(data)) return data;
 
-    await verifyOperationOwnership(parsed.data.operationId, session.userId);
+    await verifyOperationOwnership(data.operationId, session.userId);
 
     const created = await CreativeService.create({
-      name: parsed.data.name,
-      totalProfit: new Prisma.Decimal(parsed.data.totalProfit),
-      operationId: parsed.data.operationId,
+      name: data.name,
+      totalProfit: new Prisma.Decimal(data.totalProfit),
+      operationId: data.operationId,
     });
 
     const full = await CreativeService.findById(created.id);
@@ -94,46 +136,19 @@ export async function updateCreative(
   input: { name?: string; totalProfit?: number },
 ): Promise<ActionResult<CreativeViewModel>> {
   try {
-    const session = await getServerSession();
-    if (!session) {
-      return {
-        success: false,
-        error: {
-          title: "Não autorizado",
-          detail: "Autenticação necessária",
-          status: 401,
-        },
-      };
-    }
+    const session = await requireSession();
+    if (isErrorResult(session)) return session;
 
-    const parsed = updateCreativeSchema.safeParse(input);
-    if (!parsed.success) {
-      return {
-        success: false,
-        error: {
-          title: "Dados inválidos",
-          detail: parsed.error.issues[0]?.message ?? "Dados inválidos",
-          status: 400,
-        },
-      };
-    }
+    const data = validateInput(updateCreativeSchema, input);
+    if (isErrorResult(data)) return data;
 
-    const existing = await CreativeService.findById(id);
-    if (existing.operation.userId !== session.userId) {
-      return {
-        success: false,
-        error: {
-          title: "Recurso não encontrado",
-          detail: "Criativo não encontrado",
-          status: 404,
-        },
-      };
-    }
+    const ownership = await verifyCreativeOwnership(id, session.userId);
+    if (isErrorResult(ownership)) return ownership;
 
     await CreativeService.update(id, {
-      ...(parsed.data.name !== undefined ? { name: parsed.data.name } : {}),
-      ...(parsed.data.totalProfit !== undefined
-        ? { totalProfit: new Prisma.Decimal(parsed.data.totalProfit) }
+      ...(data.name !== undefined ? { name: data.name } : {}),
+      ...(data.totalProfit !== undefined
+        ? { totalProfit: new Prisma.Decimal(data.totalProfit) }
         : {}),
     });
 
@@ -147,29 +162,11 @@ export async function updateCreative(
 
 export async function deleteCreative(id: string): Promise<ActionResult<void>> {
   try {
-    const session = await getServerSession();
-    if (!session) {
-      return {
-        success: false,
-        error: {
-          title: "Não autorizado",
-          detail: "Autenticação necessária",
-          status: 401,
-        },
-      };
-    }
+    const session = await requireSession();
+    if (isErrorResult(session)) return session;
 
-    const existing = await CreativeService.findById(id);
-    if (existing.operation.userId !== session.userId) {
-      return {
-        success: false,
-        error: {
-          title: "Recurso não encontrado",
-          detail: "Criativo não encontrado",
-          status: 404,
-        },
-      };
-    }
+    const ownership = await verifyCreativeOwnership(id, session.userId);
+    if (isErrorResult(ownership)) return ownership;
 
     await CreativeService.deleteCreative(id);
     revalidatePath("/criativos");
@@ -183,29 +180,11 @@ export async function deactivateCreative(
   id: string,
 ): Promise<ActionResult<CreativeViewModel>> {
   try {
-    const session = await getServerSession();
-    if (!session) {
-      return {
-        success: false,
-        error: {
-          title: "Não autorizado",
-          detail: "Autenticação necessária",
-          status: 401,
-        },
-      };
-    }
+    const session = await requireSession();
+    if (isErrorResult(session)) return session;
 
-    const existing = await CreativeService.findById(id);
-    if (existing.operation.userId !== session.userId) {
-      return {
-        success: false,
-        error: {
-          title: "Recurso não encontrado",
-          detail: "Criativo não encontrado",
-          status: 404,
-        },
-      };
-    }
+    const ownership = await verifyCreativeOwnership(id, session.userId);
+    if (isErrorResult(ownership)) return ownership;
 
     await CreativeService.update(id, { isActive: false });
     const updated = await CreativeService.findById(id);
@@ -216,54 +195,23 @@ export async function deactivateCreative(
   }
 }
 
-const registerProfitSchema = z.object({
-  amount: z.number().positive("Valor deve ser positivo"),
-});
-
 export async function registerProfit(
   id: string,
   input: { amount: number },
 ): Promise<ActionResult<CreativeViewModel>> {
   try {
-    const session = await getServerSession();
-    if (!session) {
-      return {
-        success: false,
-        error: {
-          title: "Não autorizado",
-          detail: "Autenticação necessária",
-          status: 401,
-        },
-      };
-    }
+    const session = await requireSession();
+    if (isErrorResult(session)) return session;
 
-    const parsed = registerProfitSchema.safeParse(input);
-    if (!parsed.success) {
-      return {
-        success: false,
-        error: {
-          title: "Dados inválidos",
-          detail: parsed.error.issues[0]?.message ?? "Dados inválidos",
-          status: 400,
-        },
-      };
-    }
+    const data = validateInput(registerProfitSchema, input);
+    if (isErrorResult(data)) return data;
 
-    const existing = await CreativeService.findById(id);
-    if (existing.operation.userId !== session.userId) {
-      return {
-        success: false,
-        error: {
-          title: "Recurso não encontrado",
-          detail: "Criativo não encontrado",
-          status: 404,
-        },
-      };
-    }
+    const ownership = await verifyCreativeOwnership(id, session.userId);
+    if (isErrorResult(ownership)) return ownership;
 
     const updated = await CreativeService.registerProfit(
       id,
-      new Prisma.Decimal(parsed.data.amount),
+      new Prisma.Decimal(data.amount),
     );
 
     revalidatePath("/criativos");
@@ -277,70 +225,15 @@ export async function registerProfitPayment(
   id: string,
 ): Promise<ActionResult<void>> {
   try {
-    const session = await getServerSession();
-    if (!session) {
-      return {
-        success: false,
-        error: {
-          title: "Não autorizado",
-          detail: "Autenticação necessária",
-          status: 401,
-        },
-      };
-    }
+    const session = await requireSession();
+    if (isErrorResult(session)) return session;
 
-    const existing = await CreativeService.findById(id);
-    if (existing.operation.userId !== session.userId) {
-      return {
-        success: false,
-        error: {
-          title: "Recurso não encontrado",
-          detail: "Criativo não encontrado",
-          status: 404,
-        },
-      };
-    }
+    const ownership = await verifyCreativeOwnership(id, session.userId);
+    if (isErrorResult(ownership)) return ownership;
 
     await CreativeService.registerProfitPayment(id);
     revalidatePath("/criativos");
     return { success: true, data: undefined };
-  } catch (error) {
-    return errorResult(error);
-  }
-}
-
-export async function markAsPaid(
-  id: string,
-): Promise<ActionResult<CreativeViewModel>> {
-  try {
-    const session = await getServerSession();
-    if (!session) {
-      return {
-        success: false,
-        error: {
-          title: "Não autorizado",
-          detail: "Autenticação necessária",
-          status: 401,
-        },
-      };
-    }
-
-    const existing = await CreativeService.findById(id);
-    if (existing.operation.userId !== session.userId) {
-      return {
-        success: false,
-        error: {
-          title: "Recurso não encontrado",
-          detail: "Criativo não encontrado",
-          status: 404,
-        },
-      };
-    }
-
-    await CreativeService.registerProfitPayment(id);
-    const updated = await CreativeService.findById(id);
-    revalidatePath("/criativos");
-    return { success: true, data: toCreativeViewModel(updated) };
   } catch (error) {
     return errorResult(error);
   }

@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import type { CreativeStatus, PaymentStatus } from "../_types";
 
 interface CreativeFilterDialogProps {
   open: boolean;
@@ -39,10 +40,8 @@ export function CreativeFilterDialog({
 
   const [search, setSearch] = useState("");
   const [operation, setOperation] = useState("all");
-  const [status, setStatus] = useState<"active" | "inactive" | "all">("active");
-  const [paymentStatus, setPaymentStatus] = useState<"all" | "paid" | "unpaid">(
-    "all",
-  );
+  const [status, setStatus] = useState<CreativeStatus>("active");
+  const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>("all");
 
   // Sync state with url params when dialog opens
   useEffect(() => {
@@ -55,7 +54,7 @@ export function CreativeFilterDialog({
         statusParam === "inactive" ||
         statusParam === "all"
       ) {
-        setStatus(statusParam as "active" | "inactive" | "all");
+        setStatus(statusParam as CreativeStatus);
       } else {
         setStatus("active");
       }
@@ -174,7 +173,7 @@ export function CreativeFilterDialog({
                   className={cn(
                     "flex-1 py-1.5 text-sm font-medium rounded-full transition-all",
                     status === "active"
-                      ? "bg-[#FFB800] text-black shadow-sm"
+                      ? "bg-brand text-black shadow-sm"
                       : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200",
                   )}
                 >
@@ -186,7 +185,7 @@ export function CreativeFilterDialog({
                   className={cn(
                     "flex-1 py-1.5 text-sm font-medium rounded-full transition-all",
                     status === "inactive"
-                      ? "bg-[#FFB800] text-black shadow-sm"
+                      ? "bg-brand text-black shadow-sm"
                       : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200",
                   )}
                 >
@@ -206,7 +205,7 @@ export function CreativeFilterDialog({
                   className={cn(
                     "flex-1 py-1.5 text-sm font-medium rounded-full transition-all",
                     paymentStatus === "all"
-                      ? "bg-[#FFB800] text-black shadow-sm"
+                      ? "bg-brand text-black shadow-sm"
                       : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200",
                   )}
                 >
@@ -218,7 +217,7 @@ export function CreativeFilterDialog({
                   className={cn(
                     "flex-1 py-1.5 text-sm font-medium rounded-full transition-all",
                     paymentStatus === "paid"
-                      ? "bg-[#FFB800] text-black shadow-sm"
+                      ? "bg-brand text-black shadow-sm"
                       : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200",
                   )}
                 >
@@ -230,7 +229,7 @@ export function CreativeFilterDialog({
                   className={cn(
                     "flex-1 py-1.5 text-sm font-medium rounded-full transition-all",
                     paymentStatus === "unpaid"
-                      ? "bg-[#FFB800] text-black shadow-sm"
+                      ? "bg-brand text-black shadow-sm"
                       : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200",
                   )}
                 >
@@ -250,7 +249,7 @@ export function CreativeFilterDialog({
             Limpar Filtros
           </Button>
           <Button
-            className="flex-1 bg-[#FFB800] hover:bg-[#e5a600] text-black font-semibold border-none"
+            className="flex-1 bg-brand hover:bg-brand/90 text-black font-semibold border-none"
             onClick={handleApply}
           >
             Aplicar Filtros

@@ -65,10 +65,11 @@ export function CreativesPagination({ pagination }: CreativesPaginationProps) {
             key={item.value}
             type="button"
             onClick={() => goToPage(item.value)}
-            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold transition-colors ${item.value === page
-                ? "bg-[#FFBB00] text-black shadow-lg shadow-[#FFBB00]/20"
+            className={`w-10 h-10 flex items-center justify-center rounded-lg font-bold transition-colors ${
+              item.value === page
+                ? "bg-brand text-black shadow-lg shadow-brand/20"
                 : "bg-white border border-slate-200 shadow-sm text-slate-600 hover:bg-slate-50 dark:bg-muted dark:border-none dark:shadow-none dark:text-muted-foreground dark:hover:bg-muted/80 dark:hover:text-foreground"
-              }`}
+            }`}
           >
             {item.value}
           </button>

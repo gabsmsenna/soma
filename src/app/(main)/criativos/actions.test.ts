@@ -122,6 +122,88 @@ describe("criativos/actions", () => {
     });
   });
 
+  describe("updateCreative", () => {
+    it("returns updated creative on valid input", async () => {
+      const { getServerSession } = await import("@/lib/session");
+      const CreativeService = await import("@/services/creative.service");
+
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+      vi.mocked(CreativeService.findById).mockResolvedValue(
+        mockCreativeFromDB as any,
+      );
+
+      const updatedCreative = { ...mockCreativeFromDB, name: "Updated Name" };
+      vi.mocked(CreativeService.update).mockResolvedValue(
+        updatedCreative as any,
+      );
+      vi.mocked(CreativeService.findById)
+        .mockResolvedValueOnce(mockCreativeFromDB as any)
+        .mockResolvedValueOnce(updatedCreative as any);
+
+      const { updateCreative } = await import("./actions");
+      const result = await updateCreative(creativeId, {
+        name: "Updated Name",
+      });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.name).toBe("Updated Name");
+      }
+    });
+
+    it("returns 401 when not authenticated", async () => {
+      const { getServerSession } = await import("@/lib/session");
+      vi.mocked(getServerSession).mockResolvedValue(null);
+
+      const { updateCreative } = await import("./actions");
+      const result = await updateCreative(creativeId, { name: "New Name" });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.status).toBe(401);
+      }
+    });
+
+    it("returns validation error for invalid input", async () => {
+      const { getServerSession } = await import("@/lib/session");
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+
+      const { updateCreative } = await import("./actions");
+      const result = await updateCreative(creativeId, {
+        name: "",
+        totalProfit: -5,
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.status).toBe(400);
+      }
+    });
+
+    it("returns 404 when creative belongs to different user", async () => {
+      const { getServerSession } = await import("@/lib/session");
+      const CreativeService = await import("@/services/creative.service");
+
+      vi.mocked(getServerSession).mockResolvedValue(mockSession);
+
+      const otherUserCreative = {
+        ...mockCreativeFromDB,
+        operation: { ...mockCreativeFromDB.operation, userId: "other-user" },
+      };
+      vi.mocked(CreativeService.findById).mockResolvedValue(
+        otherUserCreative as any,
+      );
+
+      const { updateCreative } = await import("./actions");
+      const result = await updateCreative(creativeId, { name: "New Name" });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        expect(result.error.status).toBe(404);
+      }
+    });
+  });
+
   describe("deleteCreative", () => {
     it("returns success after deleting owned creative", async () => {
       const { getServerSession } = await import("@/lib/session");
@@ -317,38 +399,6 @@ describe("criativos/actions", () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         expect(result.error.status).toBe(404);
-      }
-    });
-  });
-
-  describe("markAsPaid", () => {
-    it("returns updated creative marked as paid", async () => {
-      const { getServerSession } = await import("@/lib/session");
-      const CreativeService = await import("@/services/creative.service");
-
-      vi.mocked(getServerSession).mockResolvedValue(mockSession);
-      vi.mocked(CreativeService.findById).mockResolvedValue(
-        mockCreativeFromDB as any,
-      );
-
-      const paidCreative = {
-        ...mockCreativeFromDB,
-        totalProfit: new Prisma.Decimal(0),
-        freelancerCut: new Prisma.Decimal(0),
-      };
-      vi.mocked(CreativeService.registerProfitPayment).mockResolvedValue(
-        {} as any,
-      );
-      vi.mocked(CreativeService.findById)
-        .mockResolvedValueOnce(mockCreativeFromDB as any)
-        .mockResolvedValueOnce(paidCreative as any);
-
-      const { markAsPaid } = await import("./actions");
-      const result = await markAsPaid(creativeId);
-
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(Number(result.data.totalProfit)).toBe(0);
       }
     });
   });

@@ -2,7 +2,7 @@
 
 import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,75 +23,48 @@ import {
 import type { CreativeViewModel } from "../_types";
 import { createCreative, updateCreative } from "../actions";
 
+interface Operation {
+  id: string;
+  name: string;
+}
+
 interface CreateMode {
   mode?: "create";
   creative?: never;
+  operations?: Operation[];
   children?: React.ReactNode;
 }
 
 interface EditMode {
   mode: "edit";
   creative: CreativeViewModel;
+  operations?: never;
   children?: React.ReactNode;
 }
 
 type CreativeFormDialogProps = CreateMode | EditMode;
 
-interface Operation {
-  id: string;
-  name: string;
-}
-
 export function CreativeFormDialog({
   mode = "create",
   creative,
+  operations = [],
   children,
 }: CreativeFormDialogProps) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [operations, setOperations] = useState<Operation[]>([]);
-  const [isLoadingOperations, setIsLoadingOperations] = useState(false);
   const [operationId, setOperationId] = useState("");
   const router = useRouter();
 
   const isEdit = mode === "edit" && creative !== undefined;
 
-  useEffect(() => {
-    if (!open) {
+  function handleOpenChange(nextOpen: boolean) {
+    setOpen(nextOpen);
+    if (!nextOpen) {
       setError(null);
       setOperationId("");
     }
-
-    if (open && !isEdit) {
-      const fetchOperations = async () => {
-        setIsLoadingOperations(true);
-        setError(null);
-        try {
-          const response = await fetch("/api/operations?status=active");
-          if (!response.ok) {
-            const data = await response.json().catch(() => ({}));
-            const message =
-              data.detail || data.error || "Falha ao buscar operações ativas.";
-            throw new Error(message);
-          }
-          const result: { data: Operation[] } = await response.json();
-          setOperations(result.data);
-        } catch (err) {
-          const errorMessage =
-            err instanceof Error
-              ? err.message
-              : "Ocorreu um erro desconhecido.";
-          setError(errorMessage);
-          console.error(err);
-        } finally {
-          setIsLoadingOperations(false);
-        }
-      };
-
-      fetchOperations();
-    }
-  }, [open, isEdit]);
+  }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -121,10 +94,10 @@ export function CreativeFormDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children ?? (
-          <Button className="flex items-center gap-2 bg-[#FFBB00] hover:bg-[#FFBB00]/90 text-black font-bold py-2.5 px-6 rounded-xl transition-all transform active:scale-95 shadow-lg shadow-[#FFBB00]/20">
+          <Button className="flex items-center gap-2 bg-brand hover:bg-brand/90 text-black font-bold py-2.5 px-6 rounded-xl transition-all transform active:scale-95 shadow-lg shadow-brand/20">
             <Plus className="h-5 w-5" />
             <span className="text-sm">Novo Criativo</span>
           </Button>
@@ -167,16 +140,9 @@ export function CreativeFormDialog({
                 name="operationId"
                 onValueChange={setOperationId}
                 value={operationId}
-                disabled={isLoadingOperations}
               >
                 <SelectTrigger id="operationId" className="w-full">
-                  <SelectValue
-                    placeholder={
-                      isLoadingOperations
-                        ? "Carregando..."
-                        : "Selecione uma operação"
-                    }
-                  />
+                  <SelectValue placeholder="Selecione uma operação" />
                 </SelectTrigger>
                 <SelectContent position="popper" className="max-h-60">
                   {operations.map((op) => (
@@ -192,7 +158,7 @@ export function CreativeFormDialog({
           <Button
             type="submit"
             disabled={isPending}
-            className="w-full bg-[#FFBB00] hover:bg-[#FFBB00]/90 text-black font-bold"
+            className="w-full bg-brand hover:bg-brand/90 text-black font-bold"
           >
             {isPending ? "Salvando..." : isEdit ? "Salvar" : "Criar"}
           </Button>
