@@ -3,10 +3,9 @@ import z from "zod";
 import { updateOperationSchema } from "@/dtos/operation.dto";
 import { authenticate } from "@/lib/auth-middleware";
 import { handleError } from "@/lib/error-handler";
-import prisma from "@/lib/prisma";
-import { problems } from "@/lib/problem-registry";
 import {
   deleteOperation,
+  getById,
   updateOperation,
   verifyOperationOwnership,
 } from "@/services/operation.service";
@@ -19,15 +18,7 @@ export async function GET(
     const { userId } = await authenticate(request);
     const { operationId } = await params;
 
-    const operation = await prisma.operation.findUnique({
-      where: { id: operationId, userId },
-      include: { creatives: true },
-    });
-
-    if (!operation) {
-      throw problems.resourceNotFound("Operação não encontrada");
-    }
-
+    const operation = await getById(operationId, userId);
     return NextResponse.json(operation);
   } catch (error) {
     return handleError(error, request);

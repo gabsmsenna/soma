@@ -122,6 +122,17 @@ export async function deleteOperation(id: string, userId: string) {
   });
 }
 
+export async function getById(id: string, userId: string) {
+  const operation = await prisma.operation.findUnique({
+    where: { id, userId },
+    include: { creatives: true },
+  });
+  if (!operation) {
+    throw problems.resourceNotFound("Operação não encontrada");
+  }
+  return serializeOperation(operation);
+}
+
 export async function verifyOperationOwnership(
   operationId: string,
   userId: string,

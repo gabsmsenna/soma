@@ -14,13 +14,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import type { Operation } from "../_types/types";
 import { createOperation, updateOperation } from "../actions";
-
-interface Operation {
-  id: string;
-  name: string;
-  freelancerCutPercentage: string;
-}
 
 interface OperationFormDialogProps {
   children?: React.ReactNode;

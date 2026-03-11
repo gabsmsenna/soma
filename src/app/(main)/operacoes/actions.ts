@@ -10,6 +10,19 @@ import { getServerSession } from "@/lib/session";
 import * as OperationService from "@/services/operation.service";
 import type { ActionResult } from "@/types/action-result";
 
+async function requireSession() {
+  const session = await getServerSession();
+  if (!session) {
+    throw new AppError(
+      "https://soma.api/problems/invalid-credentials",
+      "Não autorizado",
+      401,
+      "Autenticação necessária",
+    );
+  }
+  return session;
+}
+
 function errorResult(error: unknown): ActionResult<never> {
   if (error instanceof AppError) {
     return {
@@ -36,17 +49,7 @@ export async function createOperation(input: {
   freelancerCutPercentage: number;
 }): Promise<ActionResult<{ id: string }>> {
   try {
-    const session = await getServerSession();
-    if (!session) {
-      return {
-        success: false,
-        error: {
-          title: "Não autorizado",
-          detail: "Autenticação necessária",
-          status: 401,
-        },
-      };
-    }
+    const session = await requireSession();
 
     const parsed = createOperationSchema.safeParse(input);
     if (!parsed.success) {
@@ -77,17 +80,7 @@ export async function updateOperation(
   input: { name?: string; freelancerCutPercentage?: number },
 ): Promise<ActionResult<{ id: string }>> {
   try {
-    const session = await getServerSession();
-    if (!session) {
-      return {
-        success: false,
-        error: {
-          title: "Não autorizado",
-          detail: "Autenticação necessária",
-          status: 401,
-        },
-      };
-    }
+    const session = await requireSession();
 
     const parsed = updateOperationSchema.safeParse(input);
     if (!parsed.success) {
@@ -116,17 +109,7 @@ export async function updateOperation(
 
 export async function deleteOperation(id: string): Promise<ActionResult<void>> {
   try {
-    const session = await getServerSession();
-    if (!session) {
-      return {
-        success: false,
-        error: {
-          title: "Não autorizado",
-          detail: "Autenticação necessária",
-          status: 401,
-        },
-      };
-    }
+    const session = await requireSession();
 
     await OperationService.deleteOperation(id, session.userId);
 
