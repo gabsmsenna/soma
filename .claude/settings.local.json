@@ -6,7 +6,8 @@
       "Bash(pnpm biome:*)",
       "Bash(git:*)",
       "Bash(ls:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(git add:*)"
     ]
   },
   "enabledPlugins": {

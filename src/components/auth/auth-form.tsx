@@ -5,7 +5,6 @@ import { Eye, EyeOff, FileText, Mail, User, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { SocialLogin } from "@/components/auth/social-login";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -274,17 +273,6 @@ export function AuthForm() {
           <RegisterForm />
         </TabsContent>
       </Tabs>
-
-      {/* Divider */}
-      <div className="relative flex py-6 items-center shrink-0">
-        <div className="grow border-t border-gray-200 dark:border-zinc-700" />
-        <span className="shrink-0 mx-4 text-gray-400 text-xs font-medium uppercase">
-          Ou
-        </span>
-        <div className="grow border-t border-gray-200 dark:border-zinc-700" />
-      </div>
-
-      <SocialLogin />
     </div>
   );
 }
