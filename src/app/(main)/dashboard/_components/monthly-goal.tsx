@@ -1,40 +1,20 @@
 "use client";
 
 import { Loader2, Pencil, Rocket, Target, X } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { GoalResponse } from "@/dtos/dashboard.dto";
 import { formatBRL } from "@/lib/format";
+import { setMonthlyGoal } from "@/app/(main)/dashboard/actions";
 
-export function MonthlyGoal() {
-  const [data, setData] = useState<GoalResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface MonthlyGoalProps {
+  initialData: GoalResponse;
+}
+
+export function MonthlyGoal({ initialData }: MonthlyGoalProps) {
   const [goalInput, setGoalInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-
-  const fetchGoal = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/dashboard/goals");
-      if (!res.ok) {
-        setError("Falha ao carregar meta.");
-        return;
-      }
-      const json: GoalResponse = await res.json();
-      setData(json);
-    } catch {
-      setError("Falha ao carregar meta.");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchGoal();
-  }, [fetchGoal]);
 
   const handleSetGoal = async () => {
     const amount = Number(
@@ -47,16 +27,9 @@ export function MonthlyGoal() {
 
     setSaving(true);
     try {
-      const res = await fetch("/api/dashboard/goals", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount }),
-      });
-      if (res.ok) {
-        setGoalInput("");
-        setIsEditing(false);
-        fetchGoal();
-      }
+      await setMonthlyGoal(amount);
+      setGoalInput("");
+      setIsEditing(false);
     } catch (err) {
       console.error(err);
     } finally {
@@ -64,28 +37,10 @@ export function MonthlyGoal() {
     }
   };
 
-  if (loading) {
-    return (
-      <Card className="col-span-12 backdrop-blur-sm">
-        <CardContent className="p-8 flex items-center justify-center h-60">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (error) {
-    return (
-      <Card className="col-span-12 backdrop-blur-sm">
-        <CardContent className="p-8 text-center text-sm text-muted-foreground">
-          {error}
-        </CardContent>
-      </Card>
-    );
-  }
+  const data = initialData;
 
   // No goal set — show goal creation form
-  if (data && (data.goal === null || isEditing)) {
+  if (data.goal === null || isEditing) {
     return (
       <Card className="col-span-12 backdrop-blur-sm relative overflow-hidden group">
         <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-orange-500/20 transition-all duration-500" />
@@ -143,8 +98,6 @@ export function MonthlyGoal() {
       </Card>
     );
   }
-
-  if (!data) return null;
 
   const progressWidth = Math.min(data.percentAchieved, 100);
 

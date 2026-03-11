@@ -1,10 +1,8 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
-import type { RankingEntry, RankingResponse } from "@/dtos/dashboard.dto";
+import type { RankingEntry } from "@/dtos/dashboard.dto";
 import { formatBRL } from "@/lib/format";
 
 const COLORS = ["#FFBB00", "#f97316", "#fcd34d", "#3b82f6", "#a855f7"];
@@ -16,30 +14,11 @@ const COLOR_CLASSES = [
   "bg-purple-500",
 ];
 
-export function DistributionChart() {
-  const [ranking, setRanking] = useState<RankingEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface DistributionChartProps {
+  ranking: RankingEntry[];
+}
 
-  useEffect(() => {
-    async function fetchRanking() {
-      try {
-        const res = await fetch("/api/dashboard/ranking");
-        if (!res.ok) {
-          setError("Falha ao carregar ranking.");
-          return;
-        }
-        const json: RankingResponse = await res.json();
-        setRanking(json.data);
-      } catch {
-        setError("Falha ao carregar ranking.");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchRanking();
-  }, []);
-
+export function DistributionChart({ ranking }: DistributionChartProps) {
   const total = ranking.reduce((sum, r) => sum + r.totalProfit, 0);
 
   const chartData = ranking.map((r, i) => ({
@@ -56,15 +35,7 @@ export function DistributionChart() {
         <div className="flex justify-between items-center mb-6">
           <h4 className="font-bold text-lg">Top Operações</h4>
         </div>
-        {loading ? (
-          <div className="flex items-center justify-center h-48">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
-        ) : error ? (
-          <div className="flex items-center justify-center h-48">
-            <p className="text-sm text-muted-foreground">{error}</p>
-          </div>
-        ) : chartData.length === 0 ? (
+        {chartData.length === 0 ? (
           <div className="flex items-center justify-center h-48">
             <p className="text-sm text-muted-foreground">
               Nenhuma operação encontrada.

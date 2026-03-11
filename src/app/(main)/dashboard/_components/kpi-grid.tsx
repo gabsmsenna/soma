@@ -1,67 +1,13 @@
-"use client";
-
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  Loader2,
-  Minus,
-  TrendingUp,
-} from "lucide-react";
-import { useEffect, useState } from "react";
+import { ArrowDownRight, ArrowUpRight, Minus, TrendingUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { SummaryResponse } from "@/dtos/dashboard.dto";
 import { formatBRL } from "@/lib/format";
 
-export function KpiGrid() {
-  const [data, setData] = useState<SummaryResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface KpiGridProps {
+  data: SummaryResponse;
+}
 
-  useEffect(() => {
-    async function fetchSummary() {
-      try {
-        const res = await fetch("/api/dashboard/summary");
-        if (!res.ok) {
-          setError("Falha ao carregar indicadores.");
-          return;
-        }
-        const json: SummaryResponse = await res.json();
-        setData(json);
-      } catch {
-        setError("Falha ao carregar indicadores.");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchSummary();
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <Card key={`skeleton-${i}`} className="backdrop-blur-sm">
-            <CardContent className="p-6 flex items-center justify-center h-[140px]">
-              <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <Card className="backdrop-blur-sm">
-        <CardContent className="p-6 text-center text-sm text-muted-foreground">
-          {error}
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (!data) return null;
-
+export function KpiGrid({ data }: KpiGridProps) {
   const kpiCards = [
     {
       label: "Lucro Total Gerado",

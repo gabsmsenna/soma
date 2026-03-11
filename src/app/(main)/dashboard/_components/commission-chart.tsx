@@ -1,7 +1,6 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Area,
   AreaChart,
@@ -28,42 +27,23 @@ function formatLabel(dateStr: string, period: "weekly" | "monthly"): string {
   });
 }
 
-export function CommissionChart() {
+interface CommissionChartProps {
+  weeklyData: CommissionsChartResponse;
+  monthlyData: CommissionsChartResponse;
+}
+
+export function CommissionChart({
+  weeklyData,
+  monthlyData,
+}: CommissionChartProps) {
   const [viewMode, setViewMode] = useState<"semanal" | "mensal">("semanal");
-  const [chartData, setChartData] = useState<CommissionsChartResponse | null>(
-    null,
-  );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    const period = viewMode === "semanal" ? "weekly" : "monthly";
+  const activeDataset = viewMode === "semanal" ? weeklyData : monthlyData;
 
-    async function fetchCommissions() {
-      try {
-        const res = await fetch(`/api/dashboard/commissions?period=${period}`);
-        if (!res.ok) {
-          setError("Falha ao carregar comissões.");
-          return;
-        }
-        const json: CommissionsChartResponse = await res.json();
-        setChartData(json);
-      } catch {
-        setError("Falha ao carregar comissões.");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchCommissions();
-  }, [viewMode]);
-
-  const data =
-    chartData?.data.map((d) => ({
-      name: formatLabel(d.label, chartData.period),
-      myProfit: d.myProfit,
-    })) ?? [];
+  const data = activeDataset.data.map((d) => ({
+    name: formatLabel(d.label, activeDataset.period),
+    myProfit: d.myProfit,
+  }));
 
   return (
     <Card className="col-span-12 lg:col-span-8 backdrop-blur-sm">
@@ -101,15 +81,7 @@ export function CommissionChart() {
           </div>
         </div>
         <div className="h-[310px] w-full relative">
-          {loading ? (
-            <div className="flex items-center justify-center h-full">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-            </div>
-          ) : error ? (
-            <div className="flex items-center justify-center h-full">
-              <p className="text-sm text-muted-foreground">{error}</p>
-            </div>
-          ) : data.length === 0 ? (
+          {data.length === 0 ? (
             <div className="flex items-center justify-center h-full">
               <p className="text-sm text-muted-foreground">
                 Nenhum dado de comissão disponível.
