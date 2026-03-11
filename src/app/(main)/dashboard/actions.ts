@@ -12,7 +12,9 @@ export async function setMonthlyGoal(amount: number): Promise<void> {
 
   const parsed = monthlyGoalSchema.safeParse({ amount });
   if (!parsed.success) {
-    throw problems.validationError(parsed.error.issues[0]?.message ?? "Dados inválidos");
+    throw problems.validationError(
+      parsed.error.issues[0]?.message ?? "Dados inválidos",
+    );
   }
 
   const now = new Date();
