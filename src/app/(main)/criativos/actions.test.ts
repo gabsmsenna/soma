@@ -40,12 +40,15 @@ describe("criativos/actions", () => {
     totalProfit: new Prisma.Decimal(1000),
     freelancerCut: new Prisma.Decimal(100),
     isActive: true,
+    isPaid: false,
+    paidAt: null,
     createdAt: new Date("2024-01-01"),
     updatedAt: new Date("2024-01-01"),
     operation: {
       id: operationId,
       name: "Test Operation",
       freelancerCutPercentage: new Prisma.Decimal(10),
+      active: true,
       userId,
       createdAt: new Date("2024-01-01"),
       updatedAt: new Date("2024-01-01"),
@@ -66,12 +69,8 @@ describe("criativos/actions", () => {
 
       vi.mocked(getServerSession).mockResolvedValue(mockSession);
       vi.mocked(verifyOperationOwnership).mockResolvedValue();
-      vi.mocked(CreativeService.create).mockResolvedValue(
-        mockCreativeFromDB as any,
-      );
-      vi.mocked(CreativeService.findById).mockResolvedValue(
-        mockCreativeFromDB as any,
-      );
+      vi.mocked(CreativeService.create).mockResolvedValue(mockCreativeFromDB);
+      vi.mocked(CreativeService.findById).mockResolvedValue(mockCreativeFromDB);
 
       const { createCreative } = await import("./actions");
       const result = await createCreative({
@@ -128,17 +127,13 @@ describe("criativos/actions", () => {
       const CreativeService = await import("@/services/creative.service");
 
       vi.mocked(getServerSession).mockResolvedValue(mockSession);
-      vi.mocked(CreativeService.findById).mockResolvedValue(
-        mockCreativeFromDB as any,
-      );
+      vi.mocked(CreativeService.findById).mockResolvedValue(mockCreativeFromDB);
 
       const updatedCreative = { ...mockCreativeFromDB, name: "Updated Name" };
-      vi.mocked(CreativeService.update).mockResolvedValue(
-        updatedCreative as any,
-      );
+      vi.mocked(CreativeService.update).mockResolvedValue(updatedCreative);
       vi.mocked(CreativeService.findById)
-        .mockResolvedValueOnce(mockCreativeFromDB as any)
-        .mockResolvedValueOnce(updatedCreative as any);
+        .mockResolvedValueOnce(mockCreativeFromDB)
+        .mockResolvedValueOnce(updatedCreative);
 
       const { updateCreative } = await import("./actions");
       const result = await updateCreative(creativeId, {
@@ -190,9 +185,7 @@ describe("criativos/actions", () => {
         ...mockCreativeFromDB,
         operation: { ...mockCreativeFromDB.operation, userId: "other-user" },
       };
-      vi.mocked(CreativeService.findById).mockResolvedValue(
-        otherUserCreative as any,
-      );
+      vi.mocked(CreativeService.findById).mockResolvedValue(otherUserCreative);
 
       const { updateCreative } = await import("./actions");
       const result = await updateCreative(creativeId, { name: "New Name" });
@@ -210,9 +203,7 @@ describe("criativos/actions", () => {
       const CreativeService = await import("@/services/creative.service");
 
       vi.mocked(getServerSession).mockResolvedValue(mockSession);
-      vi.mocked(CreativeService.findById).mockResolvedValue(
-        mockCreativeFromDB as any,
-      );
+      vi.mocked(CreativeService.findById).mockResolvedValue(mockCreativeFromDB);
       vi.mocked(CreativeService.deleteCreative).mockResolvedValue();
 
       const { deleteCreative } = await import("./actions");
@@ -247,9 +238,7 @@ describe("criativos/actions", () => {
           userId: "other-user",
         },
       };
-      vi.mocked(CreativeService.findById).mockResolvedValue(
-        otherUserCreative as any,
-      );
+      vi.mocked(CreativeService.findById).mockResolvedValue(otherUserCreative);
 
       const { deleteCreative } = await import("./actions");
       const result = await deleteCreative(creativeId);
@@ -270,11 +259,9 @@ describe("criativos/actions", () => {
 
       const inactiveCreative = { ...mockCreativeFromDB, isActive: false };
       vi.mocked(CreativeService.findById)
-        .mockResolvedValueOnce(mockCreativeFromDB as any)
-        .mockResolvedValueOnce(inactiveCreative as any);
-      vi.mocked(CreativeService.update).mockResolvedValue(
-        inactiveCreative as any,
-      );
+        .mockResolvedValueOnce(mockCreativeFromDB)
+        .mockResolvedValueOnce(inactiveCreative);
+      vi.mocked(CreativeService.update).mockResolvedValue(inactiveCreative);
 
       const { deactivateCreative } = await import("./actions");
       const result = await deactivateCreative(creativeId);
@@ -308,9 +295,7 @@ describe("criativos/actions", () => {
         ...mockCreativeFromDB,
         operation: { ...mockCreativeFromDB.operation, userId: "other-user" },
       };
-      vi.mocked(CreativeService.findById).mockResolvedValue(
-        otherUserCreative as any,
-      );
+      vi.mocked(CreativeService.findById).mockResolvedValue(otherUserCreative);
 
       const { deactivateCreative } = await import("./actions");
       const result = await deactivateCreative(creativeId);
@@ -328,9 +313,7 @@ describe("criativos/actions", () => {
       const CreativeService = await import("@/services/creative.service");
 
       vi.mocked(getServerSession).mockResolvedValue(mockSession);
-      vi.mocked(CreativeService.findById).mockResolvedValue(
-        mockCreativeFromDB as any,
-      );
+      vi.mocked(CreativeService.findById).mockResolvedValue(mockCreativeFromDB);
 
       const updatedCreative = {
         ...mockCreativeFromDB,
@@ -338,11 +321,11 @@ describe("criativos/actions", () => {
         freelancerCut: new Prisma.Decimal(150),
       };
       vi.mocked(CreativeService.registerProfit).mockResolvedValue(
-        updatedCreative as any,
+        updatedCreative,
       );
       vi.mocked(CreativeService.findById)
-        .mockResolvedValueOnce(mockCreativeFromDB as any)
-        .mockResolvedValueOnce(updatedCreative as any);
+        .mockResolvedValueOnce(mockCreativeFromDB)
+        .mockResolvedValueOnce(updatedCreative);
 
       const { registerProfit } = await import("./actions");
       const result = await registerProfit(creativeId, { amount: 500 });
@@ -389,9 +372,7 @@ describe("criativos/actions", () => {
         ...mockCreativeFromDB,
         operation: { ...mockCreativeFromDB.operation, userId: "other-user" },
       };
-      vi.mocked(CreativeService.findById).mockResolvedValue(
-        otherUserCreative as any,
-      );
+      vi.mocked(CreativeService.findById).mockResolvedValue(otherUserCreative);
 
       const { registerProfit } = await import("./actions");
       const result = await registerProfit(creativeId, { amount: 500 });
@@ -417,11 +398,9 @@ describe("criativos/actions", () => {
       const CreativeService = await import("@/services/creative.service");
 
       vi.mocked(getServerSession).mockResolvedValue(mockSession);
-      vi.mocked(CreativeService.findById).mockResolvedValue(
-        mockCreativeFromDB as any,
-      );
+      vi.mocked(CreativeService.findById).mockResolvedValue(mockCreativeFromDB);
       vi.mocked(CreativeService.registerProfitPayment).mockResolvedValue(
-        mockPayment as any,
+        mockPayment,
       );
 
       const { registerProfitPayment } = await import("./actions");
@@ -453,9 +432,7 @@ describe("criativos/actions", () => {
         ...mockCreativeFromDB,
         operation: { ...mockCreativeFromDB.operation, userId: "other-user" },
       };
-      vi.mocked(CreativeService.findById).mockResolvedValue(
-        otherUserCreative as any,
-      );
+      vi.mocked(CreativeService.findById).mockResolvedValue(otherUserCreative);
 
       const { registerProfitPayment } = await import("./actions");
       const result = await registerProfitPayment(creativeId);
