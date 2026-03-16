@@ -206,7 +206,8 @@ export async function findProfitPaymentsGroupedByOperation(
       });
     }
 
-    const group = grouped.get(opId)!;
+    const group = grouped.get(opId);
+    if (!group) continue;
     group.totalLucro += entry.totalProfit;
     group.totalComissao += entry.commission;
     group.creatives.push({

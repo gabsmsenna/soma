@@ -1,6 +1,5 @@
 import { differenceInDays, subDays } from "date-fns";
 import type {
-  ProfitReportCreativeEntry,
   ProfitReportKpis,
   ProfitReportOperationGroup,
   ProfitReportResponse,
@@ -158,7 +157,8 @@ function buildKpis(
   );
   const creativesList = Array.from(profitByCreative.entries())
     .map(([creativeId, profit]) => {
-      const entry = currentEntries.find((e) => e.creativeId === creativeId)!;
+      const entry = currentEntries.find((e) => e.creativeId === creativeId);
+      if (!entry) throw new Error(`Entry not found for creative ${creativeId}`);
       return {
         name: entry.creative.name,
         operationName: entry.creative.operation.name,
