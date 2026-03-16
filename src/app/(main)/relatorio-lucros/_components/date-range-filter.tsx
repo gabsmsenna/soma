@@ -97,7 +97,7 @@ export function DateRangeFilter() {
               selected={startDate}
               onSelect={setStartDate}
               locale={ptBR}
-              initialFocus
+              autoFocus
             />
           </PopoverContent>
         </Popover>
@@ -130,7 +130,7 @@ export function DateRangeFilter() {
               selected={endDate}
               onSelect={setEndDate}
               locale={ptBR}
-              initialFocus
+              autoFocus
             />
           </PopoverContent>
         </Popover>
@@ -141,7 +141,7 @@ export function DateRangeFilter() {
           type="submit"
           disabled={!!error}
           size="sm"
-          className="bg-[#FFBB00] text-primary-foreground hover:bg-[#FFBB00]/80 font-bold"
+          className="bg-[#FFBB00] text-slate-900 dark:text-slate-800 hover:bg-[#FFBB00]/80 font-bold"
         >
           Filtrar
         </Button>

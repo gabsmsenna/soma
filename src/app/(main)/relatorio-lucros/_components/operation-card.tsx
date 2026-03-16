@@ -19,6 +19,7 @@ export function OperationCard({ group }: OperationCardProps) {
 
   return (
     <div className="bg-card backdrop-blur-md border rounded-2xl p-6 overflow-hidden hover:border-[#ffbb00]/50 transition-all shadow-sm">
+      {/* biome-ignore lint/a11y/useSemanticElements: wrapper is interactive because it contains nested buttons not allowed in <button> */}
       <div
         className="flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer"
         onClick={() => setExpanded(!expanded)}

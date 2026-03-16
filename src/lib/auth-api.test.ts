@@ -1,3 +1,4 @@
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { loginUser, registerUser } from "@/lib/auth-api";
 
 describe("loginUser", () => {

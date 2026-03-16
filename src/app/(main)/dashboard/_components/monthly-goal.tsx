@@ -2,10 +2,10 @@
 
 import { Loader2, Pencil, Rocket, Target, X } from "lucide-react";
 import { useState } from "react";
+import { setMonthlyGoal } from "@/app/(main)/dashboard/actions";
 import { Card, CardContent } from "@/components/ui/card";
 import type { GoalResponse } from "@/dtos/dashboard.dto";
 import { formatBRL } from "@/lib/format";
-import { setMonthlyGoal } from "@/app/(main)/dashboard/actions";
 
 interface MonthlyGoalProps {
   initialData: GoalResponse;
