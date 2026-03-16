@@ -1,14 +1,13 @@
+import { Prisma } from "@prisma/client";
 import {
   addDays,
   addMonths,
   eachDayOfInterval,
   format,
   startOfMonth,
-  startOfWeek,
   subDays,
   subMonths,
 } from "date-fns";
-import { Prisma } from "@prisma/client";
 import type {
   CommissionsChartResponse,
   CommissionsDataPoint,
@@ -100,8 +99,8 @@ export async function getSummary(userId: string): Promise<SummaryResponse> {
 
 function getWeekRange(): { start: Date; end: Date } {
   const now = new Date();
-  const start = startOfWeek(now, { weekStartsOn: 1 });
-  const end = addDays(start, 7);
+  const start = subDays(now, 6);
+  const end = addDays(now, 1);
   return { start, end };
 }
 
