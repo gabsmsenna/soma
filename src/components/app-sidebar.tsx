@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  BarChart3,
   DollarSign,
   HelpCircle,
   LayoutDashboard,
@@ -181,6 +180,8 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
+                {/* biome-ignore lint/a11y/useSemanticElements: toggle button styling */}
+                {/* biome-ignore lint/a11y/useKeyWithClickEvents: toggle button */}
                 <div
                   role="group"
                   aria-label="Alternar tema"

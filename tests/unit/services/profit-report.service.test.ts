@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import type { ProfitReportResponse } from "@/dtos/profit-report.dto";
 import * as ProfitReportService from "@/services/profit-report.service";
 import {
   type createMockPrismaClient,
@@ -73,10 +72,6 @@ function makeUnpaidCreative(overrides: Record<string, unknown> = {}) {
 describe("ProfitReportService", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Add profitEntry and creative mocks to the mock prisma client
-    (mockPrisma as any).profitEntry = {
-      findMany: vi.fn(),
-    };
   });
 
   describe("getProfitReport", () => {
@@ -97,7 +92,7 @@ describe("ProfitReportService", () => {
       ];
 
       // Current period entries
-      (mockPrisma as any).profitEntry.findMany
+      mockPrisma.profitEntry.findMany
         .mockResolvedValueOnce(entries) // current period
         .mockResolvedValueOnce([]); // previous period
 
@@ -122,7 +117,7 @@ describe("ProfitReportService", () => {
         makeProfitEntry({ totalProfit: 500, commission: 50 }),
       ];
 
-      (mockPrisma as any).profitEntry.findMany
+      mockPrisma.profitEntry.findMany
         .mockResolvedValueOnce(currentEntries)
         .mockResolvedValueOnce(previousEntries);
 
@@ -162,7 +157,7 @@ describe("ProfitReportService", () => {
         }),
       ];
 
-      (mockPrisma as any).profitEntry.findMany
+      mockPrisma.profitEntry.findMany
         .mockResolvedValueOnce(entries)
         .mockResolvedValueOnce([]);
 
@@ -187,7 +182,7 @@ describe("ProfitReportService", () => {
     });
 
     it("deve retornar null para top/bottom quando não há entries", async () => {
-      (mockPrisma as any).profitEntry.findMany
+      mockPrisma.profitEntry.findMany
         .mockResolvedValueOnce([])
         .mockResolvedValueOnce([]);
 
@@ -229,7 +224,7 @@ describe("ProfitReportService", () => {
         }),
       ];
 
-      (mockPrisma as any).profitEntry.findMany
+      mockPrisma.profitEntry.findMany
         .mockResolvedValueOnce(entries)
         .mockResolvedValueOnce([]);
 
@@ -247,7 +242,7 @@ describe("ProfitReportService", () => {
     });
 
     it("deve incluir criativos não pagos (totalProfit > 0) com isPaid: false", async () => {
-      (mockPrisma as any).profitEntry.findMany
+      mockPrisma.profitEntry.findMany
         .mockResolvedValueOnce([])
         .mockResolvedValueOnce([]);
 
@@ -294,7 +289,7 @@ describe("ProfitReportService", () => {
         }),
       ];
 
-      (mockPrisma as any).profitEntry.findMany
+      mockPrisma.profitEntry.findMany
         .mockResolvedValueOnce(currentEntries)
         .mockResolvedValueOnce(previousEntries);
 
@@ -315,7 +310,7 @@ describe("ProfitReportService", () => {
         makeProfitEntry({ totalProfit: 1000, commission: 100 }),
       ];
 
-      (mockPrisma as any).profitEntry.findMany
+      mockPrisma.profitEntry.findMany
         .mockResolvedValueOnce(currentEntries)
         .mockResolvedValueOnce([]); // no previous data
 
@@ -342,7 +337,7 @@ describe("ProfitReportService", () => {
         name: "Criativo Unpaid",
       });
 
-      (mockPrisma as any).profitEntry.findMany
+      mockPrisma.profitEntry.findMany
         .mockResolvedValueOnce([paidEntry])
         .mockResolvedValueOnce([]);
 
@@ -357,13 +352,13 @@ describe("ProfitReportService", () => {
       // Both should be in the same operation group
       const opGroup = result.operations.find((op) => op.operationId === "op-1");
       expect(opGroup).toBeDefined();
-      expect(opGroup!.creatives).toHaveLength(2);
+      expect(opGroup?.creatives).toHaveLength(2);
 
-      const paid = opGroup!.creatives.find((c) => c.isPaid);
-      const unpaid = opGroup!.creatives.find((c) => !c.isPaid);
+      const paid = opGroup?.creatives.find((c) => c.isPaid);
+      const unpaid = opGroup?.creatives.find((c) => !c.isPaid);
       expect(paid).toBeDefined();
       expect(unpaid).toBeDefined();
-      expect(unpaid!.paidAt).toBeNull();
+      expect(unpaid?.paidAt).toBeNull();
     });
   });
 });

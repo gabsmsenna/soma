@@ -1,3 +1,4 @@
+import type { User } from "@prisma/client";
 import { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
@@ -17,7 +18,7 @@ import {
 
 describe("Dashboard Goals API (/api/dashboard/goals)", () => {
   const prisma = getTestPrismaClient();
-  let testUser: any;
+  let testUser: User;
   let validToken: string;
 
   beforeAll(async () => {
@@ -62,7 +63,7 @@ describe("Dashboard Goals API (/api/dashboard/goals)", () => {
       const response = await POST(request);
       expect(response.status).toBe(200);
 
-      const body = await parseJsonResponse<any>(response);
+      const body = await parseJsonResponse<{ amount: number }>(response);
       expect(Number(body.amount)).toBe(10000);
 
       // Tem que persistir no banco
@@ -70,7 +71,7 @@ describe("Dashboard Goals API (/api/dashboard/goals)", () => {
         where: { userId: testUser.id },
       });
       expect(goal).toBeDefined();
-      expect(Number(goal!.amount)).toBe(10000);
+      expect(Number(goal?.amount)).toBe(10000);
     });
 
     it("deve atualizar meta existente via upsert", async () => {
@@ -98,7 +99,7 @@ describe("Dashboard Goals API (/api/dashboard/goals)", () => {
       const response = await POST(request);
       expect(response.status).toBe(200);
 
-      const body = await parseJsonResponse<any>(response);
+      const body = await parseJsonResponse<{ amount: number }>(response);
       expect(Number(body.amount)).toBe(15000);
 
       // Verificar que não duplicou

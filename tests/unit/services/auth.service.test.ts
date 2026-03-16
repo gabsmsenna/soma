@@ -223,7 +223,7 @@ describe("AuthService", () => {
       const { generateAuthToken: realGenerate } = await import(
         "@/lib/generate-auth-token"
       );
-      const token = await vi.stubEnv("JWT_SECRET", JWT_SECRET); // Set temporarily to generate
+      vi.stubEnv("JWT_SECRET", JWT_SECRET); // Set temporarily to generate
       const tokenString = await realGenerate(
         "user-123",
         "test@example.com",

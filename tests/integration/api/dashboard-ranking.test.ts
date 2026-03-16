@@ -1,3 +1,4 @@
+import type { User } from "@prisma/client";
 import { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
@@ -17,7 +18,7 @@ import {
 
 describe("Dashboard Ranking API (GET /api/dashboard/ranking)", () => {
   const prisma = getTestPrismaClient();
-  let testUser: any;
+  let testUser: User;
   let validToken: string;
 
   beforeAll(async () => {

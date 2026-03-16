@@ -12,6 +12,22 @@ import {
   teardownTestDatabase,
 } from "../../utils/setup/test-db";
 
+interface LoginSuccessResponse {
+  user: {
+    id: string;
+    email: string;
+    password?: string;
+  };
+  token: string;
+}
+
+interface ProblemResponse {
+  status: number;
+  title: string;
+  error?: string;
+  details?: unknown;
+}
+
 describe("POST /api/auth/login", () => {
   const prisma = getTestPrismaClient();
 
@@ -52,7 +68,8 @@ describe("POST /api/auth/login", () => {
 
     expect(response.status).toBe(200);
 
-    const responseData = await parseJsonResponse<any>(response);
+    const responseData =
+      await parseJsonResponse<LoginSuccessResponse>(response);
 
     expect(responseData.user).toBeDefined();
     expect(responseData.user.id).toBe(user.id);
@@ -75,7 +92,7 @@ describe("POST /api/auth/login", () => {
 
     expect(response.status).toBe(401);
 
-    const errorData = await parseJsonResponse<any>(response);
+    const errorData = await parseJsonResponse<ProblemResponse>(response);
     expect(errorData.status).toBe(401);
     expect(errorData.title).toBe("Credenciais inválidas");
   });
@@ -105,7 +122,7 @@ describe("POST /api/auth/login", () => {
 
     expect(response.status).toBe(401);
 
-    const errorData = await parseJsonResponse<any>(response);
+    const errorData = await parseJsonResponse<ProblemResponse>(response);
     expect(errorData.status).toBe(401);
     expect(errorData.title).toBe("Credenciais inválidas");
   });
@@ -123,7 +140,7 @@ describe("POST /api/auth/login", () => {
 
     expect(response.status).toBe(400);
 
-    const errorData = await parseJsonResponse<any>(response);
+    const errorData = await parseJsonResponse<ProblemResponse>(response);
     expect(errorData.error).toBe("Dados inválidos");
     expect(errorData.details).toBeDefined();
   });

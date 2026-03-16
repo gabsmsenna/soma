@@ -68,13 +68,13 @@ describe("CreativeService", () => {
       mockPrisma.operation.findUnique = mockPrismaFindUnique(mockOperation);
 
       // $transaction executes the callback passing the mock prisma as tx
-      (mockPrisma.$transaction as any).mockImplementation(
-        async (cb: (tx: any) => Promise<any>) => cb(mockPrisma),
+      (
+        mockPrisma.$transaction as unknown as ReturnType<typeof vi.fn>
+      ).mockImplementation(async (cb: (tx: unknown) => Promise<unknown>) =>
+        cb(mockPrisma),
       );
       mockPrisma.creative.create = mockPrismaCreate(mockCreatedCreative);
-      (mockPrisma as any).profitLog = {
-        create: vi.fn().mockResolvedValue({}),
-      };
+      mockPrisma.profitLog.create = vi.fn().mockResolvedValue({});
 
       const result = await CreativeService.create(createData);
 
@@ -119,7 +119,7 @@ describe("CreativeService", () => {
         paidAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
-        operation: {} as any,
+        operation: {} as unknown,
       };
 
       mockPrisma.creative.findUnique = mockPrismaFindUnique(mockCreative);
@@ -156,7 +156,7 @@ describe("CreativeService", () => {
           paidAt: null,
           createdAt: new Date(),
           updatedAt: new Date(),
-        } as any,
+        } as unknown,
       ];
 
       mockPrisma.creative.findMany = mockPrismaFindMany(mockCreatives);
@@ -185,7 +185,7 @@ describe("CreativeService", () => {
           paidAt: null,
           createdAt: new Date(),
           updatedAt: new Date(),
-        } as any,
+        } as unknown,
       ];
       const page = 1;
       const limit = 10;

@@ -1,18 +1,18 @@
 "use client";
 
+import { differenceInDays, format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { CalendarIcon } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 
 const MAX_DAYS = 30;
@@ -23,20 +23,19 @@ export function DateRangeFilter() {
 
   const [startDate, setStartDate] = useState<Date | undefined>(
     searchParams.get("startDate")
-      ? new Date(searchParams.get("startDate") + "T12:00:00")
+      ? new Date(`${searchParams.get("startDate")}T12:00:00`)
       : undefined,
   );
   const [endDate, setEndDate] = useState<Date | undefined>(
     searchParams.get("endDate")
-      ? new Date(searchParams.get("endDate") + "T12:00:00")
+      ? new Date(`${searchParams.get("endDate")}T12:00:00`)
       : undefined,
   );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (startDate && endDate) {
-      const diffMs = endDate.getTime() - startDate.getTime();
-      const diffDays = diffMs / (1000 * 60 * 60 * 24);
+      const diffDays = differenceInDays(endDate, startDate);
       if (diffDays > MAX_DAYS) {
         setError(`O intervalo máximo de busca é de ${MAX_DAYS} dias.`);
       } else if (diffDays < 0) {

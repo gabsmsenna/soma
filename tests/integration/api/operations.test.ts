@@ -1,3 +1,4 @@
+import type { Operation, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { GET, POST } from "@/app/api/operations/route";
@@ -13,9 +14,19 @@ import {
   teardownTestDatabase,
 } from "../../utils/setup/test-db";
 
+interface PaginatedOperationsResponse {
+  data: Operation[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
 describe("Operations API Endpoints (/api/operations)", () => {
   const prisma = getTestPrismaClient();
-  let testUser: any;
+  let testUser: User;
   let validToken: string;
 
   beforeAll(async () => {
@@ -63,7 +74,7 @@ describe("Operations API Endpoints (/api/operations)", () => {
 
       expect(response.status).toBe(201);
 
-      const responseData = await parseJsonResponse<any>(response);
+      const responseData = await parseJsonResponse<Operation>(response);
       expect(responseData.id).toBeDefined();
       expect(responseData.name).toBe("Nova Operação Teste");
       expect(responseData.userId).toBe(testUser.id);
@@ -88,7 +99,7 @@ describe("Operations API Endpoints (/api/operations)", () => {
 
       expect(response.status).toBe(401);
 
-      const errorData = await parseJsonResponse<any>(response);
+      const errorData = await parseJsonResponse<{ status: number }>(response);
       expect(errorData.status).toBe(401);
     });
 
@@ -107,7 +118,7 @@ describe("Operations API Endpoints (/api/operations)", () => {
 
       expect(response.status).toBe(400);
 
-      const errorData = await parseJsonResponse<any>(response);
+      const errorData = await parseJsonResponse<{ error: string }>(response);
       expect(errorData.error).toBe("Dados inválidos");
     });
   });
@@ -139,7 +150,8 @@ describe("Operations API Endpoints (/api/operations)", () => {
 
       expect(response.status).toBe(200);
 
-      const responseData = await parseJsonResponse<any>(response);
+      const responseData =
+        await parseJsonResponse<PaginatedOperationsResponse>(response);
       expect(responseData.data).toBeDefined();
       expect(responseData.data.length).toBe(2);
       expect(responseData.pagination).toBeDefined();
@@ -160,7 +172,8 @@ describe("Operations API Endpoints (/api/operations)", () => {
 
       expect(response.status).toBe(200);
 
-      const responseData = await parseJsonResponse<any>(response);
+      const responseData =
+        await parseJsonResponse<PaginatedOperationsResponse>(response);
       expect(responseData.data.length).toBe(3);
       expect(responseData.pagination.page).toBe(1);
       expect(responseData.pagination.limit).toBe(10);
@@ -199,11 +212,12 @@ describe("Operations API Endpoints (/api/operations)", () => {
       });
 
       const response = await GET(request);
-      const responseData = await parseJsonResponse<any>(response);
+      const responseData =
+        await parseJsonResponse<PaginatedOperationsResponse>(response);
 
       // Verify that the operation created by otherUser is not included
       expect(responseData.pagination.total).toBe(3); // Original 3 operations of testUser
-      const opNames = responseData.data.map((op: any) => op.name);
+      const opNames = responseData.data.map((op: Operation) => op.name);
       expect(opNames).not.toContain("Other User Op");
     });
   });

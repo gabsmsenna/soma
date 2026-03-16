@@ -19,7 +19,7 @@ describe("getServerSession", () => {
 
     vi.mocked(cookies).mockReturnValue({
       get: vi.fn().mockReturnValue({ value: "valid.jwt.token" }),
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof cookies>>);
 
     vi.mocked(verifyToken).mockResolvedValue({
       userId: "user-123",
@@ -43,7 +43,7 @@ describe("getServerSession", () => {
 
     vi.mocked(cookies).mockReturnValue({
       get: vi.fn().mockReturnValue(undefined),
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof cookies>>);
 
     const { getServerSession } = await import("@/lib/session");
     const session = await getServerSession();
@@ -57,7 +57,7 @@ describe("getServerSession", () => {
 
     vi.mocked(cookies).mockReturnValue({
       get: vi.fn().mockReturnValue({ value: "invalid.token" }),
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof cookies>>);
 
     vi.mocked(verifyToken).mockRejectedValue(new Error("invalid token"));
 

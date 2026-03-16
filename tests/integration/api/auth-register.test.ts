@@ -11,6 +11,23 @@ import {
   teardownTestDatabase,
 } from "../../utils/setup/test-db";
 
+interface RegisterSuccessResponse {
+  user: {
+    name: string;
+    email: string;
+    cpf: string;
+    password?: string;
+  };
+  token: string;
+}
+
+interface ProblemResponse {
+  status: number;
+  title: string;
+  error?: string;
+  details?: unknown;
+}
+
 describe("POST /api/auth/register", () => {
   const prisma = getTestPrismaClient();
 
@@ -46,7 +63,8 @@ describe("POST /api/auth/register", () => {
     }
     expect(response.status).toBe(201);
 
-    const responseData = await parseJsonResponse<any>(response);
+    const responseData =
+      await parseJsonResponse<RegisterSuccessResponse>(response);
 
     // Verificar retorno
     expect(responseData.user).toBeDefined();
@@ -87,7 +105,7 @@ describe("POST /api/auth/register", () => {
     const response = await POST(request);
 
     expect(response.status).toBe(409);
-    const errorData = await parseJsonResponse<any>(response);
+    const errorData = await parseJsonResponse<ProblemResponse>(response);
 
     expect(errorData.status).toBe(409);
     expect(errorData.title).toBe("E-mail já cadastrado"); // Error format of Problem Details
@@ -108,7 +126,7 @@ describe("POST /api/auth/register", () => {
 
     expect(response.status).toBe(400);
 
-    const errorData = await parseJsonResponse<any>(response);
+    const errorData = await parseJsonResponse<ProblemResponse>(response);
     expect(errorData.error).toBe("Dados inválidos");
     expect(errorData.details).toBeDefined();
   });

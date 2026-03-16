@@ -1,3 +1,4 @@
+import type { Operation, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { DELETE, GET, PUT } from "@/app/api/operations/[operationId]/route";
@@ -15,11 +16,11 @@ import {
 
 describe("Operations API Endpoints (/api/operations/[operationId])", () => {
   const prisma = getTestPrismaClient();
-  let testUser: any;
-  let otherUser: any;
+  let testUser: User;
+  let otherUser: User;
   let validToken: string;
   let otherToken: string;
-  let testOperation: any;
+  let testOperation: Operation;
 
   beforeAll(async () => {
     await setupTestDatabase();
@@ -87,7 +88,7 @@ describe("Operations API Endpoints (/api/operations/[operationId])", () => {
       });
 
       expect(response.status).toBe(200);
-      const responseData = await parseJsonResponse<any>(response);
+      const responseData = await parseJsonResponse<Operation>(response);
       expect(responseData.id).toBe(testOperation.id);
       expect(responseData.name).toBe(testOperation.name);
     });
@@ -149,7 +150,7 @@ describe("Operations API Endpoints (/api/operations/[operationId])", () => {
 
       expect(response.status).toBe(200);
 
-      const responseData = await parseJsonResponse<any>(response);
+      const responseData = await parseJsonResponse<Operation>(response);
       expect(responseData.id).toBe(testOperation.id);
       expect(responseData.name).toBe("Operação Atualizada");
 
