@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTheme } from "next-themes";
 import {
   Area,
   AreaChart,
@@ -37,6 +38,9 @@ export function CommissionChart({
   monthlyData,
 }: CommissionChartProps) {
   const [viewMode, setViewMode] = useState<"semanal" | "mensal">("semanal");
+  const { resolvedTheme } = useTheme();
+  const axisTickColor =
+    resolvedTheme === "dark" ? "#ffffff" : "hsl(var(--muted-foreground))";
 
   const activeDataset = viewMode === "semanal" ? weeklyData : monthlyData;
 
@@ -112,7 +116,7 @@ export function CommissionChart({
                 />
                 <XAxis
                   dataKey="name"
-                  stroke="hsl(var(--muted-foreground))"
+                  stroke={axisTickColor}
                   fontSize={10}
                   tickLine={false}
                   axisLine={false}
@@ -121,7 +125,7 @@ export function CommissionChart({
                   style={{
                     fontWeight: "bold",
                     letterSpacing: "0.1em",
-                    fill: "hsl(var(--muted-foreground))",
+                    fill: axisTickColor,
                   }}
                 />
                 <YAxis hide domain={["dataMin - 10", "dataMax + 10"]} />
