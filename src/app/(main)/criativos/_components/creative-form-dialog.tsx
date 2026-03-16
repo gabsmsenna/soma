@@ -97,7 +97,7 @@ export function CreativeFormDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {children ?? (
-          <Button className="flex items-center gap-2 bg-brand hover:bg-brand/90 text-black font-bold py-2.5 px-6 rounded-xl transition-all transform active:scale-95 shadow-lg shadow-brand/20">
+          <Button className="flex items-center gap-2 bg-brand hover:bg-brand/90 text-black dark:bg-brand dark:hover:bg-brand/90 dark:text-black font-bold py-2.5 px-6 rounded-xl transition-all transform active:scale-95 shadow-lg shadow-brand/20">
             <Plus className="h-5 w-5" />
             <span className="text-sm">Novo Criativo</span>
           </Button>

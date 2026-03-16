@@ -36,8 +36,8 @@ export function CreativesGrid({
         ))}
 
         <CreativeFormDialog operations={operations}>
-          <div className="border-2 border-dashed border-slate-300 dark:border-border rounded-2xl p-5 flex flex-col items-center justify-center text-center group hover:border-brand/50 transition-all cursor-pointer bg-white/50 dark:bg-muted/20 h-full min-h-[200px]">
-            <div className="h-16 w-16 bg-brand/10 text-brand rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-sm dark:shadow-none">
+          <div className="border-2 border-dashed border-slate-300 dark:border-border rounded-2xl p-5 flex flex-col items-center justify-center text-center group hover:border-brand/50 dark:hover:border-brand/50 hover:bg-brand/5 dark:hover:bg-brand/5 transition-all cursor-pointer bg-white/50 dark:bg-muted/20 h-full min-h-[200px]">
+            <div className="h-16 w-16 bg-brand/10 text-brand rounded-full flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-brand/20 dark:group-hover:bg-brand/20 transition-all shadow-sm dark:shadow-none">
               <Plus className="h-8 w-8" />
             </div>
             <p className="font-bold mb-1 text-slate-800 dark:text-foreground">

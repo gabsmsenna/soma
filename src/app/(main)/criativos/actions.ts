@@ -195,6 +195,25 @@ export async function deactivateCreative(
   }
 }
 
+export async function activateCreative(
+  id: string,
+): Promise<ActionResult<CreativeViewModel>> {
+  try {
+    const session = await requireSession();
+    if (isErrorResult(session)) return session;
+
+    const ownership = await verifyCreativeOwnership(id, session.userId);
+    if (isErrorResult(ownership)) return ownership;
+
+    await CreativeService.update(id, { isActive: true });
+    const updated = await CreativeService.findById(id);
+    revalidatePath("/criativos");
+    return { success: true, data: toCreativeViewModel(updated) };
+  } catch (error) {
+    return errorResult(error);
+  }
+}
+
 export async function registerProfit(
   id: string,
   input: { amount: number },
