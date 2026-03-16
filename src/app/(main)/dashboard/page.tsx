@@ -4,6 +4,7 @@ import { DistributionChart } from "@/app/(main)/dashboard/_components/distributi
 import { Header } from "@/app/(main)/dashboard/_components/header";
 import { KpiGrid } from "@/app/(main)/dashboard/_components/kpi-grid";
 import { MonthlyGoal } from "@/app/(main)/dashboard/_components/monthly-goal";
+import { AppFooter } from "@/components/app-footer";
 import { getServerSession } from "@/lib/session";
 import {
   getCommissionsChart,
@@ -53,6 +54,8 @@ export default async function DashboardPage() {
           {/* Monthly Goal */}
           <MonthlyGoal initialData={goalData} />
         </div>
+
+        <AppFooter />
       </div>
     </div>
   );

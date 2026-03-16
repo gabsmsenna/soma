@@ -1,3 +1,4 @@
+import { AppFooter } from "@/components/app-footer";
 import { Separator } from "@/components/ui/separator";
 import type { CreativeMetrics } from "../_types";
 
@@ -42,9 +43,7 @@ export function CreativesFooter({ metrics }: CreativesFooterProps) {
           </p>
         </div>
       </div>
-      <div className="text-xs text-slate-500 dark:text-muted-foreground">
-        Soma v1.0.5 © 2024 Grid Management System
-      </div>
+      <AppFooter className="mt-0 p-0 border-none bg-transparent dark:bg-transparent" />
     </footer>
   );
 }

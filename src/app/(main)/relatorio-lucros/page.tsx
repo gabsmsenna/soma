@@ -1,9 +1,10 @@
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import { AppFooter } from "@/components/app-footer";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { getServerSession } from "@/lib/session";
 import { getProfitReport } from "@/services/profit-report.service";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@/components/ui/separator";
 import { DateRangeFilter } from "./_components/date-range-filter";
 import { KpiCards } from "./_components/kpi-cards";
 import { OperationsList } from "./_components/operations-list";
@@ -67,6 +68,8 @@ export default async function RelatorioLucrosPage({
           <OperationsList operations={report.operations} />
         </div>
       </main>
+
+      <AppFooter />
     </div>
   );
 }

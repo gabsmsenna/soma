@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
+import { AppFooter } from "@/components/app-footer";
 import { DeleteConfirmationDialog } from "@/components/ui/delete-confirmation-dialog";
 import type { Operation, PaginationInfo } from "../_types/types";
 import { deleteOperation } from "../actions";
@@ -134,6 +135,8 @@ export function OperacoesClient({
           title="Excluir Operação"
         />
       </div>
+
+      <AppFooter />
     </div>
   );
 }
